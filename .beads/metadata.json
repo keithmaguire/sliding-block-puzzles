@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "sliding_puzzle_claude",
+  "project_id": "731904c0-868f-4751-bec1-ed2bac2fe22d"
+}
