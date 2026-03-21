@@ -27,6 +27,19 @@ export function AdminPage({ onBack, onCreate, onEditLibraryMetadata }: Props) {
           bg="rgba(34,197,94,0.08)"
           onClick={onEditLibraryMetadata}
         />
+        <div style={infoPanelStyle}>
+          <p style={infoParagraphStyle}>
+            Built-in puzzle maintenance happens entirely through exported files and the app’s
+            metadata editor. There is no command-line index generator in the supported workflow.
+          </p>
+          <ol style={infoListStyle}>
+            <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>
+            <li>Add that exported file to the repo <code>puzzles/</code> directory outside the app.</li>
+            <li>Open <strong>Edit library metadata</strong> and use <strong>Import puzzle JSON</strong> to add or refresh built-in index rows.</li>
+            <li>Update titles, sources, difficulties, and groups in the table and registry lists.</li>
+            <li>Use <strong>Export updated index</strong> and replace <code>puzzles/index.json</code> in the repo.</li>
+          </ol>
+        </div>
       </div>
     </DocPage>
   )
@@ -82,4 +95,24 @@ const subtitleStyle: React.CSSProperties = {
   margin: 0,
   color: 'var(--text-dim)',
   lineHeight: 1.6,
+}
+
+const infoPanelStyle: React.CSSProperties = {
+  padding: '14px 16px',
+  borderRadius: 'var(--radius-md)',
+  border: '1px solid var(--border)',
+  background: 'rgba(255,255,255,0.03)',
+}
+
+const infoParagraphStyle: React.CSSProperties = {
+  margin: 0,
+  color: 'var(--text-dim)',
+  lineHeight: 1.6,
+}
+
+const infoListStyle: React.CSSProperties = {
+  margin: '10px 0 0',
+  paddingLeft: 20,
+  color: 'var(--text-dim)',
+  lineHeight: 1.7,
 }
