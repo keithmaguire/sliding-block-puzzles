@@ -1,9 +1,9 @@
 import { PUZZLE_SESSIONS_KEY as KEY } from './localMemory'
-import type { PuzzleJSON } from './puzzleTypes'
+import type { PlayablePuzzle } from './puzzleTypes'
 import type { WasmBlock, WasmRestoreBlocks } from './wasm'
 
 export interface SavedPuzzleSession {
-  puzzle: PuzzleJSON
+  puzzle: PlayablePuzzle
   blocks: Record<string, [number, number][]>
   moveCount: number
   shuffleAvailable?: boolean
@@ -19,8 +19,8 @@ function sameCells(left: [number, number][], right: [number, number][]): boolean
 }
 
 function sameAppearance(
-  left: PuzzleJSON['blocks'][number]['appearance'],
-  right: PuzzleJSON['blocks'][number]['appearance'],
+  left: PlayablePuzzle['blocks'][number]['appearance'],
+  right: PlayablePuzzle['blocks'][number]['appearance'],
 ): boolean {
   if (left.type !== right.type) return false
   if (left.color !== right.color) return false
@@ -35,7 +35,7 @@ function sameAppearance(
   return false
 }
 
-function sameBlocks(left: PuzzleJSON['blocks'], right: PuzzleJSON['blocks']): boolean {
+function sameBlocks(left: PlayablePuzzle['blocks'], right: PlayablePuzzle['blocks']): boolean {
   return left.length === right.length && left.every((leftBlock, index) => {
     const rightBlock = right[index]
     if (!rightBlock) return false
@@ -48,7 +48,7 @@ function sameBlocks(left: PuzzleJSON['blocks'], right: PuzzleJSON['blocks']): bo
   })
 }
 
-function hasSetupStateChanges(initialPuzzle: PuzzleJSON, playPuzzle: PuzzleJSON): boolean {
+function hasSetupStateChanges(initialPuzzle: PlayablePuzzle, playPuzzle: PlayablePuzzle): boolean {
   return !sameBlocks(initialPuzzle.blocks, playPuzzle.blocks)
 }
 
@@ -95,8 +95,8 @@ export function sessionBlocksToWasm(blocks: Record<string, [number, number][]>):
 }
 
 export function shouldPersistPuzzleSession(
-  initialPuzzle: PuzzleJSON,
-  playPuzzle: PuzzleJSON,
+  initialPuzzle: PlayablePuzzle,
+  playPuzzle: PlayablePuzzle,
   moveCount: number,
   shuffleAvailable: boolean,
 ): boolean {

@@ -2,6 +2,7 @@ import {
   blockMatchesPhysicalMatch,
   canonicalizeAppearance,
   normalizeShapeCells,
+  type PlayablePuzzle,
   type PuzzleMetadata,
   type PhysicalMatch,
   type PositionTarget,
@@ -204,7 +205,7 @@ export function visualStateToPuzzleMetadata(state: VisualState): PuzzleMetadata 
   }
 }
 
-export function puzzleJSONToVisualState(puzzle: PuzzleJSON): Partial<VisualState> {
+export function puzzleJSONToVisualState(puzzle: PlayablePuzzle): Partial<VisualState> {
   const { width, height } = puzzle.board
   const startGrid = makeGrid(height, width, '')
   const winGrid = makeGrid(height, width, '?')
@@ -277,7 +278,7 @@ export function puzzleJSONToVisualState(puzzle: PuzzleJSON): Partial<VisualState
 
   const firstBlock = blocks[0]?.id ?? ''
   return {
-    title: puzzle.title ?? 'My Puzzle',
+    title: puzzle.title ?? puzzle.id,
     puzzleId: puzzle.id,
     source: puzzle.source ?? '',
     difficulty: puzzle.difficulty ?? 2,

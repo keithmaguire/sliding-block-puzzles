@@ -1,4 +1,4 @@
-import type { CustomPuzzleRecord, PuzzleJSON, PuzzleMetadata } from './puzzleTypes'
+import type { CustomPuzzleRecord, PlayablePuzzle, PuzzleJSON, PuzzleMetadata } from './puzzleTypes'
 import { CUSTOM_PUZZLES_KEY as KEY, HIDDEN_PUZZLES_KEY as HIDDEN_KEY } from './localMemory'
 
 const DEFAULT_GROUP_ID = 'custom-local'
@@ -47,12 +47,12 @@ function readCustomPuzzleRecords(): CustomPuzzleRecord[] {
   }
 }
 
-export function stripPuzzleMetadata(puzzle: PuzzleJSON): PuzzleJSON {
+export function stripPuzzleMetadata(puzzle: PlayablePuzzle): PuzzleJSON {
   const { title: _title, source: _source, difficulty: _difficulty, ...gameplay } = puzzle
   return gameplay
 }
 
-export function buildPuzzleWithMetadata(record: CustomPuzzleRecord): PuzzleJSON {
+export function buildPuzzleWithMetadata(record: CustomPuzzleRecord): PlayablePuzzle {
   return {
     ...record.puzzle,
     title: record.metadata.title,

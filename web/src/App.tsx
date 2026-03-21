@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useWasm } from './wasm'
-import type { PuzzleJSON } from './puzzleTypes'
+import type { PlayablePuzzle } from './puzzleTypes'
 import { GameScreen } from './components/GameScreen'
 import { PuzzleBrowser } from './components/PuzzleBrowser'
 import { DocSelector } from './components/DocSelector'
@@ -16,14 +16,14 @@ import './App.css'
 export default function App() {
   const { status, error, api } = useWasm()
   const [view, setView] = useState<View>('title')
-  const [activePuzzle, setActivePuzzle] = useState<PuzzleJSON | null>(null)
+  const [activePuzzle, setActivePuzzle] = useState<PlayablePuzzle | null>(null)
   const [gameReturnView, setGameReturnView] = useState<'browser' | 'creator'>('browser')
-  const [creatorInitialPuzzle, setCreatorInitialPuzzle] = useState<PuzzleJSON | undefined>(undefined)
+  const [creatorInitialPuzzle, setCreatorInitialPuzzle] = useState<PlayablePuzzle | undefined>(undefined)
   const [editorKey, setEditorKey] = useState(0)
   const [hasAuthoringSession, setHasAuthoringSession] = useState(false)
   const [docOrigin, setDocOrigin] = useState<'browser' | 'game'>('browser')
 
-  function goToGame(puzzle: PuzzleJSON, returnTo: 'browser' | 'creator') {
+  function goToGame(puzzle: PlayablePuzzle, returnTo: 'browser' | 'creator') {
     setActivePuzzle(puzzle)
     setGameReturnView(returnTo)
     setView('game')

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { CustomPuzzleRecord, PuzzleJSON, IndexEntry, PuzzleGroup, PuzzleIndex } from '../puzzleTypes'
+import type { CustomPuzzleRecord, IndexEntry, PlayablePuzzle, PuzzleGroup, PuzzleIndex, PuzzleJSON } from '../puzzleTypes'
 import { groupIndexPuzzles } from '../puzzleTypes'
 import { getProgress } from '../progress'
 import { buildPuzzleWithMetadata, getCustomPuzzleRecords, removeCustomPuzzle, getHiddenPuzzleIds, hidePuzzle, restoreHiddenPuzzle } from '../customPuzzles'
@@ -9,9 +9,9 @@ import { fetchJsonWithCache } from '../cachedFetch'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface PuzzleBrowserProps {
-  onSelect: (puzzle: PuzzleJSON) => void
+  onSelect: (puzzle: PlayablePuzzle) => void
   onDocs: () => void
-  onEdit: (puzzle: PuzzleJSON) => void
+  onEdit: (puzzle: PlayablePuzzle) => void
 }
 
 function parseIndex(raw: unknown): PuzzleGroup[] {
@@ -71,7 +71,7 @@ export function PuzzleBrowser({ onSelect, onDocs, onEdit }: PuzzleBrowserProps) 
     }
   }, [])
 
-  async function fetchLibraryPuzzle(entry: IndexEntry): Promise<PuzzleJSON> {
+  async function fetchLibraryPuzzle(entry: IndexEntry): Promise<PlayablePuzzle> {
     const puzzle = await fetchJsonWithCache<PuzzleJSON>(`${BASE_URL}puzzles/${entry.file}`)
     return {
       ...puzzle,

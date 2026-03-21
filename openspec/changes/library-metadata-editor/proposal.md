@@ -1,6 +1,6 @@
 ## Why
 
-The app can already create and edit puzzle content, but shipped-library metadata is still awkward to maintain because titles and catalog fields are spread across puzzle files and the generated index. A dedicated in-browser metadata editor is needed so admins can manage the library catalog as one coherent dataset and export a replacement `index.json`.
+The app can already create and edit puzzle content, but shipped-library metadata is still awkward to maintain because titles and catalog fields are spread across puzzle files and the separately maintained index. A dedicated in-browser metadata editor is needed so admins can manage the library catalog as one coherent dataset and export a replacement `index.json`.
 
 ## What Changes
 

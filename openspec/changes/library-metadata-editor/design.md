@@ -58,7 +58,7 @@ Alternative considered:
   Rejected because the user explicitly wants this process explained within the app.
 
 ### Decision: Replace the grouped index structure with a flat catalog plus registries
-The regenerated index will use a flat list of puzzle rows keyed by puzzle `id`, plus embedded registries for allowed values. Group presentation in the browser will be derived from each puzzle row's group reference rather than authored as a nested tree.
+The canonical index will use a flat list of puzzle rows keyed by puzzle `id`, plus embedded registries for allowed values. Group presentation in the browser will be derived from each puzzle row's group reference rather than authored as a nested tree.
 
 Rationale:
 - Spreadsheet editing works naturally on flat rows.

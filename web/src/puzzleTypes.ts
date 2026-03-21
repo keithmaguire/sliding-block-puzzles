@@ -134,6 +134,12 @@ export interface PuzzleMetadata {
   group_title?: string
 }
 
+export interface PuzzleCatalogMetadata {
+  title: string
+  source: string
+  difficulty: number
+}
+
 export interface CustomPuzzleRecord {
   puzzle: PuzzleJSON
   metadata: PuzzleMetadata
@@ -142,9 +148,6 @@ export interface CustomPuzzleRecord {
 /** Serialized PuzzleJSON structure. */
 export interface PuzzleJSON {
   id: string
-  title?: string
-  source?: string
-  difficulty?: number
   min_moves?: number
   board: { width: number; height: number }
   blocks: PuzzleBlock[]
@@ -152,6 +155,8 @@ export interface PuzzleJSON {
   win_description?: string
   setup_options?: SetupOptions
 }
+
+export type PlayablePuzzle = PuzzleJSON & Partial<PuzzleCatalogMetadata>
 
 // Derived meta for the Board component — keyed by block ID.
 export interface BlockMeta {

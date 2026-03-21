@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { PuzzleJSON } from '../puzzleTypes'
+import type { PlayablePuzzle, PuzzleJSON } from '../puzzleTypes'
 import { visualStateToPuzzleJSON, visualStateToPuzzleMetadata } from './puzzleEditorState'
 import {
   applyVisualStateChange,
@@ -12,7 +12,7 @@ import {
   snapshotAuthoringState,
 } from './puzzleCreatorState'
 
-const EDIT_PUZZLE: PuzzleJSON = {
+const EDIT_PUZZLE: PlayablePuzzle = {
   id: 'edit-me',
   title: 'Edit Me',
   source: 'Tests',
@@ -30,9 +30,6 @@ const EDIT_PUZZLE: PuzzleJSON = {
 
 const IMPORT_PUZZLE: PuzzleJSON = {
   id: 'imported',
-  title: 'Imported Puzzle',
-  source: 'Tests',
-  difficulty: 4,
   board: { width: 5, height: 4 },
   blocks: [
     { id: 'C', movable: true, cells: [[1, 1], [1, 2]], appearance: { type: 'plain', color: '#22c55e' } },
@@ -107,9 +104,9 @@ describe('PuzzleCreator authoring state', () => {
       blocks: IMPORT_PUZZLE.blocks,
     })
     expect(visualStateToPuzzleMetadata(next.visualState)).toEqual({
-      title: IMPORT_PUZZLE.title!,
-      source: IMPORT_PUZZLE.source!,
-      difficulty: IMPORT_PUZZLE.difficulty!,
+      title: IMPORT_PUZZLE.id,
+      source: 'Custom',
+      difficulty: 2,
       group_id: 'custom-local',
       group_title: 'Custom',
     })
@@ -146,7 +143,6 @@ describe('PuzzleCreator authoring state', () => {
   it('round-trips win_description through the authoring state', () => {
     const puzzleWithDesc: PuzzleJSON = {
       id: 'desc-puzzle',
-      title: 'Desc Puzzle',
       board: { width: 3, height: 2 },
       blocks: [{ id: 'A', movable: true, cells: [[0, 0]], appearance: { type: 'plain', color: '#f00' } }],
       win_condition: { type: 'description_only' },
@@ -160,7 +156,6 @@ describe('PuzzleCreator authoring state', () => {
   it('round-trips text appearance color through the authoring state', () => {
     const puzzleWithLabelColor: PuzzleJSON = {
       id: 'label-color',
-      title: 'Label Color',
       board: { width: 3, height: 2 },
       blocks: [
         {
@@ -181,7 +176,6 @@ describe('PuzzleCreator authoring state', () => {
   it('reconstructs edge goals as ordinary position targets', () => {
     const edgePuzzle: PuzzleJSON = {
       id: 'edge-puzzle',
-      title: 'Edge Puzzle',
       board: { width: 4, height: 3 },
       blocks: [
         { id: 'A', movable: true, cells: [[0, 1], [1, 1]], appearance: { type: 'plain', color: '#f0a500' } },
@@ -201,7 +195,6 @@ describe('PuzzleCreator authoring state', () => {
   it('round-trips appearance-based position targets through the authoring state', () => {
     const appearanceValuePuzzle: PuzzleJSON = {
       id: 'word-slot',
-      title: 'Word Slot',
       board: { width: 4, height: 2 },
       blocks: [
         { id: 'A', movable: true, cells: [[0, 0]], appearance: { type: 'text', color: '#f0a500', value: 'T' } },
@@ -218,7 +211,6 @@ describe('PuzzleCreator authoring state', () => {
   it('round-trips shape-based position targets through the authoring state', () => {
     const shapePuzzle: PuzzleJSON = {
       id: 'shape-slot',
-      title: 'Shape Slot',
       board: { width: 4, height: 3 },
       blocks: [
         { id: 'L', movable: true, cells: [[0, 0], [0, 1], [1, 1]], appearance: { type: 'plain', color: '#f0a500' } },

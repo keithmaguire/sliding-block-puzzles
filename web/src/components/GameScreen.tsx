@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PuzzleApi } from '../wasm'
-import type { PuzzleJSON, WinCondition } from '../puzzleTypes'
+import type { PlayablePuzzle, WinCondition } from '../puzzleTypes'
 import { buildBlockMeta, getSupportedSetupOptions } from '../puzzleTypes'
 import { recordSolve } from '../progress'
 import { Board } from './Board'
@@ -20,14 +20,14 @@ function hasDescriptionOnly(wc: WinCondition): boolean {
 }
 
 interface GameScreenProps {
-  puzzle: PuzzleJSON
+  puzzle: PlayablePuzzle
   api: PuzzleApi
   onBack: () => void
   onDocs: () => void
 }
 
 interface LoadedGameState {
-  playPuzzle: PuzzleJSON
+  playPuzzle: PlayablePuzzle
   restored: WasmOk | null
   loadError: string | null
   removableIds: Set<string>
@@ -42,7 +42,7 @@ interface GameLoadKey {
 
 const CELL = 64 // must match BlockShape.tsx
 
-function loadPlayState(api: PuzzleApi, basePuzzle: PuzzleJSON, session = getPuzzleSession(basePuzzle.id)) {
+function loadPlayState(api: PuzzleApi, basePuzzle: PlayablePuzzle, session = getPuzzleSession(basePuzzle.id)) {
   const playPuzzle = session?.puzzle ?? basePuzzle
   const loaded = api.loadPuzzle(JSON.stringify(playPuzzle))
   appendDebugLog('game.loadPuzzle', { puzzleId: playPuzzle.id, fromSession: Boolean(session), ok: loaded.ok })
@@ -69,7 +69,7 @@ function loadPlayState(api: PuzzleApi, basePuzzle: PuzzleJSON, session = getPuzz
   return { playPuzzle, restored }
 }
 
-function getLoadedGameState(api: PuzzleApi, puzzle: PuzzleJSON): LoadedGameState {
+function getLoadedGameState(api: PuzzleApi, puzzle: PlayablePuzzle): LoadedGameState {
   const session = getPuzzleSession(puzzle.id)
   const initialLoad = loadPlayState(api, puzzle, session)
   return {
@@ -94,7 +94,7 @@ function readViewport() {
 export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
   const [initialLoad] = useState<LoadedGameState>(() => getLoadedGameState(api, puzzle))
   const [viewport, setViewport] = useState(readViewport)
-  const [playPuzzle, setPlayPuzzle] = useState<PuzzleJSON>(initialLoad.playPuzzle)
+  const [playPuzzle, setPlayPuzzle] = useState<PlayablePuzzle>(initialLoad.playPuzzle)
   const [state, setState] = useState<WasmOk | null>(initialLoad.restored)
   const [won, setWon] = useState(initialLoad.won)
   const [loadError, setLoadError] = useState<string | null>(initialLoad.loadError)
@@ -147,7 +147,7 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     }
   }
 
-  function applyLoadedPuzzle(nextPuzzle: PuzzleJSON) {
+  function applyLoadedPuzzle(nextPuzzle: PlayablePuzzle) {
     const loaded = api.loadPuzzle(JSON.stringify(nextPuzzle))
     appendDebugLog('game.applyLoadedPuzzle', { puzzleId: nextPuzzle.id, ok: loaded.ok, blockCount: nextPuzzle.blocks.length })
     setPlayPuzzle(nextPuzzle)
@@ -249,7 +249,7 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
   const savePuzzleState = useCallback(() => {
     if (!state) return
     const blocks = serializeWasmBlocks(state.blocks)
-    const snapshotPuzzle: PuzzleJSON = {
+    const snapshotPuzzle: PlayablePuzzle = {
       ...playPuzzle,
       blocks: playPuzzle.blocks
         .filter((block) => block.id in blocks)

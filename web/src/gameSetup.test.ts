@@ -6,7 +6,6 @@ import type { PuzzleJSON } from './puzzleTypes'
 function makePuzzle(overrides: Partial<PuzzleJSON> = {}): PuzzleJSON {
   return {
     id: 'test-puzzle',
-    title: 'Test',
     board: { width: 4, height: 4 },
     blocks: [
       { id: 'A', movable: true, cells: [[0, 0], [1, 0]], appearance: { type: 'plain', color: '#f00' } },

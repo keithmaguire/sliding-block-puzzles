@@ -1,4 +1,4 @@
-import type { PuzzleJSON } from '../puzzleTypes'
+import type { PlayablePuzzle, PuzzleJSON } from '../puzzleTypes'
 import {
   defaultVisualState,
   puzzleJSONToVisualState,
@@ -6,7 +6,7 @@ import {
   type VisualState,
 } from './puzzleEditorState'
 
-export function makeInitialVisualState(initialPuzzle?: PuzzleJSON): VisualState {
+export function makeInitialVisualState(initialPuzzle?: PlayablePuzzle): VisualState {
   if (initialPuzzle) {
     return { ...defaultVisualState(), ...puzzleJSONToVisualState(initialPuzzle) }
   }
@@ -24,7 +24,7 @@ export function snapshotAuthoringState(state: VisualState): string {
   })
 }
 
-export function replaceAuthoringStateFromPuzzle(puzzle: PuzzleJSON): {
+export function replaceAuthoringStateFromPuzzle(puzzle: PlayablePuzzle): {
   visualState: VisualState
   cleanSnapshot: string
 } {

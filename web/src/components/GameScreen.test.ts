@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { computeBoardDisplayWidth, countRemovedSetupBlocks, getInitialShuffleAvailability } from './gameSetupState'
-import type { PuzzleJSON } from '../puzzleTypes'
+import type { PlayablePuzzle } from '../puzzleTypes'
 import { shouldReloadGameState } from './GameScreen'
 import type { PuzzleApi } from '../wasm'
 
-function makePuzzle(blockIds: string[], allowShuffle = false): PuzzleJSON {
+function makePuzzle(blockIds: string[], allowShuffle = false): PlayablePuzzle {
   return {
     id: 'puzzle',
     title: 'Puzzle',

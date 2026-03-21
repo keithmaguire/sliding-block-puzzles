@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { normalizePuzzleJSONInput } from '../puzzleTypes'
-import type { PuzzleJSON } from '../puzzleTypes'
+import type { PlayablePuzzle, PuzzleJSON } from '../puzzleTypes'
 import { saveCustomPuzzleRecord } from '../customPuzzles'
 import { PuzzleEditorVisual } from './PuzzleEditorVisual'
 import { visualStateToPuzzleJSON, visualStateToPuzzleMetadata, type VisualState } from './puzzleEditorState'
@@ -16,8 +16,8 @@ import {
 
 interface Props {
   onBack: () => void
-  onTryIt: (puzzle: PuzzleJSON) => void
-  initialPuzzle?: PuzzleJSON
+  onTryIt: (puzzle: PlayablePuzzle) => void
+  initialPuzzle?: PlayablePuzzle
 }
 
 export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
@@ -70,7 +70,7 @@ export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
       setVisualState(next.visualState)
       setUndoHistory([])
       setCleanSnapshot(next.cleanSnapshot)
-      showAddedMessage(`Imported "${puzzle.title ?? puzzle.id}" from JSON`)
+      showAddedMessage(`Imported "${puzzle.id}" from JSON`)
       setErrorMsg(null)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : 'Failed to import puzzle JSON')
@@ -124,7 +124,12 @@ export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
       return
     }
     setErrorMsg(null)
-    onTryIt(puzzle)
+    onTryIt({
+      ...puzzle,
+      title: visualState.title.trim() || puzzle.id,
+      source: visualState.source.trim() || 'Custom',
+      difficulty: Math.max(1, Math.trunc(visualState.difficulty || 1)),
+    })
   }
 
   return (

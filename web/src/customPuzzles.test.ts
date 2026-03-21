@@ -108,7 +108,7 @@ describe('customPuzzles', () => {
         allow_shuffle: true,
         future_flag: { mode: 'experimental' },
       })
-      expect(stored.puzzle.title).toBeUndefined()
+      expect('title' in stored.puzzle).toBe(false)
     })
   })
 

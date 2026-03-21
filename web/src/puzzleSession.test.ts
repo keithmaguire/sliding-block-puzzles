@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearPuzzleSession, getPuzzleSession, savePuzzleSession, serializeWasmBlocks, sessionBlocksToWasm, shouldPersistPuzzleSession } from './puzzleSession'
-import type { PuzzleJSON } from './puzzleTypes'
+import type { PlayablePuzzle } from './puzzleTypes'
 
 function makeStorage(): Storage {
   const store: Record<string, string> = {}
@@ -16,7 +16,7 @@ function makeStorage(): Storage {
 
 let storage: Storage
 
-const basePuzzle: PuzzleJSON = {
+const basePuzzle: PlayablePuzzle = {
   id: 'demo',
   title: 'Demo',
   board: { width: 4, height: 4 },
@@ -83,7 +83,7 @@ describe('puzzleSession', () => {
     expect(shouldPersistPuzzleSession(basePuzzle, structuredClone(basePuzzle), 0, true)).toBe(false)
     expect(shouldPersistPuzzleSession(basePuzzle, basePuzzle, 2, true)).toBe(true)
 
-    const shuffledPuzzle: PuzzleJSON = {
+    const shuffledPuzzle: PlayablePuzzle = {
       ...basePuzzle,
       blocks: [
         { ...basePuzzle.blocks[0], cells: [[2, 2]] },
