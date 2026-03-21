@@ -8,7 +8,7 @@ Visual-only in-app puzzle authoring for creating, editing, importing, exporting,
 
 ### Requirement: Puzzle Authoring entry points
 The system SHALL provide Puzzle Authoring from the puzzle browser through:
-- Create
+- Create new puzzle
 - Edit on built-in puzzles
 - Edit on custom puzzles
 
@@ -88,7 +88,7 @@ Opening a puzzle and then saving or exporting it SHALL preserve its authored sem
 #### Scenario: Existing puzzle round-trips without semantic loss
 - **GIVEN** a valid puzzle is opened in Puzzle Authoring
 - **WHEN** the user exports or saves it without changing its meaning
-- **THEN** the resulting puzzle SHALL preserve board, blocks, appearance, movability, win condition, setup options, and metadata, including catalog metadata used for shipped puzzles
+- **THEN** the resulting puzzle SHALL preserve board, blocks, appearance, movability, win condition, and setup options
 
 #### Scenario: Immovable background-colored blocks round-trip correctly
 - **GIVEN** a puzzle contains an immovable plain block with `appearance.color = "background"`
@@ -102,11 +102,12 @@ The system SHALL use `PuzzleJSON` as the only import/export format exposed withi
 - **WHEN** the user imports or exports from Puzzle Authoring
 - **THEN** the format SHALL be JSON only
 
-### Requirement: Exported puzzle JSON is drop-in ready for puzzles directory
-Puzzle Authoring SHALL allow the author to edit the catalog metadata required for shipped puzzle files.
+### Requirement: Exported puzzle JSON is gameplay-only
+Puzzle Authoring SHALL export canonical gameplay `PuzzleJSON` only.
 
-Exported JSON SHALL include catalog metadata so that placing the file into `puzzles/` makes it eligible for index generation without manual JSON edits.
+Browse-time metadata for shipped puzzles SHALL be maintained separately in `puzzles/index.json`.
 
-#### Scenario: Exported puzzle can be added directly to puzzles directory
-- **WHEN** the user exports a puzzle from Puzzle Authoring
-- **THEN** the JSON SHALL include the catalog metadata required by the build/index pipeline
+#### Scenario: Exported puzzle requires separate index maintenance
+- **WHEN** the user exports a puzzle from Puzzle Authoring for the built-in library
+- **THEN** the JSON SHALL contain gameplay data only
+- **AND** the built-in index row SHALL be added or updated separately through the app-managed metadata editor

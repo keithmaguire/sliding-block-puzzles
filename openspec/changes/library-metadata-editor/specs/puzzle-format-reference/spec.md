@@ -53,10 +53,9 @@ The system SHALL document how the exported puzzle JSON and exported `index.json`
 The page SHALL explain that:
 - Puzzle Authoring exports puzzle gameplay JSON files.
 - Built-in puzzle JSON files are added to `puzzles/` outside the app.
-- `make index` regenerates the placeholder `puzzles/index.json`.
-- Edit library metadata is used in-app to refine the regenerated index.
+- Edit library metadata imports puzzle JSON files and manages the built-in index in-app.
 - `Export updated index` produces the replacement `puzzles/index.json` file that is copied into the repository outside the app.
 
 #### Scenario: Index maintenance workflow documented
 - **WHEN** the user reads the maintenance guidance
-- **THEN** the page SHALL explain how puzzle export, `make index`, in-app metadata editing, and index export fit together
+- **THEN** the page SHALL explain how puzzle export, metadata-editor import, in-app metadata editing, and index export fit together

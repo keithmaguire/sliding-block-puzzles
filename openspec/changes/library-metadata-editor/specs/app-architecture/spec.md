@@ -2,7 +2,7 @@
 
 ### Requirement: App Architecture page describes the data flow
 The system SHALL include a data flow description covering the path from puzzle selection or authoring to gameplay:
-1. `make index` regenerates a flat versioned `puzzles/index.json` with registries and placeholder puzzle rows derived from puzzle files
+1. the metadata editor imports current-format puzzle JSON files and exports a flat versioned `puzzles/index.json` with registries and built-in puzzle rows
 2. `PuzzleBrowser` fetches and parses the canonical index format
 3. The browser derives grouped presentation by resolving each puzzle row's `group_id` through the group registry
 4. The browser also joins local custom puzzles using browser-local metadata records that wrap canonical puzzle gameplay data
@@ -18,4 +18,4 @@ The system SHALL include a data flow description covering the path from puzzle s
 
 #### Scenario: Data flow path described
 - **WHEN** the user reads the data-flow section
-- **THEN** the page SHALL describe the sequence from index generation and browser metadata loading through gameplay render and admin export flows
+- **THEN** the page SHALL describe the sequence from metadata-editor-managed index creation and browser metadata loading through gameplay render and admin export flows

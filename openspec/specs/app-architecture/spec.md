@@ -45,7 +45,7 @@ The descriptions SHALL reflect:
 
 ### Requirement: App Architecture page describes the data flow
 The system SHALL include a data flow description covering the path from puzzle selection or authoring to gameplay:
-1. `PuzzleBrowser` fetches and parses the v2 grouped index format
+1. `PuzzleBrowser` fetches and parses the v3 flat index format with registries and puzzle rows
 2. User either selects a puzzle to play or opens Puzzle Authoring via Create/Edit
 3. Editing or importing loads `PuzzleJSON` into `PuzzleEditorVisual`
 4. Puzzle Authoring saves, exports, or Try It hands the current `PuzzleJSON` to gameplay
@@ -61,6 +61,9 @@ The system SHALL include a data flow description covering the path from puzzle s
 ### Requirement: App Architecture page describes the build pipeline
 The system SHALL describe how the Go core is built to WebAssembly and then bundled into the static web build.
 
+The documented workflow SHALL NOT describe a CLI step that regenerates `puzzles/index.json`.
+
 #### Scenario: Build steps documented
 - **WHEN** the user reads the build section
 - **THEN** the page SHALL explain the WASM build and web build steps
+- **AND** it SHALL describe built-in index maintenance as an in-app workflow

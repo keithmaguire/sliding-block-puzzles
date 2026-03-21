@@ -1,7 +1,7 @@
 ## 1. Index Contract And Generation
 
 - [x] 1.1 Define the new canonical `index.json` shape with flat puzzle rows and embedded registries
-- [x] 1.2 Update `make index` and the index generator to rebuild `puzzles/index.json` from scratch with valid placeholder metadata
+- [x] 1.2 Define `puzzles/index.json` as the canonical built-in metadata catalog owned by the app workflow
 - [x] 1.3 Update index parsing/loading code to consume the new versioned catalog format
 - [x] 1.4 Update built-in browser grouping logic to derive groups from `group_id` registry references
 - [x] 1.5 Add tests covering regenerated placeholder rows and registry integrity
@@ -28,12 +28,12 @@
 - [x] 4.2 Update built-in browser and gameplay code paths so browse-time metadata is resolved from the index while gameplay data is loaded from puzzle files
 - [x] 4.3 Update custom-puzzle storage so canonical puzzle gameplay data and browser-local metadata are stored separately
 - [x] 4.4 Surface custom-puzzle metadata correctly in My Puzzles and in the metadata editor
-- [x] 4.5 Verify the external admin workflow for adding a built-in puzzle: export JSON, place file in `puzzles/`, run `make index`, edit metadata, export updated index
+- [x] 4.5 Verify the external admin workflow for adding a built-in puzzle: export JSON, place file in `puzzles/`, import it into the metadata editor, edit metadata, export updated index
 
 ## 5. Documentation And Verification
 
 - [x] 5.1 Update in-app documentation pages to describe the settings/documentation section and library metadata editor
-- [x] 5.2 Add the in-app admin-workflow documentation covering puzzle JSON export, `puzzles/` placement, `make index`, metadata editing, and index replacement
+- [x] 5.2 Add the in-app admin-workflow documentation covering puzzle JSON export, `puzzles/` placement, metadata-editor import, metadata editing, and index replacement
 - [x] 5.3 Update the puzzle format and app architecture docs to describe index-owned metadata and regenerated placeholder catalogs
 - [x] 5.4 Update user-facing control text from help/docs wording to settings/documentation wording where required
 - [x] 5.5 Add or update tests covering the new index format, regeneration behavior, registry validation, metadata editing, and export flow

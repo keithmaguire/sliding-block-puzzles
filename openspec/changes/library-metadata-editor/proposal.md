@@ -11,7 +11,7 @@ The app can already create and edit puzzle content, but shipped-library metadata
 - Change the browser docs entry into a combined settings/documentation area, replace the question-mark affordance with a cog, rename `Create` to `Create new puzzle`, and move that action into the settings/documentation area.
 - Add a dedicated admin-workflow section inside settings/documentation that explains how built-in puzzles and the index are updated outside the app using exported files.
 - Add `Export updated index` to write the complete updated `index.json` for admin replacement outside the app.
-- Define `make index` as a full regeneration step that rebuilds `index.json` from the puzzle directory with valid placeholder catalog values and controlled-list data for later refinement in the app.
+- Define `index.json` as an app-managed catalog artifact that admins refine and export from the in-browser metadata editor.
 
 ## Capabilities
 
@@ -31,4 +31,4 @@ The app can already create and edit puzzle content, but shipped-library metadata
 
 - Affected code: puzzle browser navigation, authoring entry points, index parsing/generation, metadata editing UI, and export flows.
 - Affected data contracts: `puzzles/index.json`, library metadata ownership, and puzzle JSON top-level fields.
-- Affected tooling: `make index` and any code that assumes puzzle files carry titles or other browse-time metadata.
+- Affected tooling: any build or authoring path that assumes puzzle files carry titles or other browse-time metadata.

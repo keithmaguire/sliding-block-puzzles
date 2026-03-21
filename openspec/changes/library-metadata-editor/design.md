@@ -13,12 +13,12 @@ This change also affects navigation. The browser header currently exposes Create
 - Explain the external admin workflow directly inside the settings/documentation area so the app teaches the intended update process.
 - Enforce controlled values for `source`, numeric `difficulty`, and groups.
 - Export only the updated `index.json` so an admin can replace the shipped file outside the app.
-- Define `make index` as a deterministic regeneration step that creates a valid placeholder index from puzzle files alone.
+- Define the in-browser metadata editor as the sole supported mechanism for building and exporting `index.json`.
 
 **Non-Goals:**
 - Editing built-in puzzle geometry or win conditions through the metadata editor.
 - Writing built-in puzzle files directly into the repository from the browser.
-- Preserving curated metadata across `make index` runs.
+- Preserving any separate generator-managed index state outside the app workflow.
 - Adding free-form categories in this change.
 
 ## Decisions
@@ -47,7 +47,7 @@ Alternative considered:
   Rejected because it weakens the separation between gameplay data and catalog metadata.
 
 ### Decision: Document the admin update workflow in-app
-The settings/documentation area will include a dedicated explanatory section describing how admins update the shipped library: export puzzle JSON from authoring, place it into `puzzles/`, run `make index`, refine metadata in-app, export `index.json`, and replace the on-disk index file.
+The settings/documentation area will include a dedicated explanatory section describing how admins update the shipped library: export puzzle JSON from authoring, place it into `puzzles/`, import it into the metadata editor, refine metadata in-app, export `index.json`, and replace the on-disk index file.
 
 Rationale:
 - The intended workflow is not obvious from the UI alone.
@@ -92,8 +92,8 @@ Alternative considered:
 - Store registries in a separate metadata file.
   Rejected because it adds coordination overhead without a clear benefit for this workflow.
 
-### Decision: `make index` regenerates from scratch with valid placeholders
-`make index` will discard the prior `index.json` contents and generate a fresh file from the puzzle directory. The generated file will contain placeholder-but-valid rows and registries so it can immediately load into the metadata editor for refinement.
+### Decision: The metadata editor owns built-in row creation
+The supported workflow for creating or refreshing built-in catalog rows is to import current-format puzzle JSON files into the metadata editor. The editor can start from an empty built-in catalog and produce a complete `index.json` export without any CLI regeneration step.
 
 Rationale:
 - The user explicitly wants regeneration to be clean and deterministic.
@@ -105,7 +105,7 @@ Alternative considered:
 
 ## Risks / Trade-offs
 
-- [Regeneration discards curated metadata] → Make the behavior explicit in docs and position the in-app editor as the step that follows `make index`.
+- [Admins may expect a CLI regeneration step] → Make the app-managed workflow explicit in docs and remove generator references from supported build steps.
 - [Older code may assume puzzle files contain titles or difficulty] → Update affected specs and implementation paths to derive browser metadata from the index.
 - [Flat index format is a breaking change from the current grouped object] → Version the index format and document the new schema clearly.
 - [Registry validation could make the editor feel strict] → Keep registry editing adjacent to the table and show row-level validation before export.
@@ -114,7 +114,7 @@ Alternative considered:
 ## Migration Plan
 
 1. Introduce the new versioned `index.json` shape with flat puzzle rows and registries.
-2. Update `make index` to generate the new shape from puzzle files using placeholder metadata.
+2. Update the metadata editor to create and refresh built-in rows from imported current-format puzzle JSON files.
 3. Update browser loading to resolve puzzle cards and groups from the new catalog format.
 4. Add the settings/documentation section and move Create into it as `Create new puzzle`.
 5. Add the metadata editor and `Export updated index`, covering built-in and local custom puzzles while exporting only the built-in index-backed rows.

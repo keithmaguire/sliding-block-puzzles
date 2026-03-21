@@ -35,4 +35,4 @@ The canonical index SHALL be a versioned object containing:
 
 ### Requirement: Shipped puzzle files define catalog metadata
 **Reason**: Shipped-library metadata now belongs to `index.json`, not to individual puzzle JSON files.
-**Migration**: Place exported gameplay JSON into `puzzles/`, regenerate `index.json`, then edit and export the index separately.
+**Migration**: Place exported gameplay JSON into `puzzles/`, import it into the metadata editor, then edit and export the index separately.

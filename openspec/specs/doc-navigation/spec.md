@@ -22,12 +22,17 @@ The system SHALL provide a navigation control in the GameScreen (e.g. alongside 
 - **WHEN** the user opens a doc page from the game screen and then returns
 - **THEN** the game screen SHALL show the same puzzle with the same move count and block positions as before
 
-### Requirement: A doc page selector lists all three documentation pages
-The system SHALL provide a doc page selector view (or equivalent navigation mechanism) that lists all three pages — How to Play, Puzzle Format Reference, App Architecture — with a brief description of each, so the user can choose which page to read.
+### Requirement: A settings/documentation selector lists admin actions and docs
+The system SHALL provide a settings/documentation selector view (or equivalent navigation mechanism) that lists the documentation pages plus admin actions such as Create new puzzle and Edit library metadata.
 
-#### Scenario: All three pages listed
+#### Scenario: Documentation pages listed
 - **WHEN** the user activates the doc navigation control
 - **THEN** all three documentation pages SHALL be listed with their names visible
+
+#### Scenario: Admin workflow is described from the selector
+- **WHEN** the user opens the settings/documentation selector from the browser
+- **THEN** the selector SHALL explain the supported built-in puzzle workflow
+- **AND** that workflow SHALL describe importing puzzle JSON into the metadata editor rather than using a CLI index-generation step
 
 ### Requirement: Every doc page has a Back navigation control
 The system SHALL display a Back button on every doc page that returns the user to the view they came from (puzzle browser or game screen).

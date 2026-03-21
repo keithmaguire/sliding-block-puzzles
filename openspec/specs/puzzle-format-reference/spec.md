@@ -8,39 +8,33 @@ The Puzzle Format Reference documents the on-disk JSON structures consumed by th
 
 ### Requirement: Puzzle Format Reference page documents the index.json canonical format
 The system SHALL document the canonical `puzzles/index.json` format as a JSON object with:
-- `version: 2`
-- `groups`: array of `PuzzleGroup` objects
-
-A `PuzzleGroup` has:
-- `id`
-- `title`
-- `items`: array of `IndexEntry` or nested `PuzzleGroup` objects
+- `version: 3`
+- `registries`
+- `puzzles`
 
 An `IndexEntry` has:
 - `id`
 - `title`
 - `file`
-- optional `source`
-- optional `difficulty`
+- `source`
+- `difficulty`
+- `group_id`
 - optional `min_moves`
 
 #### Scenario: Index format displayed
 - **WHEN** the user reads the index section
-- **THEN** the page SHALL identify the v2 grouped object as the required format
+- **THEN** the page SHALL identify the v3 flat catalog object as the required format
 
 ### Requirement: Puzzle Format Reference page documents puzzle file top-level fields
 The system SHALL document the required and optional top-level fields of a puzzle JSON file.
 
 Required canonical fields:
 - `id`
-- `title`
 - `board`
 - `blocks`
 - `win_condition`
 
 Optional fields:
-- `source`
-- `difficulty`
 - `min_moves`
 - `win_description`
 - `setup_options`

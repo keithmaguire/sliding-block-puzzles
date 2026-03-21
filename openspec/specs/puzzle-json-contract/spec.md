@@ -11,18 +11,14 @@ The system SHALL define a canonical serialized puzzle object named `PuzzleJSON`.
 
 A canonical `PuzzleJSON` SHALL contain:
 - `id`
-- `title`
 - `board`
 - `blocks`
 - `win_condition`
 
 A canonical `PuzzleJSON` MAY additionally contain:
-- `source`
-- `difficulty`
 - `min_moves`
 - `win_description`
 - `setup_options`
-- `catalog`
 
 #### Scenario: Canonical top-level fields are defined
 - **WHEN** an author reads the PuzzleJSON contract
@@ -295,36 +291,30 @@ Repeated values SHALL be treated as interchangeable target requirements subject 
 - **AND** the contract SHALL NOT require a specific repeated-value block to occupy a specific repeated-value slot
 
 ### Requirement: PuzzleJSON contract defines index formats and canonical form
-The system SHALL define `puzzles/index.json` as the v2 hierarchical object form with `version: 2` and `groups`.
-
-### Requirement: Shipped puzzle files define catalog metadata
-Puzzle JSON files intended to live in the app's `puzzles/` directory SHALL include top-level `catalog` metadata.
-
-The `catalog` object SHALL contain:
-- `group.id`
-- `group.title`
-
-The `catalog` object MAY additionally contain:
-- `group.order`
-- `order`
-
-#### Scenario: Puzzle file includes catalog metadata
-- **WHEN** a puzzle JSON file is exported for placement in `puzzles/`
-- **THEN** it SHALL include the catalog metadata needed for index generation
+The system SHALL define `puzzles/index.json` as the v3 flat catalog object with:
+- `version: 3`
+- registry collections for sources, numeric difficulties, and groups
+- flat puzzle rows keyed by puzzle `id`
 
 #### Scenario: Index format is defined
 - **WHEN** an author reads the index contract
-- **THEN** the hierarchical v2 format SHALL be identified as the required serialized structure
+- **THEN** the v3 flat catalog format SHALL be identified as the required serialized structure
+
+### Requirement: Built-in puzzle metadata is index-owned
+Library-facing metadata such as title, source, difficulty, and grouping SHALL belong to `puzzles/index.json` rather than to canonical puzzle files.
+
+#### Scenario: Puzzle file excludes browse-time metadata
+- **WHEN** a puzzle JSON file is exported for placement in `puzzles/`
+- **THEN** it SHALL contain gameplay data only
+- **AND** built-in browse metadata SHALL be maintained separately in the index
 
 ### Requirement: Build pipeline validates shipped puzzle files
-The system SHALL validate every shipped puzzle JSON file before generating `puzzles/index.json` or building the app.
+The system SHALL validate every shipped puzzle JSON file before building the app.
 
 Validation SHALL include:
 - canonical `PuzzleJSON` structure
 - block and win-condition validation performed by the Go loader
-- required shipped-library metadata needed to generate `puzzles/index.json`
 
 #### Scenario: Invalid shipped puzzle blocks the build
 - **WHEN** a shipped puzzle JSON file is invalid
-- **THEN** index generation SHALL fail
-- **AND** the app build SHALL fail rather than emitting an index from invalid data
+- **THEN** the app build SHALL fail

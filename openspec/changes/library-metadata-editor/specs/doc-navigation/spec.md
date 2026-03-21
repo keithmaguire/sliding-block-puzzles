@@ -35,11 +35,10 @@ That section SHALL explain this workflow:
 1. create or edit a puzzle in Puzzle Authoring
 2. export the puzzle JSON
 3. add the exported JSON file to the repository `puzzles/` directory outside the app
-4. run `make index` to regenerate `puzzles/index.json`
-5. open Edit library metadata in the app
-6. update titles, sources, difficulties, and groups in-app
-7. export the updated `index.json`
-8. replace the repository `puzzles/index.json` file outside the app
+4. open Edit library metadata in the app and import that puzzle JSON
+5. update titles, sources, difficulties, and groups in-app
+6. export the updated `index.json`
+7. replace the repository `puzzles/index.json` file outside the app
 
 The section SHALL explain that built-in puzzle files and the built-in index are incorporated into the app outside the browser UI even though the app produces the files used for those updates.
 

@@ -62,16 +62,16 @@ The export SHALL NOT include local custom puzzle rows.
 - **WHEN** the admin activates Export updated index with a valid catalog
 - **THEN** the app SHALL download the complete `index.json` file
 
-### Requirement: make index regenerates a valid placeholder index from puzzle files
-The build/index pipeline SHALL regenerate `puzzles/index.json` from the puzzle directory without preserving prior catalog edits.
+### Requirement: Built-in catalog rows are created in the metadata editor
+The system SHALL support creating or refreshing built-in `index.json` rows by importing current-format puzzle JSON files into the Library Metadata Editor.
 
-The generated index SHALL:
-- include one row per puzzle file
+Imported built-in rows SHALL:
 - use puzzle `id` as the stable join key
-- include valid placeholder metadata values
-- include registries sufficient to make every generated row valid
+- record the built-in puzzle `file`
+- receive valid metadata values drawn from the current registries
+- become editable in the same table as existing built-in rows
 
-#### Scenario: Regeneration produces an editable placeholder catalog
-- **WHEN** an admin runs `make index` after placing a new puzzle JSON file into `puzzles/`
-- **THEN** the generated `index.json` SHALL include a row for that puzzle
-- **AND** the row SHALL use valid placeholder metadata that can later be refined in the app
+#### Scenario: Import produces an editable built-in catalog row
+- **WHEN** an admin adds a puzzle JSON file to `puzzles/` and imports that file into Edit library metadata
+- **THEN** the editor SHALL include a built-in row for that puzzle
+- **AND** the row SHALL use valid metadata that can be refined before export

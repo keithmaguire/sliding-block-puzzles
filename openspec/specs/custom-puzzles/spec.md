@@ -9,7 +9,11 @@ User-created puzzles and progress tracking. Users can save puzzles to a personal
 ### Requirement: Custom puzzle collection
 The system SHALL maintain a persistent collection of user-created puzzles in localStorage under `sliding-puzzle-custom`.
 
-The collection stores complete `PuzzleJSON` objects keyed by puzzle `id`. Saving a puzzle whose id already exists SHALL replace the existing entry.
+The collection stores records keyed by puzzle `id` with:
+- canonical gameplay `PuzzleJSON`
+- browser-local metadata for title, source, difficulty, and group reference
+
+Saving a puzzle whose id already exists SHALL replace the existing entry.
 
 #### Scenario: Add to library saves the puzzle
 - **WHEN** the user activates Add to Library in Puzzle Authoring

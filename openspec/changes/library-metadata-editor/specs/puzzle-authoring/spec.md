@@ -38,10 +38,10 @@ The exported puzzle JSON SHALL NOT be the canonical owner of library metadata su
 The intended workflow for adding a built-in puzzle SHALL be:
 1. export puzzle JSON from Puzzle Authoring
 2. place the file into `puzzles/`
-3. run `make index` to regenerate placeholder catalog entries
+3. import the puzzle JSON into Edit library metadata
 4. refine library metadata through Edit library metadata
 
-#### Scenario: Exported puzzle joins the library through index regeneration
+#### Scenario: Exported puzzle joins the library through metadata editing
 - **WHEN** the user exports a puzzle from Puzzle Authoring
 - **THEN** the JSON SHALL be suitable for placement into `puzzles/`
-- **AND** the shipped-library metadata for browser presentation SHALL be supplied later through regenerated and edited `index.json`
+- **AND** the shipped-library metadata for browser presentation SHALL be supplied later through imported and edited `index.json`
