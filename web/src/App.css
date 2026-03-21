@@ -1,0 +1,27 @@
+#root {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-shell {
+  width: min(960px, calc(100% - 24px));
+  margin: 12px auto 20px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0)) ,
+    linear-gradient(180deg, var(--frame-bg-hi) 0%, var(--frame-bg) 100%);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
