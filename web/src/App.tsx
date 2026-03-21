@@ -8,6 +8,7 @@ import { HowToPlay } from './components/HowToPlay'
 import { PuzzleFormatReference } from './components/PuzzleFormatReference'
 import { AppArchitecture } from './components/AppArchitecture'
 import { LibraryMetadataEditor } from './components/LibraryMetadataEditor'
+import { AdminPage } from './components/AdminPage'
 import { PuzzleCreator } from './components/PuzzleCreator'
 import { TitleScreen } from './components/TitleScreen'
 import { shouldKeepCreatorMounted, type View } from './appViewState'
@@ -36,7 +37,7 @@ export default function App() {
     return <p style={{ padding: 24, color: 'var(--danger)', fontSize: '1rem' }}>Failed to load engine: {error}</p>
   }
 
-  const inDocs = view === 'doc-selector' || view === 'how-to-play' || view === 'puzzle-format' || view === 'architecture' || view === 'library-metadata'
+  const inDocs = view === 'doc-selector' || view === 'admin' || view === 'how-to-play' || view === 'puzzle-format' || view === 'architecture' || view === 'library-metadata'
 
   function backFromDocs() {
     setView(docOrigin)
@@ -105,8 +106,14 @@ export default function App() {
             <DocSelector
               onSelect={(page) => setView(page)}
               onBack={backFromDocs}
-              onCreate={docOrigin === 'browser' ? openCreator : undefined}
-              onEditLibraryMetadata={docOrigin === 'browser' ? () => setView('library-metadata') : undefined}
+              onAdmin={docOrigin === 'browser' ? () => setView('admin') : undefined}
+            />
+          )}
+          {view === 'admin' && docOrigin === 'browser' && (
+            <AdminPage
+              onBack={() => setView('doc-selector')}
+              onCreate={openCreator}
+              onEditLibraryMetadata={() => setView('library-metadata')}
             />
           )}
           {view === 'how-to-play' && <HowToPlay onBack={() => setView('doc-selector')} />}

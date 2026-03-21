@@ -6,8 +6,7 @@ type DocPageKey = 'how-to-play' | 'puzzle-format' | 'architecture'
 interface Props {
   onSelect: (page: DocPageKey) => void
   onBack: () => void
-  onCreate?: () => void
-  onEditLibraryMetadata?: () => void
+  onAdmin?: () => void
 }
 
 const pages: { key: DocPageKey; title: string; description: string; icon: string; color: string; bg: string }[] = [
@@ -37,33 +36,21 @@ const pages: { key: DocPageKey; title: string; description: string; icon: string
   },
 ]
 
-export function DocSelector({ onSelect, onBack, onCreate, onEditLibraryMetadata }: Props) {
+export function DocSelector({ onSelect, onBack, onAdmin }: Props) {
   return (
     <DocPage title="Settings & Documentation" onBack={onBack}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {(onCreate || onEditLibraryMetadata) && (
+        {onAdmin && (
           <>
-            <SectionLabel>Admin Actions</SectionLabel>
-            {onCreate && (
-              <DocCard
-                title="Create new puzzle"
-                description="Open the visual authoring workflow for a new or resumed draft."
-                icon="✏️"
-                color="#fbbf24"
-                bg="rgba(240,165,0,0.08)"
-                onClick={onCreate}
-              />
-            )}
-            {onEditLibraryMetadata && (
-              <DocCard
-                title="Edit library metadata"
-                description="Open the spreadsheet-style metadata editor for titles, sources, difficulties, groups, and index export."
-                icon="🗂️"
-                color="#4ade80"
-                bg="rgba(34,197,94,0.08)"
-                onClick={onEditLibraryMetadata}
-              />
-            )}
+            <SectionLabel>Admin</SectionLabel>
+            <DocCard
+              title="Admin"
+              description="Create puzzles and edit library metadata."
+              icon="🛠️"
+              color="#fbbf24"
+              bg="rgba(240,165,0,0.08)"
+              onClick={onAdmin}
+            />
             <SectionLabel>Admin Workflow</SectionLabel>
             <div style={infoPanelStyle}>
               <p style={infoParagraphStyle}>
