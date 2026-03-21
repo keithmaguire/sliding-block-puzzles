@@ -1,4 +1,4 @@
-const RESOURCE_CACHE = 'sliding-puzzle-resource-cache-v1'
+const RESOURCE_CACHE = 'sliding-puzzle-resource-cache-v2'
 
 function hasCacheStorage(): boolean {
   return typeof globalThis !== 'undefined' && 'caches' in globalThis

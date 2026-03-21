@@ -41,6 +41,15 @@ export default defineConfig(({ command }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
+            urlPattern: /\/puzzles\/index\.json$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'puzzle-index-cache-v2',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 5, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
+          },
+          {
             urlPattern: /\.wasm$/,
             handler: 'CacheFirst',
             options: {
@@ -52,7 +61,7 @@ export default defineConfig(({ command }) => ({
             urlPattern: /\/puzzles\/.*\.json$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'puzzle-cache',
+              cacheName: 'puzzle-cache-v2',
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
