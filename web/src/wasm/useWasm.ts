@@ -19,6 +19,8 @@ interface UseWasmResult {
   api: PuzzleApi | null
 }
 
+let wasmExecLoadPromise: Promise<void> | null = null
+
 function parseResponse(raw: unknown): WasmResponse {
   return raw as WasmResponse
 }
@@ -37,6 +39,28 @@ function makeApi(): PuzzleApi {
   }
 }
 
+function ensureWasmExecLoaded(scriptPath: string): Promise<void> {
+  const existing = (globalThis as unknown as { Go?: GoRuntimeConstructor }).Go
+  if (existing) return Promise.resolve()
+  if (wasmExecLoadPromise) return wasmExecLoadPromise
+
+  wasmExecLoadPromise = new Promise<void>((resolve, reject) => {
+    if (typeof document === 'undefined') {
+      reject(new Error('document is unavailable while loading wasm_exec.js'))
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = scriptPath
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error(`failed to load ${scriptPath}`))
+    document.head.appendChild(script)
+  })
+
+  return wasmExecLoadPromise
+}
+
 export function useWasm(wasmPath = `${import.meta.env.BASE_URL}sliding-puzzle.wasm`): UseWasmResult {
   const [status, setStatus] = useState<WasmStatus>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -47,7 +71,7 @@ export function useWasm(wasmPath = `${import.meta.env.BASE_URL}sliding-puzzle.wa
 
     async function load() {
       try {
-        // wasm_exec.js must already be loaded (via <script> in index.html).
+        await ensureWasmExecLoaded(`${import.meta.env.BASE_URL}wasm_exec.js`)
         const GoRuntime = (globalThis as unknown as { Go?: GoRuntimeConstructor }).Go
         if (!GoRuntime) throw new Error('wasm_exec.js not loaded')
 
