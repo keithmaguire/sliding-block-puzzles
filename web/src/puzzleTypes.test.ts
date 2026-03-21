@@ -191,7 +191,6 @@ describe('groupIndexPuzzles', () => {
     const index: PuzzleIndex = {
       version: 3,
       registries: {
-        sources: ['Unknown'],
         difficulties: [1],
         groups: [
           { id: 'b', title: 'Beta' },
@@ -226,7 +225,6 @@ describe('groupIndexPuzzles', () => {
     const index: PuzzleIndex = {
       version: 3,
       registries: {
-        sources: ['Unknown'],
         difficulties: [1],
         groups: [],
       },

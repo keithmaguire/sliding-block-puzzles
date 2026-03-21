@@ -73,7 +73,6 @@ export interface IndexGroupDefinition {
 }
 
 export interface IndexRegistries {
-  sources: string[]
   difficulties: number[]
   groups: IndexGroupDefinition[]
 }

@@ -23,7 +23,6 @@ The canonical index format is a flat versioned catalog:
 {
   "version": 3,
   "registries": {
-    "sources": ["Hornden D24", "Hornden D25"],
     "difficulties": [1, 2, 3, 4],
     "groups": [
       { "id": "classics", "title": "Classics" },
@@ -51,7 +50,7 @@ Each puzzle entry inside `puzzles` has these fields:
 | `id` | yes | string | Unique identifier, must match the puzzle file `id` |
 | `title` | yes | string | Display name shown in the puzzle browser |
 | `file` | yes | string | Filename relative to `puzzles/` |
-| `source` | yes | string | Attribution, selected from `registries.sources` |
+| `source` | yes | string | Free-text attribution |
 | `difficulty` | yes | integer | Numeric difficulty, selected from `registries.difficulties` |
 | `group_id` | yes | string | Stable group identifier selected from `registries.groups` |
 | `min_moves` | no | integer | Minimum move target shown in the UI |

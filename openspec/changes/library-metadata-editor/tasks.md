@@ -16,7 +16,7 @@
 ## 3. Library Metadata Editor
 
 - [x] 3.1 Implement a spreadsheet-style editor for all puzzles with editable title, source, difficulty, and group selection
-- [x] 3.2 Implement adjacent registry editing UI for allowed sources, numeric difficulties, and group titles with system-managed group IDs
+- [x] 3.2 Implement adjacent registry editing UI for numeric difficulties and group titles with system-managed group IDs
 - [x] 3.3 Add validation that blocks export while any puzzle row references values outside the registries
 - [x] 3.4 Distinguish built-in and custom rows in the metadata editor and exclude custom rows from built-in index export
 - [x] 3.5 Implement `Export updated index` to download the complete replacement `index.json`

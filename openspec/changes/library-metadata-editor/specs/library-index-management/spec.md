@@ -20,10 +20,9 @@ The editor SHALL operate on the complete puzzle set rather than on per-group sub
 - **THEN** the app SHALL display all built-in and local custom puzzles in a spreadsheet-like table
 
 ### Requirement: Controlled registries define allowed metadata values
-The system SHALL treat `source`, numeric `difficulty`, and groups as controlled metadata backed by registries embedded in `index.json`.
+The system SHALL treat numeric `difficulty` and groups as controlled metadata backed by registries embedded in `index.json`.
 
 The system SHALL provide a separate metadata-management interface for editing:
-- allowed sources
 - allowed numeric difficulties
 - allowed groups by editable title
 
@@ -36,14 +35,13 @@ The system SHALL manage group IDs internally and SHALL NOT require direct user e
 
 ### Requirement: Puzzle rows must reference only allowed registry values
 Each puzzle row in the Library Metadata Editor SHALL reference only values that exist in the current registries for:
-- `source`
 - `difficulty`
 - `group`
 
 The editor SHALL prevent export while any row references a value outside the registries.
 
 #### Scenario: Invalid registry reference blocks export
-- **GIVEN** at least one puzzle row references a source, difficulty, or group not present in the current registries
+- **GIVEN** at least one puzzle row references a difficulty or group not present in the current registries
 - **WHEN** the admin attempts to export the catalog
 - **THEN** the system SHALL reject the export
 

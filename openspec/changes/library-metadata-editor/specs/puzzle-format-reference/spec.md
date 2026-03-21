@@ -7,7 +7,6 @@ The system SHALL document the canonical `puzzles/index.json` format as a JSON ob
 - `puzzles`
 
 `registries` SHALL contain:
-- allowed `sources`
 - allowed numeric `difficulties`
 - allowed `groups`, each with a system-managed `id` and editable `title`
 

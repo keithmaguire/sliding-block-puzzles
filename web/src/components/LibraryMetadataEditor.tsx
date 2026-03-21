@@ -33,14 +33,12 @@ interface Props {
 export function LibraryMetadataEditor({ onBack }: Props) {
   const importInputRef = useRef<HTMLInputElement | null>(null)
   const [rows, setRows] = useState<EditorRow[]>([])
-  const [sources, setSources] = useState<string[]>([])
   const [difficulties, setDifficulties] = useState<number[]>([])
   const [groups, setGroups] = useState<GroupOption[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(false)
-  const [newSource, setNewSource] = useState('')
   const [newDifficulty, setNewDifficulty] = useState('1')
   const [newGroupTitle, setNewGroupTitle] = useState('')
 
@@ -56,17 +54,12 @@ export function LibraryMetadataEditor({ onBack }: Props) {
         if (cancelled) return
         const custom = getCustomPuzzleRecords()
         const nextRows = buildRows(index, custom)
-        const nextSources = uniqueStrings([
-          ...index.registries.sources,
-          ...nextRows.map((row) => row.source).filter(Boolean),
-        ])
         const nextDifficulties = uniqueNumbers([
           ...index.registries.difficulties,
           ...nextRows.map((row) => row.difficulty),
         ])
         const nextGroups = buildGroups(index, custom, nextRows)
         setRows(nextRows)
-        setSources(nextSources)
         setDifficulties(nextDifficulties)
         setGroups(nextGroups)
         setHydrated(true)
@@ -75,7 +68,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
           const custom = getCustomPuzzleRecords()
           const index = emptyIndex()
           setRows(buildRows(index, custom))
-          setSources(index.registries.sources)
           setDifficulties(index.registries.difficulties)
           setGroups(buildGroups(index, custom, []))
           setNotice(loadError instanceof Error ? `${loadError.message}. Started with an empty built-in index.` : 'Started with an empty built-in index.')
@@ -95,8 +87,8 @@ export function LibraryMetadataEditor({ onBack }: Props) {
   }, [])
 
   const invalidRows = useMemo(
-    () => findInvalidRows(rows, sources, difficulties, groups),
-    [rows, sources, difficulties, groups],
+    () => findInvalidRows(rows, difficulties, groups),
+    [rows, difficulties, groups],
   )
 
   const canExport = !loading && !error && invalidRows.length === 0
@@ -120,13 +112,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     setRows((current) => current.map((row) => (
       row.id === id && row.origin === origin ? { ...row, ...patch } : row
     )))
-  }
-
-  function addSource() {
-    const value = newSource.trim()
-    if (!value) return
-    setSources((current) => uniqueStrings([...current, value]))
-    setNewSource('')
   }
 
   function addDifficulty() {
@@ -157,7 +142,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
   async function handleImportFiles(files: FileList | null) {
     if (!files || files.length === 0) return
 
-    const nextSources = sources.length > 0 ? sources : ['Imported']
     const nextDifficulties = difficulties.length > 0 ? difficulties : [1]
     const nextGroups = groups.length > 0 ? groups : [{ id: 'imported', title: 'Imported' }]
     const importedRows: EditorRow[] = []
@@ -165,10 +149,9 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     for (const file of Array.from(files)) {
       const parsed = JSON.parse(await file.text()) as unknown
       const puzzle = normalizePuzzleJSONInput(parsed)
-      importedRows.push(buildImportedRow(puzzle, file.name, nextSources, nextDifficulties, nextGroups))
+      importedRows.push(buildImportedRow(puzzle, file.name, nextDifficulties, nextGroups))
     }
 
-    setSources(nextSources)
     setDifficulties(nextDifficulties)
     setGroups(nextGroups)
     setRows((current) => {
@@ -185,7 +168,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
 
   function exportIndex() {
     if (!canExport) return
-    const index = buildExportIndex(rows, sources, difficulties, groups)
+    const index = buildExportIndex(rows, difficulties, groups)
 
     const blob = new Blob([`${JSON.stringify(index, null, 2)}\n`], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -211,11 +194,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
         {!loading && (
           <>
             <RegistryPanel
-              sources={sources}
-              onRemoveSource={(value) => setSources((current) => current.filter((item) => item !== value))}
-              newSource={newSource}
-              onNewSourceChange={setNewSource}
-              onAddSource={addSource}
               difficulties={difficulties}
               onRemoveDifficulty={(value) => setDifficulties((current) => current.filter((item) => item !== value))}
               newDifficulty={newDifficulty}
@@ -232,73 +210,30 @@ export function LibraryMetadataEditor({ onBack }: Props) {
             {invalidRows.length > 0 && (
               <div style={warningBox}>
                 {invalidRows.length} row{invalidRows.length === 1 ? '' : 's'} currently fail validation. Export is disabled until
-                every row uses an allowed source, difficulty, group, and non-empty title.
+                every row uses an allowed difficulty, allowed group, and non-empty title.
               </div>
             )}
 
-            <div style={tableWrapStyle}>
-              <table style={tableStyle}>
-                <thead>
-                  <tr>
-                    <HeaderCell>Origin</HeaderCell>
-                    <HeaderCell>ID</HeaderCell>
-                    <HeaderCell>File</HeaderCell>
-                    <HeaderCell>Title</HeaderCell>
-                    <HeaderCell>Source</HeaderCell>
-                    <HeaderCell>Difficulty</HeaderCell>
-                    <HeaderCell>Group</HeaderCell>
-                    <HeaderCell>Min</HeaderCell>
-                    <HeaderCell>Action</HeaderCell>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => {
-                    const rowInvalid = invalidRows.some((candidate) => candidate.id === row.id && candidate.origin === row.origin)
-                    return (
-                      <tr key={`${row.origin}:${row.id}`} style={rowInvalid ? invalidRowStyle : undefined}>
-                        <DataCell>
-                          <span style={row.origin === 'built-in' ? originBuiltInStyle : originCustomStyle}>
-                            {row.origin === 'built-in' ? 'Built-in' : 'Custom'}
-                          </span>
-                        </DataCell>
-                        <DataCell>{row.id}</DataCell>
-                        <DataCell>{row.file || 'local'}</DataCell>
-                        <DataCell>
-                          <input value={row.title} onChange={(event) => updateRow(row.id, row.origin, { title: event.target.value })} style={textInputStyle} />
-                        </DataCell>
-                        <DataCell>
-                          <select value={row.source} onChange={(event) => updateRow(row.id, row.origin, { source: event.target.value })} style={selectStyle}>
-                            {sources.map((source) => <option key={source} value={source}>{source}</option>)}
-                          </select>
-                        </DataCell>
-                        <DataCell>
-                          <select
-                            value={String(row.difficulty)}
-                            onChange={(event) => updateRow(row.id, row.origin, { difficulty: Number(event.target.value) })}
-                            style={selectStyle}
-                          >
-                            {difficulties.map((difficulty) => <option key={difficulty} value={difficulty}>{difficulty}</option>)}
-                          </select>
-                        </DataCell>
-                        <DataCell>
-                          <select value={row.groupId} onChange={(event) => updateRow(row.id, row.origin, { groupId: event.target.value })} style={selectStyle}>
-                            {groups.map((group) => <option key={group.id} value={group.id}>{group.title}</option>)}
-                          </select>
-                        </DataCell>
-                        <DataCell>{row.minMoves ?? '—'}</DataCell>
-                        <DataCell>
-                          {row.origin === 'built-in' ? (
-                            <button onClick={() => removeRow(row.id, row.origin)} style={miniDangerStyle}>Remove</button>
-                          ) : (
-                            '—'
-                          )}
-                        </DataCell>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <RowGrid
+              title="Built-in Puzzles"
+              subtitle="These rows are exported into index.json."
+              rows={rows.filter((row) => row.origin === 'built-in')}
+              invalidRows={invalidRows}
+              groups={groups}
+              difficulties={difficulties}
+              onUpdateRow={updateRow}
+              onRemoveRow={removeRow}
+            />
+
+            <RowGrid
+              title="Custom Puzzles"
+              subtitle="These rows stay in browser-local storage and are not exported."
+              rows={rows.filter((row) => row.origin === 'custom')}
+              invalidRows={invalidRows}
+              groups={groups}
+              difficulties={difficulties}
+              onUpdateRow={updateRow}
+            />
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               <button onClick={openImportDialog} style={miniBtnStyle}>
@@ -362,7 +297,6 @@ function emptyIndex(): PuzzleIndex {
   return {
     version: 3,
     registries: {
-      sources: [],
       difficulties: [1],
       groups: [],
     },
@@ -373,11 +307,9 @@ function emptyIndex(): PuzzleIndex {
 function buildImportedRow(
   puzzle: { id: string; min_moves?: number },
   fileName: string,
-  sources: string[],
   difficulties: number[],
   groups: GroupOption[],
 ): EditorRow {
-  const source = sources[0] ?? 'Imported'
   const difficulty = difficulties[0] ?? 1
   const groupId = groups[0]?.id ?? 'imported'
   return {
@@ -385,7 +317,7 @@ function buildImportedRow(
     id: puzzle.id,
     file: fileName,
     title: humanizePuzzleId(puzzle.id),
-    source,
+    source: '',
     difficulty,
     groupId,
     minMoves: puzzle.min_moves,
@@ -413,18 +345,12 @@ export function buildGroups(index: PuzzleIndex, customPuzzles: CustomPuzzleRecor
   })
 }
 
-function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values.map((value) => value.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b))
-}
-
 export function findInvalidRows(
   rows: EditorRow[],
-  sources: string[],
   difficulties: number[],
   groups: GroupOption[],
 ): EditorRow[] {
   return rows.filter((row) => (
-    !sources.includes(row.source) ||
     !difficulties.includes(row.difficulty) ||
     !groups.some((group) => group.id === row.groupId) ||
     row.title.trim() === ''
@@ -433,7 +359,6 @@ export function findInvalidRows(
 
 export function buildExportIndex(
   rows: EditorRow[],
-  sources: string[],
   difficulties: number[],
   groups: GroupOption[],
 ): PuzzleIndex {
@@ -443,7 +368,6 @@ export function buildExportIndex(
   return {
     version: 3,
     registries: {
-      sources,
       difficulties,
       groups: exportGroups,
     },
@@ -483,6 +407,79 @@ function nextGroupId(groups: GroupOption[], title: string): string {
   return candidate
 }
 
+function RowGrid(props: {
+  title: string
+  subtitle: string
+  rows: EditorRow[]
+  invalidRows: EditorRow[]
+  groups: GroupOption[]
+  difficulties: number[]
+  onUpdateRow: (id: string, origin: RowOrigin, patch: Partial<EditorRow>) => void
+  onRemoveRow?: (id: string, origin: RowOrigin) => void
+}) {
+  return (
+    <div style={tableSectionStyle}>
+      <div style={tableSectionHeaderStyle}>
+        <div style={tableSectionTitleStyle}>{props.title}</div>
+        <div style={tableSectionSubtitleStyle}>{props.subtitle}</div>
+      </div>
+      <div style={tableWrapStyle}>
+        <table style={tableStyle}>
+          <thead>
+            <tr>
+              <HeaderCell>File</HeaderCell>
+              <HeaderCell>Title</HeaderCell>
+              <HeaderCell>Source</HeaderCell>
+              <HeaderCell>Difficulty</HeaderCell>
+              <HeaderCell>Group</HeaderCell>
+              <HeaderCell>Min</HeaderCell>
+              <HeaderCell>Action</HeaderCell>
+            </tr>
+          </thead>
+          <tbody>
+            {props.rows.map((row) => {
+              const rowInvalid = props.invalidRows.some((candidate) => candidate.id === row.id && candidate.origin === row.origin)
+              return (
+                <tr key={`${row.origin}:${row.id}`} style={rowInvalid ? invalidRowStyle : undefined}>
+                  <DataCell>{row.file || 'local'}</DataCell>
+                  <DataCell>
+                    <input value={row.title} onChange={(event) => props.onUpdateRow(row.id, row.origin, { title: event.target.value })} style={gridInputStyle} />
+                  </DataCell>
+                  <DataCell>
+                    <input value={row.source} onChange={(event) => props.onUpdateRow(row.id, row.origin, { source: event.target.value })} style={gridInputStyle} />
+                  </DataCell>
+                  <DataCell>
+                    <select
+                      value={String(row.difficulty)}
+                      onChange={(event) => props.onUpdateRow(row.id, row.origin, { difficulty: Number(event.target.value) })}
+                      style={gridSelectStyle}
+                    >
+                      {props.difficulties.map((difficulty) => <option key={difficulty} value={difficulty}>{difficulty}</option>)}
+                    </select>
+                  </DataCell>
+                  <DataCell>
+                    <select value={row.groupId} onChange={(event) => props.onUpdateRow(row.id, row.origin, { groupId: event.target.value })} style={gridSelectStyle}>
+                      {props.groups.map((group) => <option key={group.id} value={group.id}>{group.title}</option>)}
+                    </select>
+                  </DataCell>
+                  <DataCell>{row.minMoves ?? '—'}</DataCell>
+                  <DataCell>
+                    {row.origin === 'built-in' && props.onRemoveRow ? (
+                      <button onClick={() => props.onRemoveRow?.(row.id, row.origin)} style={miniDangerStyle}>Remove</button>
+                    ) : (
+                      '—'
+                    )}
+                  </DataCell>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 function humanizePuzzleId(id: string): string {
   return id
     .split(/[-_]+/g)
@@ -492,11 +489,6 @@ function humanizePuzzleId(id: string): string {
 }
 
 function RegistryPanel(props: {
-  sources: string[]
-  onRemoveSource: (value: string) => void
-  newSource: string
-  onNewSourceChange: (value: string) => void
-  onAddSource: () => void
   difficulties: number[]
   onRemoveDifficulty: (value: number) => void
   newDifficulty: string
@@ -512,19 +504,6 @@ function RegistryPanel(props: {
   return (
     <div style={panelStyle}>
       <div style={registryGridStyle}>
-        <RegistrySection
-          title="Sources"
-          items={props.sources.map((source) => (
-            <EditableChip key={source} label={source} onRemove={() => props.onRemoveSource(source)} />
-          ))}
-          input={(
-            <div style={inlineFormStyle}>
-              <input value={props.newSource} onChange={(event) => props.onNewSourceChange(event.target.value)} style={textInputStyle} placeholder="Add source" />
-              <button onClick={props.onAddSource} style={miniBtnStyle}>Add</button>
-            </div>
-          )}
-        />
-
         <RegistrySection
           title="Difficulties"
           items={props.difficulties.map((difficulty) => (
@@ -590,12 +569,12 @@ const panelStyle: React.CSSProperties = {
   border: '1px solid var(--border)',
   borderRadius: 'var(--radius-md)',
   background: 'var(--surface)',
-  padding: '16px',
+  padding: '12px',
 }
 
 const registryGridStyle: React.CSSProperties = {
   display: 'grid',
-  gap: 18,
+  gap: 14,
 }
 
 const sectionTitleStyle: React.CSSProperties = {
@@ -614,24 +593,19 @@ const inlineFormStyle: React.CSSProperties = {
 
 const textInputStyle: React.CSSProperties = {
   width: '100%',
-  minHeight: 36,
-  borderRadius: 'var(--radius-sm)',
+  minHeight: 32,
+  borderRadius: 6,
   border: '1px solid var(--border)',
   background: 'rgba(255,255,255,0.03)',
   color: 'var(--text)',
-  padding: '6px 10px',
-  fontSize: '0.95rem',
-}
-
-const selectStyle: React.CSSProperties = {
-  ...textInputStyle,
-  minWidth: 112,
+  padding: '5px 8px',
+  fontSize: '0.87rem',
 }
 
 const miniBtnStyle: React.CSSProperties = {
-  padding: '6px 12px',
-  minHeight: 36,
-  borderRadius: 'var(--radius-sm)',
+  padding: '5px 10px',
+  minHeight: 32,
+  borderRadius: 6,
   border: '1px solid rgba(240,165,0,0.35)',
   background: 'rgba(240,165,0,0.1)',
   color: '#fbbf24',
@@ -703,20 +677,20 @@ const errorBox: React.CSSProperties = {
 const tableWrapStyle: React.CSSProperties = {
   overflowX: 'auto',
   border: '1px solid var(--border)',
-  borderRadius: 'var(--radius-md)',
+  borderRadius: 8,
   background: 'var(--surface)',
 }
 
 const tableStyle: React.CSSProperties = {
   width: '100%',
   borderCollapse: 'collapse',
-  minWidth: 840,
+  minWidth: 760,
 }
 
 const headerCellStyle: React.CSSProperties = {
   textAlign: 'left',
-  padding: '10px 12px',
-  fontSize: '0.84rem',
+  padding: '7px 8px',
+  fontSize: '0.72rem',
   letterSpacing: '0.07em',
   textTransform: 'uppercase',
   color: 'var(--text-dim)',
@@ -724,28 +698,52 @@ const headerCellStyle: React.CSSProperties = {
 }
 
 const dataCellStyle: React.CSSProperties = {
-  padding: '10px 12px',
+  padding: '6px 8px',
   borderBottom: '1px solid rgba(255,255,255,0.06)',
   verticalAlign: 'middle',
+  fontSize: '0.82rem',
 }
 
 const invalidRowStyle: React.CSSProperties = {
   background: 'rgba(248,113,113,0.05)',
 }
 
-const originBuiltInStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  padding: '2px 8px',
-  borderRadius: 999,
-  background: 'rgba(6,182,212,0.12)',
-  color: '#22d3ee',
-  fontSize: '0.82rem',
+const tableSectionStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
 }
 
-const originCustomStyle: React.CSSProperties = {
-  ...originBuiltInStyle,
-  background: 'rgba(240,165,0,0.12)',
-  color: '#fbbf24',
+const tableSectionHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
+}
+
+const tableSectionTitleStyle: React.CSSProperties = {
+  fontSize: '0.8rem',
+  fontWeight: 700,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  color: 'var(--text-dim)',
+}
+
+const tableSectionSubtitleStyle: React.CSSProperties = {
+  fontSize: '0.8rem',
+  color: 'var(--text-dim)',
+}
+
+const gridInputStyle: React.CSSProperties = {
+  ...textInputStyle,
+  minHeight: 28,
+  padding: '4px 6px',
+  fontSize: '0.82rem',
+  borderRadius: 4,
+}
+
+const gridSelectStyle: React.CSSProperties = {
+  ...gridInputStyle,
+  minWidth: 92,
 }
 
 const primaryBtnStyle: React.CSSProperties = {

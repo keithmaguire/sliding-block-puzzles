@@ -5,7 +5,6 @@ import { buildExportIndex, buildGroups, buildRows, findInvalidRows } from './Lib
 const baseIndex: PuzzleIndex = {
   version: 3,
   registries: {
-    sources: ['Unknown'],
     difficulties: [1, 2],
     groups: [
       { id: 'generated-group', title: 'Generated' },
@@ -73,7 +72,7 @@ describe('LibraryMetadataEditor helpers', () => {
   it('findInvalidRows rejects rows with values outside the registries', () => {
     const rows = buildRows(baseIndex, [makeCustomRecord()])
 
-    expect(findInvalidRows(rows, ['Unknown'], [1, 2], [{ id: 'generated-group', title: 'Generated' }])).toEqual([
+    expect(findInvalidRows(rows, [1, 2], [{ id: 'generated-group', title: 'Generated' }])).toEqual([
       {
         origin: 'custom',
         id: 'custom-1',
@@ -91,7 +90,6 @@ describe('LibraryMetadataEditor helpers', () => {
     const rows = buildRows(baseIndex, [makeCustomRecord()])
     const index = buildExportIndex(
       rows,
-      ['Unknown', 'Custom'],
       [1, 2],
       [
         { id: 'generated-group', title: 'Generated' },
@@ -102,7 +100,6 @@ describe('LibraryMetadataEditor helpers', () => {
     expect(index).toEqual({
       version: 3,
       registries: {
-        sources: ['Unknown', 'Custom'],
         difficulties: [1, 2],
         groups: [
           { id: 'generated-group', title: 'Generated' },

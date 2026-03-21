@@ -80,8 +80,8 @@ Alternative considered:
 - Let users edit `group.id` and `group.title` independently in each row.
   Rejected because it makes registry integrity fragile.
 
-### Decision: Controlled lists live inside `index.json`
-The allowed values for `source`, numeric `difficulty`, and groups will be embedded in `index.json` rather than split into a second file.
+### Decision: Difficulty and group registries live inside `index.json`
+The allowed values for numeric `difficulty` and groups will be embedded in `index.json` rather than split into a second file. Puzzle `source` remains a free-text field on each puzzle row.
 
 Rationale:
 - One exported artifact fully defines the catalog.

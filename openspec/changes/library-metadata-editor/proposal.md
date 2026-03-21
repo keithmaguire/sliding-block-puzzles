@@ -5,7 +5,7 @@ The app can already create and edit puzzle content, but shipped-library metadata
 ## What Changes
 
 - Add an admin-oriented library metadata editor that shows all puzzles in a spreadsheet-like table for bulk editing of per-puzzle catalog fields.
-- Add controlled metadata registries inside `index.json` for allowed `source` values, allowed numeric `difficulty` values, and selectable groups with system-managed IDs and editable titles.
+- Add metadata registries inside `index.json` for allowed numeric `difficulty` values and selectable groups with system-managed IDs and editable titles, while keeping `source` as free text per puzzle row.
 - Make `index.json` the canonical source for library metadata, including puzzle `title`, `source`, `difficulty`, grouping, and other browser-facing catalog fields.
 - Make puzzle JSON files own gameplay data only; remove canonical library metadata ownership from individual puzzle files.
 - Change the browser docs entry into a combined settings/documentation area, replace the question-mark affordance with a cog, rename `Create` to `Create new puzzle`, and move that action into the settings/documentation area.
