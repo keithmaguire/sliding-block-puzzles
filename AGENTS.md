@@ -112,6 +112,8 @@ bd automatically syncs with git:
 ### Important Rules
 
 - ✅ Use bd for ALL task tracking
+- ✅ This task tracking must be granular, a task is a single unit of work
+- ✅ A task is a single unit of work, do not combine multiple tasks
 - ✅ Always use `--json` flag for programmatic use
 - ✅ Link discovered work with `discovered-from` dependencies
 - ✅ Check `bd ready` before asking "what should I work on?"

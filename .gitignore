@@ -1,4 +1,24 @@
+# Go
+*.test
+*.out
+core/wasm/
 
-# Dolt database files (added by bd init)
-.dolt/
-*.db
+# Node / Web
+web/node_modules/
+web/dist/
+web/.env.local
+
+# WASM build output
+web/public/*.wasm
+web/public/wasm_exec.js
+.local-https/
+
+# Local agent/session state
+.claude/
+.codex/
+
+# Beads local machine state
+.beads/.beads-credential-key
+
+# OS
+.DS_Store
