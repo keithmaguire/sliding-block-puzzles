@@ -177,15 +177,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
 
         {!loading && (
           <>
-            <RegistryPanel
-              groups={groups}
-              onChangeGroupTitle={(id, title) => setGroups((current) => current.map((group) => group.id === id ? { ...group, title } : group))}
-              onRemoveGroup={(id) => setGroups((current) => current.filter((group) => group.id !== id))}
-              newGroupTitle={newGroupTitle}
-              onNewGroupTitleChange={setNewGroupTitle}
-              onAddGroup={addGroup}
-            />
-
             {invalidRows.length > 0 && (
               <div style={warningBox}>
                 {invalidRows.length} row{invalidRows.length === 1 ? '' : 's'} currently fail validation. Export is disabled until
@@ -225,6 +216,16 @@ export function LibraryMetadataEditor({ onBack }: Props) {
                 Built-in rows exported: {rows.filter((row) => row.origin === 'built-in').length}
               </span>
             </div>
+
+            <RegistryPanel
+              groups={groups}
+              onChangeGroupTitle={(id, title) => setGroups((current) => current.map((group) => group.id === id ? { ...group, title } : group))}
+              onRemoveGroup={(id) => setGroups((current) => current.filter((group) => group.id !== id))}
+              newGroupTitle={newGroupTitle}
+              onNewGroupTitleChange={setNewGroupTitle}
+              onAddGroup={addGroup}
+            />
+
             <input
               ref={importInputRef}
               type="file"
