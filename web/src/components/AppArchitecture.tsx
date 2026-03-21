@@ -202,14 +202,14 @@ getMoveCount()`}</Pre>
         <ol>
           <li>Create or edit a puzzle in the in-app authoring workflow and export the gameplay JSON.</li>
           <li>Add that JSON file to the repo <Code>puzzles/</Code> directory outside the app.</li>
-          <li>Run <Code>make index</Code> to regenerate a placeholder catalog for the built-in library.</li>
-          <li>Use <strong>Edit library metadata</strong> in Settings &amp; Documentation to update titles, sources, difficulties, and groups.</li>
+          <li>Use <strong>Edit library metadata</strong> in Settings &amp; Documentation and import the puzzle JSON file there.</li>
+          <li>Update titles, sources, difficulties, and groups in the built-in index table.</li>
           <li>Export the updated <Code>index.json</Code> and replace <Code>puzzles/index.json</Code> in the repo.</li>
         </ol>
 
         <H2>Data Flow</H2>
         <Pre>{`built-in puzzle files
-  -> make index rebuilds placeholder puzzles/index.json
+  -> admin imports puzzle JSON files into the metadata editor
 
 Puzzle Browser
   -> loads index.json
@@ -236,6 +236,7 @@ Author a puzzle
 
 Admin metadata editing
   -> load built-in index + local custom metadata
+  -> import current-format puzzle JSON files for built-in rows
   -> edit titles, sources, difficulties, and groups
   -> Export updated index downloads puzzles/index.json`}</Pre>
 
@@ -244,12 +245,10 @@ Admin metadata editing
           For development and production builds, the project does three main things:
         </p>
         <ol>
-          <li>generate the built-in puzzle index</li>
           <li>compile the Go engine to WebAssembly</li>
           <li>bundle the web app into static files</li>
         </ol>
-        <Pre>{`cd core && go run ./cmd/buildindex ../puzzles
-cd core && GOOS=js GOARCH=wasm go build -o ../web/public/sliding-puzzle.wasm ./cmd/wasm/
+        <Pre>{`cd core && GOOS=js GOARCH=wasm go build -o ../web/public/sliding-puzzle.wasm ./cmd/wasm/
 cp $(go env GOROOT)/lib/wasm/wasm_exec.js ../web/public/wasm_exec.js
 cd web && npm run build`}</Pre>
         <p>

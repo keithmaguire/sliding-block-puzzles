@@ -16,7 +16,7 @@ export function PuzzleFormatReference({ onBack }: Props) {
         <H2>puzzles/index.json</H2>
         <p>
           The canonical library index is a flat versioned catalog. It owns browse-time metadata for
-          built-in puzzles and embeds the controlled registries used by the in-app metadata editor.
+          built-in puzzles and is maintained through the in-app metadata editor.
         </p>
         <FieldTable rows={[
           { name: 'version', type: 'integer', required: true,  description: 'Must be 3 for the current catalog format.' },
@@ -75,6 +75,11 @@ export function PuzzleFormatReference({ onBack }: Props) {
           Puzzle files are gameplay data only. Built-in browse metadata such as title, source,
           difficulty, and grouping lives in <Code>puzzles/index.json</Code>, not in the puzzle file
           itself.
+        </p>
+        <p>
+          To add a built-in puzzle, export its gameplay JSON from Puzzle Authoring, place that file
+          in <Code>puzzles/</Code>, import it into <Code>Edit library metadata</Code>, then export
+          the updated <Code>index.json</Code>.
         </p>
         <H2>Board</H2>
         <p>The board is a rectangular bounding box.</p>

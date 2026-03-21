@@ -83,8 +83,7 @@ make test       # Go unit and integration tests (core/)
 
 | Target | Description |
 |--------|-------------|
-| `make build` | Generate `puzzles/index.json`, build the WASM binary, then bundle the React app → `web/dist/` |
-| `make index` | Generate `puzzles/index.json` from the puzzle JSON files' `catalog` metadata |
+| `make build` | Build the WASM binary, then bundle the React app → `web/dist/` |
 | `make wasm`  | Compile Go WASM binary and copy `wasm_exec.js` into `web/public/` |
 | `make test`  | Run Go tests |
 | `make serve` | Serve `web/dist/` on `http://localhost:8080` via Python |
@@ -160,7 +159,7 @@ web/                    React frontend (TypeScript + Vite)
   dist/                 Production build output (gitignored)
 
 puzzles/                Puzzle JSON files
-  index.json            Generated puzzle list loaded by the browser
+  index.json            Library metadata catalog exported from the app
   README.md             Puzzle JSON format reference
 
 Makefile                Build, test, and serve targets
@@ -170,9 +169,11 @@ Makefile                Build, test, and serve targets
 
 1. Create a puzzle JSON file in `puzzles/` following the schema in
    [`puzzles/README.md`](puzzles/README.md).
-2. Set the puzzle's top-level `catalog` metadata so the browser generator
-   knows its group and order.
-3. Rebuild: `make build` (or run `make index` directly).
+2. Open **Settings & Documentation** in the app and choose
+   **Edit library metadata**.
+3. Import the puzzle JSON there to create or refresh the built-in catalog row.
+4. Edit the title, source, difficulty, and group metadata in the table.
+5. Export the updated `index.json` and replace `puzzles/index.json`.
 
 The in-app **Puzzle Format Reference** page documents every field and win
 condition type with examples.

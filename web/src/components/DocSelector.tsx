@@ -67,14 +67,14 @@ export function DocSelector({ onSelect, onBack, onCreate, onEditLibraryMetadata 
             <SectionLabel>Admin Workflow</SectionLabel>
             <div style={infoPanelStyle}>
               <p style={infoParagraphStyle}>
-                Built-in puzzle maintenance happens in two steps. First create or edit the gameplay
-                JSON, then update the library index separately.
+                Built-in puzzle maintenance happens entirely through exported files and the app’s
+                metadata editor. There is no command-line index generator in the supported workflow.
               </p>
               <ol style={infoListStyle}>
                 <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>
                 <li>Add that exported file to the repo <code>puzzles/</code> directory outside the app.</li>
-                <li>Run <code>make index</code> to regenerate a fresh placeholder <code>index.json</code>.</li>
-                <li>Open <strong>Edit library metadata</strong>, update titles, sources, difficulties, and groups.</li>
+                <li>Open <strong>Edit library metadata</strong> and use <strong>Import puzzle JSON</strong> to add or refresh built-in index rows.</li>
+                <li>Update titles, sources, difficulties, and groups in the table and registry lists.</li>
                 <li>Use <strong>Export updated index</strong> and replace <code>puzzles/index.json</code> in the repo.</li>
               </ol>
             </div>

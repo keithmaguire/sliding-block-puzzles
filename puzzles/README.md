@@ -8,13 +8,13 @@ format used by the app.
 `puzzles/index.json` is the canonical built-in library catalog. It owns browse-time
 metadata such as puzzle titles, sources, difficulties, and groups.
 
-`make index` regenerates a fresh placeholder `index.json` from the puzzle JSON files
-in this directory. The intended admin workflow is:
+`puzzles/index.json` is maintained through the app’s metadata editor. The intended
+admin workflow is:
 
 1. Export or update a puzzle gameplay JSON file.
 2. Place that file in `puzzles/`.
-3. Run `make index`.
-4. Edit the regenerated metadata in the app.
+3. Open `Edit library metadata` in the app and import the puzzle JSON file there.
+4. Edit the built-in row metadata in the app.
 5. Export the updated `index.json` and replace this file.
 
 The canonical index format is a flat versioned catalog:
