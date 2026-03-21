@@ -74,18 +74,13 @@ describe('normalizePuzzleJSONInput', () => {
     expect(normalizePuzzleJSONInput(canonical)).toEqual(canonical)
   })
 
-  it('accepts optional runtime metadata fields without requiring them', () => {
-    expect(normalizePuzzleJSONInput({
+  it('rejects superseded puzzle-file metadata fields', () => {
+    expect(() => normalizePuzzleJSONInput({
       ...canonical,
       title: 'Imported Puzzle',
       source: 'Tests',
       difficulty: 3,
-    })).toEqual({
-      ...canonical,
-      title: 'Imported Puzzle',
-      source: 'Tests',
-      difficulty: 3,
-    })
+    } as unknown as PuzzleJSON)).toThrow(/unknown field "title"/)
   })
 
   it('accepts text appearance colors white and black', () => {
@@ -179,7 +174,7 @@ describe('normalizePuzzleJSONInput', () => {
   })
 
   it('rejects invalid puzzle objects', () => {
-    expect(() => normalizePuzzleJSONInput({ title: 'Missing id' })).toThrow(/id/)
+    expect(() => normalizePuzzleJSONInput({ title: 'Missing id' })).toThrow(/unknown field "title"/)
     expect(() => normalizePuzzleJSONInput([])).toThrow(/puzzle object/)
   })
 

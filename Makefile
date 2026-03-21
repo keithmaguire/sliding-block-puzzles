@@ -1,15 +1,11 @@
-.PHONY: all build index wasm solve test clean serve https-serve serve-https cert-https
+.PHONY: all build wasm solve test clean serve https-serve serve-https cert-https
 
 # Build everything: Go WASM + React app
 all: build
 
 # Full production build
-build: index wasm
+build: wasm
 	cd web && npm run build
-
-# Generate the canonical puzzle browser index from puzzles/*.json metadata.
-index:
-	cd core && go run ./cmd/buildindex ../puzzles
 
 # Build Go WASM binary and copy wasm_exec.js into web/public/
 wasm:
@@ -22,7 +18,6 @@ wasm:
 TIMEOUT ?= 30s
 solve:
 	cd core && go run ./cmd/solve/ -timeout $(TIMEOUT) -skip-solved ../puzzles/*.json
-	$(MAKE) index
 
 # Run Go tests
 test:

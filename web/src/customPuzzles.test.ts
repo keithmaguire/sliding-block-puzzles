@@ -38,9 +38,6 @@ import { clearLocalMemory } from './localMemory'
 function makePuzzle(id: string): PuzzleJSON {
   return {
     id,
-    title: `Puzzle ${id}`,
-    source: 'custom',
-    difficulty: 1,
     board: { width: 3, height: 2 },
     blocks: [],
     win_condition: { type: 'position', positions: [{ match: { appearance: { color: '#f0a500' }, shape: [[0, 0], [1, 0]] }, col: 2, row: 1 }] },
@@ -58,24 +55,10 @@ describe('customPuzzles', () => {
       expect(getCustomPuzzleRecords()).toEqual([])
     })
 
-    it('migrates legacy stored puzzles into metadata records', () => {
+    it('ignores stored puzzles that do not match the current record shape', () => {
       const p = makePuzzle('test-1')
       storage.setItem('sliding-puzzle-custom', JSON.stringify([p]))
-      expect(getCustomPuzzleRecords()).toEqual([{
-        puzzle: {
-          id: p.id,
-          board: p.board,
-          blocks: p.blocks,
-          win_condition: p.win_condition,
-        },
-        metadata: {
-          title: p.title!,
-          source: p.source!,
-          difficulty: p.difficulty!,
-          group_id: 'custom-local',
-          group_title: 'Custom',
-        },
-      }])
+      expect(getCustomPuzzleRecords()).toEqual([])
     })
   })
 
@@ -86,7 +69,12 @@ describe('customPuzzles', () => {
         puzzle: p,
         metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' },
       })
-      expect(buildPuzzleWithMetadata(getCustomPuzzleRecords()[0])).toEqual(p)
+      expect(buildPuzzleWithMetadata(getCustomPuzzleRecords()[0])).toEqual({
+        ...p,
+        title: 'Puzzle p1',
+        source: 'custom',
+        difficulty: 1,
+      })
     })
 
     it('adds multiple puzzles', () => {

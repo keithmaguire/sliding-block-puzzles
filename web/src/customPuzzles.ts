@@ -4,54 +4,25 @@ import { CUSTOM_PUZZLES_KEY as KEY, HIDDEN_PUZZLES_KEY as HIDDEN_KEY } from './l
 const DEFAULT_GROUP_ID = 'custom-local'
 const DEFAULT_GROUP_TITLE = 'Custom'
 
-interface LegacyCustomPuzzle extends PuzzleJSON {
-  title?: string
-  source?: string
-  difficulty?: number
-}
-
-function isLegacyCustomPuzzle(raw: unknown): raw is LegacyCustomPuzzle {
+function isPuzzleMetadata(raw: unknown): raw is PuzzleMetadata {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false
   const candidate = raw as Record<string, unknown>
   return (
-    typeof candidate.id === 'string' &&
-    typeof candidate.board === 'object' &&
-    candidate.board != null &&
-    !Array.isArray(candidate.board) &&
-    Array.isArray(candidate.blocks) &&
-    typeof candidate.win_condition === 'object' &&
-    candidate.win_condition != null &&
-    !Array.isArray(candidate.win_condition)
+    typeof candidate.title === 'string' &&
+    typeof candidate.source === 'string' &&
+    typeof candidate.difficulty === 'number' &&
+    typeof candidate.group_id === 'string' &&
+    (candidate.group_title == null || typeof candidate.group_title === 'string')
   )
 }
 
-function migrateRecord(entry: unknown): CustomPuzzleRecord | null {
-  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null
-
-  const raw = entry as Record<string, unknown>
-  if ('puzzle' in raw && 'metadata' in raw) {
-    const puzzle = raw.puzzle
-    const metadata = raw.metadata
-    if (!puzzle || typeof puzzle !== 'object' || Array.isArray(puzzle)) return null
-    if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null
-    return {
-      puzzle: puzzle as PuzzleJSON,
-      metadata: metadata as PuzzleMetadata,
-    }
-  }
-
-  if (!isLegacyCustomPuzzle(raw)) return null
-  const legacy = raw
-  return {
-    puzzle: stripPuzzleMetadata(legacy),
-    metadata: {
-      title: legacy.title?.trim() || legacy.id,
-      source: legacy.source?.trim() || 'Custom',
-      difficulty: Number.isFinite(legacy.difficulty) ? Math.max(1, Number(legacy.difficulty)) : 1,
-      group_id: DEFAULT_GROUP_ID,
-      group_title: DEFAULT_GROUP_TITLE,
-    },
-  }
+function isCurrentCustomPuzzleRecord(entry: unknown): entry is CustomPuzzleRecord {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false
+  const candidate = entry as Record<string, unknown>
+  if (!('puzzle' in candidate) || !('metadata' in candidate)) return false
+  const puzzle = candidate.puzzle
+  if (!puzzle || typeof puzzle !== 'object' || Array.isArray(puzzle)) return false
+  return isPuzzleMetadata(candidate.metadata)
 }
 
 function readCustomPuzzleRecords(): CustomPuzzleRecord[] {
@@ -59,8 +30,18 @@ function readCustomPuzzleRecords(): CustomPuzzleRecord[] {
     const parsed = JSON.parse(localStorage.getItem(KEY) ?? '[]') as unknown
     if (!Array.isArray(parsed)) return []
     return parsed
-      .map((entry) => migrateRecord(entry))
-      .filter((entry): entry is CustomPuzzleRecord => entry != null)
+      .filter((entry): entry is CustomPuzzleRecord => isCurrentCustomPuzzleRecord(entry))
+      .map((entry) => ({
+        puzzle: stripPuzzleMetadata(entry.puzzle),
+        metadata: {
+          ...entry.metadata,
+          title: entry.metadata.title.trim() || entry.puzzle.id,
+          source: entry.metadata.source.trim() || 'Custom',
+          difficulty: Math.max(1, Math.trunc(entry.metadata.difficulty || 1)),
+          group_id: entry.metadata.group_id || DEFAULT_GROUP_ID,
+          group_title: entry.metadata.group_title?.trim() || DEFAULT_GROUP_TITLE,
+        },
+      }))
   } catch {
     return []
   }

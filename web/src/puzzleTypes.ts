@@ -255,7 +255,7 @@ export function normalizePuzzleJSONInput(input: unknown): PuzzleJSON {
   const raw = input as PuzzleJSON & Record<string, unknown>
   assertAllowedKeys(
     raw,
-    ['id', 'title', 'source', 'difficulty', 'min_moves', 'board', 'blocks', 'win_condition', 'win_description', 'setup_options'],
+    ['id', 'min_moves', 'board', 'blocks', 'win_condition', 'win_description', 'setup_options'],
     'root object',
   )
 
@@ -279,9 +279,6 @@ export function normalizePuzzleJSONInput(input: unknown): PuzzleJSON {
 
   return {
     id: raw.id,
-    ...(typeof raw.title === 'string' && raw.title.trim() ? { title: raw.title } : {}),
-    ...(typeof raw.source === 'string' ? { source: raw.source } : {}),
-    ...(typeof raw.difficulty === 'number' ? { difficulty: raw.difficulty } : {}),
     ...(typeof raw.min_moves === 'number' ? { min_moves: raw.min_moves } : {}),
     board: raw.board as PuzzleJSON['board'],
     blocks: raw.blocks as PuzzleJSON['blocks'],

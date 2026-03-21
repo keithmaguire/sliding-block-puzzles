@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { CustomPuzzleRecord, PuzzleIndex } from '../puzzleTypes'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { normalizePuzzleJSONInput, type CustomPuzzleRecord, type PuzzleIndex } from '../puzzleTypes'
 import { fetchJsonWithCache } from '../cachedFetch'
 import { getCustomPuzzleRecords, updateCustomPuzzleMetadata } from '../customPuzzles'
 import { DocPage } from './DocPage'
@@ -31,12 +31,14 @@ interface Props {
 }
 
 export function LibraryMetadataEditor({ onBack }: Props) {
+  const importInputRef = useRef<HTMLInputElement | null>(null)
   const [rows, setRows] = useState<EditorRow[]>([])
   const [sources, setSources] = useState<string[]>([])
   const [difficulties, setDifficulties] = useState<number[]>([])
   const [groups, setGroups] = useState<GroupOption[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(false)
   const [newSource, setNewSource] = useState('')
   const [newDifficulty, setNewDifficulty] = useState('1')
@@ -48,6 +50,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     async function load() {
       setLoading(true)
       setError(null)
+      setNotice(null)
       try {
         const index = await fetchJsonWithCache<PuzzleIndex>(`${BASE_URL}puzzles/index.json`)
         if (cancelled) return
@@ -69,7 +72,14 @@ export function LibraryMetadataEditor({ onBack }: Props) {
         setHydrated(true)
       } catch (loadError) {
         if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load library metadata')
+          const custom = getCustomPuzzleRecords()
+          const index = emptyIndex()
+          setRows(buildRows(index, custom))
+          setSources(index.registries.sources)
+          setDifficulties(index.registries.difficulties)
+          setGroups(buildGroups(index, custom, []))
+          setNotice(loadError instanceof Error ? `${loadError.message}. Started with an empty built-in index.` : 'Started with an empty built-in index.')
+          setHydrated(true)
         }
       } finally {
         if (!cancelled) {
@@ -136,6 +146,43 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     setNewGroupTitle('')
   }
 
+  function removeRow(id: string, origin: RowOrigin) {
+    setRows((current) => current.filter((row) => !(row.id === id && row.origin === origin)))
+  }
+
+  function openImportDialog() {
+    importInputRef.current?.click()
+  }
+
+  async function handleImportFiles(files: FileList | null) {
+    if (!files || files.length === 0) return
+
+    const nextSources = sources.length > 0 ? sources : ['Imported']
+    const nextDifficulties = difficulties.length > 0 ? difficulties : [1]
+    const nextGroups = groups.length > 0 ? groups : [{ id: 'imported', title: 'Imported' }]
+    const importedRows: EditorRow[] = []
+
+    for (const file of Array.from(files)) {
+      const parsed = JSON.parse(await file.text()) as unknown
+      const puzzle = normalizePuzzleJSONInput(parsed)
+      importedRows.push(buildImportedRow(puzzle, file.name, nextSources, nextDifficulties, nextGroups))
+    }
+
+    setSources(nextSources)
+    setDifficulties(nextDifficulties)
+    setGroups(nextGroups)
+    setRows((current) => {
+      const remaining = current.filter((row) => row.origin !== 'built-in' || !importedRows.some((candidate) => candidate.id === row.id))
+      return [...remaining, ...importedRows].sort((a, b) => (
+        a.origin === b.origin
+          ? a.id.localeCompare(b.id)
+          : a.origin.localeCompare(b.origin)
+      ))
+    })
+    setError(null)
+    setNotice(`Imported ${importedRows.length} built-in puzzle row${importedRows.length === 1 ? '' : 's'} from JSON.`)
+  }
+
   function exportIndex() {
     if (!canExport) return
     const index = buildExportIndex(rows, sources, difficulties, groups)
@@ -153,14 +200,15 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     <DocPage title="Edit Library Metadata" onBack={onBack}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <p style={{ margin: 0, color: 'var(--text-dim)', lineHeight: 1.7 }}>
-          Edit built-in and custom puzzle metadata together. Export writes only the built-in
-          replacement <code>index.json</code>.
+          Edit built-in and custom puzzle metadata together. Import puzzle JSON files here to add or
+          refresh built-in index rows. Export writes only the built-in replacement <code>index.json</code>.
         </p>
 
         {loading && <div style={infoBox}>Loading library metadata…</div>}
         {error && <div style={errorBox}>{error}</div>}
+        {notice && <div style={infoBox}>{notice}</div>}
 
-        {!loading && !error && (
+        {!loading && (
           <>
             <RegistryPanel
               sources={sources}
@@ -200,6 +248,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
                     <HeaderCell>Difficulty</HeaderCell>
                     <HeaderCell>Group</HeaderCell>
                     <HeaderCell>Min</HeaderCell>
+                    <HeaderCell>Action</HeaderCell>
                   </tr>
                 </thead>
                 <tbody>
@@ -237,6 +286,13 @@ export function LibraryMetadataEditor({ onBack }: Props) {
                           </select>
                         </DataCell>
                         <DataCell>{row.minMoves ?? '—'}</DataCell>
+                        <DataCell>
+                          {row.origin === 'built-in' ? (
+                            <button onClick={() => removeRow(row.id, row.origin)} style={miniDangerStyle}>Remove</button>
+                          ) : (
+                            '—'
+                          )}
+                        </DataCell>
                       </tr>
                     )
                   })}
@@ -245,6 +301,9 @@ export function LibraryMetadataEditor({ onBack }: Props) {
             </div>
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button onClick={openImportDialog} style={miniBtnStyle}>
+                Import puzzle JSON
+              </button>
               <button onClick={exportIndex} disabled={!canExport} style={canExport ? primaryBtnStyle : disabledBtnStyle}>
                 Export updated index
               </button>
@@ -252,6 +311,20 @@ export function LibraryMetadataEditor({ onBack }: Props) {
                 Built-in rows exported: {rows.filter((row) => row.origin === 'built-in').length}
               </span>
             </div>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json,application/json"
+              multiple
+              style={{ display: 'none' }}
+              onChange={(event) => {
+                const files = event.target.files
+                event.target.value = ''
+                void handleImportFiles(files).catch((importError) => {
+                  setError(importError instanceof Error ? importError.message : 'Failed to import puzzle JSON')
+                })
+              }}
+            />
           </>
         )}
       </div>
@@ -283,6 +356,40 @@ export function buildRows(index: PuzzleIndex, customPuzzles: CustomPuzzleRecord[
   }))
 
   return [...builtInRows, ...customRows]
+}
+
+function emptyIndex(): PuzzleIndex {
+  return {
+    version: 3,
+    registries: {
+      sources: [],
+      difficulties: [1],
+      groups: [],
+    },
+    puzzles: [],
+  }
+}
+
+function buildImportedRow(
+  puzzle: { id: string; min_moves?: number },
+  fileName: string,
+  sources: string[],
+  difficulties: number[],
+  groups: GroupOption[],
+): EditorRow {
+  const source = sources[0] ?? 'Imported'
+  const difficulty = difficulties[0] ?? 1
+  const groupId = groups[0]?.id ?? 'imported'
+  return {
+    origin: 'built-in',
+    id: puzzle.id,
+    file: fileName,
+    title: humanizePuzzleId(puzzle.id),
+    source,
+    difficulty,
+    groupId,
+    minMoves: puzzle.min_moves,
+  }
 }
 
 export function buildGroups(index: PuzzleIndex, customPuzzles: CustomPuzzleRecord[], rows: EditorRow[]): GroupOption[] {
@@ -374,6 +481,14 @@ function nextGroupId(groups: GroupOption[], title: string): string {
     counter += 1
   }
   return candidate
+}
+
+function humanizePuzzleId(id: string): string {
+  return id
+    .split(/[-_]+/g)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() + part.slice(1))
+    .join(' ')
 }
 
 function RegistryPanel(props: {
