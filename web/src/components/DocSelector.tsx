@@ -53,17 +53,14 @@ export function DocSelector({ onSelect, onBack, onAdmin }: Props) {
           />
         ))}
         {onAdmin && (
-          <>
-            <SectionLabel>Admin</SectionLabel>
-            <DocCard
-              title="Admin"
-              description="Create puzzles and edit library metadata."
-              icon="🛠️"
-              color="#fbbf24"
-              bg="rgba(240,165,0,0.08)"
-              onClick={onAdmin}
-            />
-          </>
+          <DocCard
+            title="Admin"
+            description="Create puzzles and edit library metadata."
+            icon="🛠️"
+            color="#fbbf24"
+            bg="rgba(240,165,0,0.08)"
+            onClick={onAdmin}
+          />
         )}
       </div>
     </DocPage>

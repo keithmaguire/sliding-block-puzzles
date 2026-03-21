@@ -11,6 +11,19 @@ export function AdminPage({ onBack, onCreate, onEditLibraryMetadata }: Props) {
     <DocPage title="Admin" onBack={onBack}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <p style={subtitleStyle}>Create puzzles and edit library metadata</p>
+        <div style={infoPanelStyle}>
+          <p style={infoParagraphStyle}>
+            Built-in puzzle maintenance happens entirely through exported files and the app’s
+            metadata editor. There is no command-line index generator in the supported workflow.
+          </p>
+          <ol style={infoListStyle}>
+            <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>
+            <li>Add that exported file to the repo <code>puzzles/</code> directory outside the app.</li>
+            <li>Open <strong>Edit library metadata</strong> and use <strong>Import puzzle JSON</strong> to add or refresh built-in index rows.</li>
+            <li>Update titles, sources, difficulties, and groups in the table and registry lists.</li>
+            <li>Use <strong>Export updated index</strong> and replace <code>puzzles/index.json</code> in the repo.</li>
+          </ol>
+        </div>
         <AdminCard
           title="Create new puzzle"
           description="Open the visual authoring workflow for a new or resumed draft."
@@ -27,19 +40,6 @@ export function AdminPage({ onBack, onCreate, onEditLibraryMetadata }: Props) {
           bg="rgba(34,197,94,0.08)"
           onClick={onEditLibraryMetadata}
         />
-        <div style={infoPanelStyle}>
-          <p style={infoParagraphStyle}>
-            Built-in puzzle maintenance happens entirely through exported files and the app’s
-            metadata editor. There is no command-line index generator in the supported workflow.
-          </p>
-          <ol style={infoListStyle}>
-            <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>
-            <li>Add that exported file to the repo <code>puzzles/</code> directory outside the app.</li>
-            <li>Open <strong>Edit library metadata</strong> and use <strong>Import puzzle JSON</strong> to add or refresh built-in index rows.</li>
-            <li>Update titles, sources, difficulties, and groups in the table and registry lists.</li>
-            <li>Use <strong>Export updated index</strong> and replace <code>puzzles/index.json</code> in the repo.</li>
-          </ol>
-        </div>
       </div>
     </DocPage>
   )
