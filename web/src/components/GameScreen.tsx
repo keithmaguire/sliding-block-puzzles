@@ -296,8 +296,8 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
           <span style={{ fontSize: '0.9rem', letterSpacing: '0.04em', color: difficultyColor(diff) }}>
             {'★'.repeat(Math.min(diff, 5))}<span style={{ color: 'var(--text-muted)' }}>{'★'.repeat(Math.max(0, 5 - diff))}</span>
           </span>
-          <button onClick={onDocs} style={iconBtnStyle} title="Documentation" aria-label="Documentation">
-            <HelpIcon />
+          <button onClick={onDocs} style={iconBtnStyle} title="Settings and documentation" aria-label="Settings and documentation">
+            <CogIcon />
           </button>
         </div>
       </div>
@@ -599,12 +599,11 @@ const winBtnStyle: React.CSSProperties = {
   minHeight: 40,
 }
 
-function HelpIcon() {
+function CogIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="8" cy="8" r="6.5" />
-      <path d="M6.5 6a1.5 1.5 0 0 1 3 0c0 1-1.5 1.5-1.5 2.5" strokeLinecap="round" />
-      <circle cx="8" cy="11.5" r="0.75" fill="currentColor" stroke="none" />
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="2.3" />
+      <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
     </svg>
   )
 }

@@ -7,6 +7,7 @@ import { DocSelector } from './components/DocSelector'
 import { HowToPlay } from './components/HowToPlay'
 import { PuzzleFormatReference } from './components/PuzzleFormatReference'
 import { AppArchitecture } from './components/AppArchitecture'
+import { LibraryMetadataEditor } from './components/LibraryMetadataEditor'
 import { PuzzleCreator } from './components/PuzzleCreator'
 import { TitleScreen } from './components/TitleScreen'
 import { shouldKeepCreatorMounted, type View } from './appViewState'
@@ -20,6 +21,7 @@ export default function App() {
   const [creatorInitialPuzzle, setCreatorInitialPuzzle] = useState<PuzzleJSON | undefined>(undefined)
   const [editorKey, setEditorKey] = useState(0)
   const [hasAuthoringSession, setHasAuthoringSession] = useState(false)
+  const [docOrigin, setDocOrigin] = useState<'browser' | 'game'>('browser')
 
   function goToGame(puzzle: PuzzleJSON, returnTo: 'browser' | 'creator') {
     setActivePuzzle(puzzle)
@@ -34,10 +36,24 @@ export default function App() {
     return <p style={{ padding: 24, color: 'var(--danger)', fontSize: '1rem' }}>Failed to load engine: {error}</p>
   }
 
-  const inDocs = view === 'doc-selector' || view === 'how-to-play' || view === 'puzzle-format' || view === 'architecture'
+  const inDocs = view === 'doc-selector' || view === 'how-to-play' || view === 'puzzle-format' || view === 'architecture' || view === 'library-metadata'
 
   function backFromDocs() {
-    setView(activePuzzle ? 'game' : 'browser')
+    setView(docOrigin)
+  }
+
+  function openDocs(origin: 'browser' | 'game') {
+    setDocOrigin(origin)
+    setView('doc-selector')
+  }
+
+  function openCreator() {
+    if (!hasAuthoringSession) {
+      setCreatorInitialPuzzle(undefined)
+      setEditorKey((k) => k + 1)
+      setHasAuthoringSession(true)
+    }
+    setView('creator')
   }
 
   return (
@@ -51,7 +67,7 @@ export default function App() {
             puzzle={activePuzzle}
             api={api}
             onBack={() => { setActivePuzzle(null); setView(gameReturnView) }}
-            onDocs={() => setView('doc-selector')}
+            onDocs={() => openDocs('game')}
           />
         </div>
       )}
@@ -60,15 +76,7 @@ export default function App() {
         <div className="app-shell">
           <PuzzleBrowser
             onSelect={(puzzle) => goToGame(puzzle, 'browser')}
-            onDocs={() => setView('doc-selector')}
-            onCreate={() => {
-              if (!hasAuthoringSession) {
-                setCreatorInitialPuzzle(undefined)
-                setEditorKey((k) => k + 1)
-                setHasAuthoringSession(true)
-              }
-              setView('creator')
-            }}
+            onDocs={() => openDocs('browser')}
             onEdit={(puzzle) => {
               setCreatorInitialPuzzle(puzzle)
               setEditorKey((k) => k + 1)
@@ -93,10 +101,18 @@ export default function App() {
 
       {inDocs && (
         <div className="app-shell">
-          {view === 'doc-selector' && <DocSelector onSelect={(page) => setView(page)} onBack={backFromDocs} />}
+          {view === 'doc-selector' && (
+            <DocSelector
+              onSelect={(page) => setView(page)}
+              onBack={backFromDocs}
+              onCreate={docOrigin === 'browser' ? openCreator : undefined}
+              onEditLibraryMetadata={docOrigin === 'browser' ? () => setView('library-metadata') : undefined}
+            />
+          )}
           {view === 'how-to-play' && <HowToPlay onBack={() => setView('doc-selector')} />}
           {view === 'puzzle-format' && <PuzzleFormatReference onBack={() => setView('doc-selector')} />}
           {view === 'architecture' && <AppArchitecture onBack={() => setView('doc-selector')} />}
+          {view === 'library-metadata' && <LibraryMetadataEditor onBack={() => setView('doc-selector')} />}
         </div>
       )}
     </>

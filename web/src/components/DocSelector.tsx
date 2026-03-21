@@ -6,6 +6,8 @@ type DocPageKey = 'how-to-play' | 'puzzle-format' | 'architecture'
 interface Props {
   onSelect: (page: DocPageKey) => void
   onBack: () => void
+  onCreate?: () => void
+  onEditLibraryMetadata?: () => void
 }
 
 const pages: { key: DocPageKey; title: string; description: string; icon: string; color: string; bg: string }[] = [
@@ -35,10 +37,50 @@ const pages: { key: DocPageKey; title: string; description: string; icon: string
   },
 ]
 
-export function DocSelector({ onSelect, onBack }: Props) {
+export function DocSelector({ onSelect, onBack, onCreate, onEditLibraryMetadata }: Props) {
   return (
-    <DocPage title="Documentation" onBack={onBack}>
+    <DocPage title="Settings & Documentation" onBack={onBack}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {(onCreate || onEditLibraryMetadata) && (
+          <>
+            <SectionLabel>Admin Actions</SectionLabel>
+            {onCreate && (
+              <DocCard
+                title="Create new puzzle"
+                description="Open the visual authoring workflow for a new or resumed draft."
+                icon="✏️"
+                color="#fbbf24"
+                bg="rgba(240,165,0,0.08)"
+                onClick={onCreate}
+              />
+            )}
+            {onEditLibraryMetadata && (
+              <DocCard
+                title="Edit library metadata"
+                description="Open the spreadsheet-style metadata editor for titles, sources, difficulties, groups, and index export."
+                icon="🗂️"
+                color="#4ade80"
+                bg="rgba(34,197,94,0.08)"
+                onClick={onEditLibraryMetadata}
+              />
+            )}
+            <SectionLabel>Admin Workflow</SectionLabel>
+            <div style={infoPanelStyle}>
+              <p style={infoParagraphStyle}>
+                Built-in puzzle maintenance happens in two steps. First create or edit the gameplay
+                JSON, then update the library index separately.
+              </p>
+              <ol style={infoListStyle}>
+                <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>
+                <li>Add that exported file to the repo <code>puzzles/</code> directory outside the app.</li>
+                <li>Run <code>make index</code> to regenerate a fresh placeholder <code>index.json</code>.</li>
+                <li>Open <strong>Edit library metadata</strong>, update titles, sources, difficulties, and groups.</li>
+                <li>Use <strong>Export updated index</strong> and replace <code>puzzles/index.json</code> in the repo.</li>
+              </ol>
+            </div>
+          </>
+        )}
+        <SectionLabel>Documentation</SectionLabel>
         {pages.map((p) => (
           <DocCard
             key={p.key}
@@ -52,6 +94,24 @@ export function DocSelector({ onSelect, onBack }: Props) {
         ))}
       </div>
     </DocPage>
+  )
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        fontSize: '0.82rem',
+        fontWeight: 700,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        color: 'var(--text-dim)',
+        marginTop: 2,
+        marginBottom: 2,
+      }}
+    >
+      {children}
+    </div>
   )
 }
 
@@ -90,4 +150,24 @@ function DocCard({
       </div>
     </button>
   )
+}
+
+const infoPanelStyle: React.CSSProperties = {
+  padding: '14px 16px',
+  borderRadius: 'var(--radius-md)',
+  border: '1px solid var(--border)',
+  background: 'rgba(255,255,255,0.03)',
+}
+
+const infoParagraphStyle: React.CSSProperties = {
+  margin: 0,
+  color: 'var(--text-dim)',
+  lineHeight: 1.6,
+}
+
+const infoListStyle: React.CSSProperties = {
+  margin: '10px 0 0',
+  paddingLeft: 20,
+  color: 'var(--text-dim)',
+  lineHeight: 1.7,
 }

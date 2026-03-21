@@ -15,77 +15,67 @@ export function PuzzleFormatReference({ onBack }: Props) {
 
         <H2>puzzles/index.json</H2>
         <p>
-          The canonical index format is a versioned hierarchical object with a <Code>version: 2</Code>{' '}
-          field and a <Code>groups</Code> array. Each group has an <Code>id</Code>, <Code>title</Code>,
-          and <Code>items</Code> array whose entries are either puzzle entries or nested groups.
+          The canonical library index is a flat versioned catalog. It owns browse-time metadata for
+          built-in puzzles and embeds the controlled registries used by the in-app metadata editor.
         </p>
         <FieldTable rows={[
-          { name: 'version', type: 'integer', required: true,  description: 'Must be 2 for the canonical format.' },
-          { name: 'groups',  type: 'array',   required: true,  description: 'Array of group objects, each with id, title, and items.' },
+          { name: 'version', type: 'integer', required: true,  description: 'Must be 3 for the current catalog format.' },
+          { name: 'registries', type: 'object', required: true, description: 'Controlled values for sources, numeric difficulties, and groups.' },
+          { name: 'puzzles',  type: 'array',   required: true,  description: 'Flat array of built-in puzzle rows keyed by puzzle id.' },
         ]} />
         <Pre>{`{
-  "version": 2,
-  "groups": [
+  "version": 3,
+  "registries": {
+    "sources": ["Hornden D24", "Hornden D25"],
+    "difficulties": [1, 2, 3, 4],
+    "groups": [
+      { "id": "classics", "title": "Classics" },
+      { "id": "custom", "title": "Custom" }
+    ]
+  },
+  "puzzles": [
     {
-      "id": "beginner",
-      "title": "Beginner",
-      "items": [
-        {
-          "id": "001-slide-right",
-          "title": "Slide Right",
-          "file": "001-slide-right.json",
-          "source": "original",
-          "difficulty": 1,
-          "min_moves": 4
-        }
-      ]
+      "id": "d24-block-10-1",
+      "file": "d24-block-10-1.json",
+      "title": "Block-10 1",
+      "source": "Hornden D24",
+      "difficulty": 4,
+      "group_id": "classics",
+      "min_moves": 49
     }
   ]
 }`}</Pre>
         <p>
-          Each puzzle entry inside <Code>items</Code> has the following fields:
+          Each entry inside <Code>puzzles</Code> has the following fields:
         </p>
         <FieldTable rows={[
           { name: 'id',         type: 'string',  required: true,  description: 'Unique identifier — must match the id inside the puzzle file.' },
           { name: 'title',      type: 'string',  required: true,  description: 'Display name shown in the puzzle browser.' },
           { name: 'file',       type: 'string',  required: true,  description: 'Filename relative to puzzles/ (e.g. "001-slide-right.json").' },
-          { name: 'source',     type: 'string',  required: false, description: 'Attribution string, e.g. "Hornden p.42".' },
-          { name: 'difficulty', type: 'integer', required: false, description: '1–5 star rating.' },
+          { name: 'source',     type: 'string',  required: true, description: 'Attribution string selected from registries.sources.' },
+          { name: 'difficulty', type: 'integer', required: true, description: 'Numeric difficulty selected from registries.difficulties.' },
+          { name: 'group_id',   type: 'string',  required: true, description: 'Stable group identifier selected from registries.groups.' },
           { name: 'min_moves',  type: 'integer', required: false, description: 'Minimum move count displayed alongside the move counter.' },
         ]} />
         <H2>Puzzle file — top-level fields</H2>
         <p>Required canonical fields:</p>
         <FieldTable rows={[
           { name: 'id',            type: 'string',  required: true,  description: 'Unique string identifier. Must match the index.json entry.' },
-          { name: 'title',         type: 'string',  required: true,  description: 'Human-readable puzzle name.' },
           { name: 'board',         type: 'object',  required: true,  description: 'Grid dimensions. See Board section.' },
           { name: 'blocks',        type: 'array',   required: true,  description: 'Array of block objects. See Blocks section.' },
           { name: 'win_condition', type: 'object',  required: true,  description: 'Win condition descriptor. See Win Conditions section.' },
         ]} />
         <p>Optional fields:</p>
         <FieldTable rows={[
-          { name: 'source',          type: 'string',  required: false, description: 'Attribution.' },
-          { name: 'difficulty',      type: 'integer', required: false, description: '1–5.' },
           { name: 'min_moves',       type: 'integer', required: false, description: 'Minimum move count (computed by solver).' },
           { name: 'win_description', type: 'string',  required: false, description: 'Player-facing goal text shown as "To win: …". Required for description_only puzzles.' },
           { name: 'setup_options',   type: 'object',  required: false, description: 'Setup behavior options. See Setup Options section.' },
-          { name: 'catalog',         type: 'object',  required: false, description: 'Required when the file is intended to live in puzzles/. Used to generate puzzles/index.json.' },
         ]} />
-        <H2>Catalog metadata</H2>
         <p>
-          Puzzle files exported for placement in <Code>puzzles/</Code> should include top-level
-          <Code>catalog</Code> metadata so the build can add them to the browser automatically.
+          Puzzle files are gameplay data only. Built-in browse metadata such as title, source,
+          difficulty, and grouping lives in <Code>puzzles/index.json</Code>, not in the puzzle file
+          itself.
         </p>
-        <FieldTable rows={[
-          { name: 'group.id',    type: 'string',  required: true,  description: 'Stable group identifier used in puzzles/index.json.' },
-          { name: 'group.title', type: 'string',  required: true,  description: 'Displayed group heading in the browser.' },
-          { name: 'group.order', type: 'integer', required: false, description: 'Optional group sort order.' },
-          { name: 'order',       type: 'integer', required: false, description: 'Optional puzzle sort order within its group.' },
-        ]} />
-        <Pre>{`"catalog": {
-  "group": { "id": "easy", "title": "easy", "order": 10 },
-  "order": 20
-}`}</Pre>
         <H2>Board</H2>
         <p>The board is a rectangular bounding box.</p>
         <FieldTable rows={[

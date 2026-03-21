@@ -73,8 +73,8 @@ export function AppArchitecture({ onBack }: Props) {
 
         <H2>What Happens When You Open the App</H2>
         <ol>
-          <li>The browser loads <Code>/puzzles/index.json</Code> to find out which built-in puzzles exist.</li>
-          <li>The Puzzle Browser shows those puzzles in groups, along with any custom puzzles saved in your browser.</li>
+          <li>The browser loads <Code>/puzzles/index.json</Code> to get the built-in catalog, controlled registries, and group definitions.</li>
+          <li>The Puzzle Browser derives built-in groups from that catalog and shows them alongside any custom puzzles saved in your browser.</li>
           <li>When you choose a puzzle, the app loads that puzzle&apos;s JSON file and passes it to the puzzle engine.</li>
           <li>The engine checks that the puzzle is valid and prepares the starting state.</li>
           <li>The Game Screen draws the board and asks the engine whether moves are legal, whether Undo/Reset should work, and whether the puzzle is solved.</li>
@@ -180,9 +180,9 @@ getMoveCount()`}</Pre>
 
         <H2>Authoring and Library Data</H2>
         <p>
-          Built-in puzzles are stored as JSON files in the repo. Their browser listing comes from{' '}
-          <Code>puzzles/index.json</Code>, which is generated during development from the shipped
-          puzzle files.
+          Built-in puzzles are stored as gameplay JSON files in the repo. Their browser listing
+          metadata comes from <Code>puzzles/index.json</Code>, which is the canonical catalog for
+          titles, sources, difficulties, and groups.
         </p>
         <p>
           Custom puzzles are different: they are stored in your browser&apos;s local storage, not in a
@@ -193,21 +193,32 @@ getMoveCount()`}</Pre>
             <strong>progress.ts</strong> stores whether a puzzle is solved and your best move count
           </li>
           <li>
-            <strong>customPuzzles.ts</strong> stores puzzles you added yourself, plus hidden-library
-            choices
+            <strong>customPuzzles.ts</strong> stores custom puzzle gameplay JSON, browser-local
+            metadata, and hidden-library choices
           </li>
         </ul>
 
+        <H3>Admin Maintenance Flow</H3>
+        <ol>
+          <li>Create or edit a puzzle in the in-app authoring workflow and export the gameplay JSON.</li>
+          <li>Add that JSON file to the repo <Code>puzzles/</Code> directory outside the app.</li>
+          <li>Run <Code>make index</Code> to regenerate a placeholder catalog for the built-in library.</li>
+          <li>Use <strong>Edit library metadata</strong> in Settings &amp; Documentation to update titles, sources, difficulties, and groups.</li>
+          <li>Export the updated <Code>index.json</Code> and replace <Code>puzzles/index.json</Code> in the repo.</li>
+        </ol>
+
         <H2>Data Flow</H2>
         <Pre>{`built-in puzzle files
-  -> buildindex creates puzzles/index.json
+  -> make index rebuilds placeholder puzzles/index.json
 
 Puzzle Browser
   -> loads index.json
-  -> shows puzzle groups and custom puzzles
+  -> derives groups from registries and puzzle rows
+  -> shows built-in puzzles and custom puzzles
 
 Play a puzzle
-  -> load puzzle JSON
+  -> load gameplay puzzle JSON
+  -> merge in catalog metadata for built-in puzzles
   -> send it to the engine
   -> engine returns board state
   -> Game Screen draws the board
@@ -220,8 +231,13 @@ Move a block
 Author a puzzle
   -> visual editor builds PuzzleJSON
   -> Try It sends that PuzzleJSON straight to gameplay
-  -> Add to Library saves it locally
-  -> Export JSON downloads it as a file`}</Pre>
+  -> Add to Library saves gameplay plus local metadata
+  -> Export JSON downloads gameplay only
+
+Admin metadata editing
+  -> load built-in index + local custom metadata
+  -> edit titles, sources, difficulties, and groups
+  -> Export updated index downloads puzzles/index.json`}</Pre>
 
         <H2>Build Pipeline</H2>
         <p>
