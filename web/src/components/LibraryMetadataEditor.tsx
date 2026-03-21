@@ -7,6 +7,7 @@ import { DocPage } from './DocPage'
 const BASE_URL = import.meta.env.BASE_URL
 const CUSTOM_GROUP_ID = 'custom-local'
 const CUSTOM_GROUP_TITLE = 'Custom'
+const DIFFICULTY_OPTIONS = [1, 2, 3, 4, 5]
 
 type RowOrigin = 'built-in' | 'custom'
 
@@ -33,13 +34,11 @@ interface Props {
 export function LibraryMetadataEditor({ onBack }: Props) {
   const importInputRef = useRef<HTMLInputElement | null>(null)
   const [rows, setRows] = useState<EditorRow[]>([])
-  const [difficulties, setDifficulties] = useState<number[]>([])
   const [groups, setGroups] = useState<GroupOption[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(false)
-  const [newDifficulty, setNewDifficulty] = useState('1')
   const [newGroupTitle, setNewGroupTitle] = useState('')
 
   useEffect(() => {
@@ -54,13 +53,8 @@ export function LibraryMetadataEditor({ onBack }: Props) {
         if (cancelled) return
         const custom = getCustomPuzzleRecords()
         const nextRows = buildRows(index, custom)
-        const nextDifficulties = uniqueNumbers([
-          ...index.registries.difficulties,
-          ...nextRows.map((row) => row.difficulty),
-        ])
         const nextGroups = buildGroups(index, custom, nextRows)
         setRows(nextRows)
-        setDifficulties(nextDifficulties)
         setGroups(nextGroups)
         setHydrated(true)
       } catch (loadError) {
@@ -68,7 +62,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
           const custom = getCustomPuzzleRecords()
           const index = emptyIndex()
           setRows(buildRows(index, custom))
-          setDifficulties(index.registries.difficulties)
           setGroups(buildGroups(index, custom, []))
           setNotice(loadError instanceof Error ? `${loadError.message}. Started with an empty built-in index.` : 'Started with an empty built-in index.')
           setHydrated(true)
@@ -87,8 +80,8 @@ export function LibraryMetadataEditor({ onBack }: Props) {
   }, [])
 
   const invalidRows = useMemo(
-    () => findInvalidRows(rows, difficulties, groups),
-    [rows, difficulties, groups],
+    () => findInvalidRows(rows, DIFFICULTY_OPTIONS, groups),
+    [rows, groups],
   )
 
   const canExport = !loading && !error && invalidRows.length === 0
@@ -114,13 +107,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
     )))
   }
 
-  function addDifficulty() {
-    const value = Number(newDifficulty)
-    if (!Number.isFinite(value) || value < 1) return
-    setDifficulties((current) => uniqueNumbers([...current, value]))
-    setNewDifficulty(String(value))
-  }
-
   function addGroup() {
     const title = newGroupTitle.trim()
     if (!title) return
@@ -142,17 +128,15 @@ export function LibraryMetadataEditor({ onBack }: Props) {
   async function handleImportFiles(files: FileList | null) {
     if (!files || files.length === 0) return
 
-    const nextDifficulties = difficulties.length > 0 ? difficulties : [1]
     const nextGroups = groups.length > 0 ? groups : [{ id: 'imported', title: 'Imported' }]
     const importedRows: EditorRow[] = []
 
     for (const file of Array.from(files)) {
       const parsed = JSON.parse(await file.text()) as unknown
       const puzzle = normalizePuzzleJSONInput(parsed)
-      importedRows.push(buildImportedRow(puzzle, file.name, nextDifficulties, nextGroups))
+      importedRows.push(buildImportedRow(puzzle, file.name, nextGroups))
     }
 
-    setDifficulties(nextDifficulties)
     setGroups(nextGroups)
     setRows((current) => {
       const remaining = current.filter((row) => row.origin !== 'built-in' || !importedRows.some((candidate) => candidate.id === row.id))
@@ -168,7 +152,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
 
   function exportIndex() {
     if (!canExport) return
-    const index = buildExportIndex(rows, difficulties, groups)
+    const index = buildExportIndex(rows, groups)
 
     const blob = new Blob([`${JSON.stringify(index, null, 2)}\n`], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -194,11 +178,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
         {!loading && (
           <>
             <RegistryPanel
-              difficulties={difficulties}
-              onRemoveDifficulty={(value) => setDifficulties((current) => current.filter((item) => item !== value))}
-              newDifficulty={newDifficulty}
-              onNewDifficultyChange={setNewDifficulty}
-              onAddDifficulty={addDifficulty}
               groups={groups}
               onChangeGroupTitle={(id, title) => setGroups((current) => current.map((group) => group.id === id ? { ...group, title } : group))}
               onRemoveGroup={(id) => setGroups((current) => current.filter((group) => group.id !== id))}
@@ -220,7 +199,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
               rows={rows.filter((row) => row.origin === 'built-in')}
               invalidRows={invalidRows}
               groups={groups}
-              difficulties={difficulties}
+              difficulties={DIFFICULTY_OPTIONS}
               onUpdateRow={updateRow}
               onRemoveRow={removeRow}
             />
@@ -231,7 +210,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
               rows={rows.filter((row) => row.origin === 'custom')}
               invalidRows={invalidRows}
               groups={groups}
-              difficulties={difficulties}
+              difficulties={DIFFICULTY_OPTIONS}
               onUpdateRow={updateRow}
             />
 
@@ -297,7 +276,7 @@ function emptyIndex(): PuzzleIndex {
   return {
     version: 3,
     registries: {
-      difficulties: [1],
+      difficulties: [...DIFFICULTY_OPTIONS],
       groups: [],
     },
     puzzles: [],
@@ -307,10 +286,8 @@ function emptyIndex(): PuzzleIndex {
 function buildImportedRow(
   puzzle: { id: string; min_moves?: number },
   fileName: string,
-  difficulties: number[],
   groups: GroupOption[],
 ): EditorRow {
-  const difficulty = difficulties[0] ?? 1
   const groupId = groups[0]?.id ?? 'imported'
   return {
     origin: 'built-in',
@@ -318,7 +295,7 @@ function buildImportedRow(
     file: fileName,
     title: humanizePuzzleId(puzzle.id),
     source: '',
-    difficulty,
+    difficulty: 1,
     groupId,
     minMoves: puzzle.min_moves,
   }
@@ -359,7 +336,6 @@ export function findInvalidRows(
 
 export function buildExportIndex(
   rows: EditorRow[],
-  difficulties: number[],
   groups: GroupOption[],
 ): PuzzleIndex {
   const builtInRows = rows.filter((row) => row.origin === 'built-in')
@@ -368,7 +344,7 @@ export function buildExportIndex(
   return {
     version: 3,
     registries: {
-      difficulties,
+      difficulties: [...DIFFICULTY_OPTIONS],
       groups: exportGroups,
     },
     puzzles: builtInRows
@@ -387,10 +363,6 @@ export function buildExportIndex(
           : a.group_id.localeCompare(b.group_id)
       )),
   }
-}
-
-function uniqueNumbers(values: number[]): number[] {
-  return [...new Set(values.filter((value) => Number.isFinite(value) && value >= 1))].sort((a, b) => a - b)
 }
 
 function nextGroupId(groups: GroupOption[], title: string): string {
@@ -489,11 +461,6 @@ function humanizePuzzleId(id: string): string {
 }
 
 function RegistryPanel(props: {
-  difficulties: number[]
-  onRemoveDifficulty: (value: number) => void
-  newDifficulty: string
-  onNewDifficultyChange: (value: string) => void
-  onAddDifficulty: () => void
   groups: GroupOption[]
   onChangeGroupTitle: (id: string, title: string) => void
   onRemoveGroup: (id: string) => void
@@ -504,19 +471,6 @@ function RegistryPanel(props: {
   return (
     <div style={panelStyle}>
       <div style={registryGridStyle}>
-        <RegistrySection
-          title="Difficulties"
-          items={props.difficulties.map((difficulty) => (
-            <EditableChip key={difficulty} label={String(difficulty)} onRemove={() => props.onRemoveDifficulty(difficulty)} />
-          ))}
-          input={(
-            <div style={inlineFormStyle}>
-              <input value={props.newDifficulty} onChange={(event) => props.onNewDifficultyChange(event.target.value)} style={textInputStyle} inputMode="numeric" />
-              <button onClick={props.onAddDifficulty} style={miniBtnStyle}>Add</button>
-            </div>
-          )}
-        />
-
         <RegistrySection
           title="Groups"
           items={props.groups.map((group) => (
@@ -544,15 +498,6 @@ function RegistrySection({ title, items, input }: { title: string; items: React.
       <div style={sectionTitleStyle}>{title}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{items}</div>
       {input}
-    </div>
-  )
-}
-
-function EditableChip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <div style={chipStyle}>
-      <span>{label}</span>
-      <button onClick={onRemove} style={chipRemoveStyle}>×</button>
     </div>
   )
 }
@@ -618,25 +563,6 @@ const miniDangerStyle: React.CSSProperties = {
   border: '1px solid rgba(248,113,113,0.35)',
   background: 'rgba(248,113,113,0.08)',
   color: '#f87171',
-}
-
-const chipStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 8,
-  border: '1px solid var(--border)',
-  borderRadius: 'var(--radius-sm)',
-  padding: '8px 10px',
-  background: 'rgba(255,255,255,0.03)',
-}
-
-const chipRemoveStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  color: 'var(--text-dim)',
-  cursor: 'pointer',
-  fontSize: '1rem',
 }
 
 const groupEditRowStyle: React.CSSProperties = {

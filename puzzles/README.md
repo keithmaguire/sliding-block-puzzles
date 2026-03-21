@@ -23,7 +23,7 @@ The canonical index format is a flat versioned catalog:
 {
   "version": 3,
   "registries": {
-    "difficulties": [1, 2, 3, 4],
+    "difficulties": [1, 2, 3, 4, 5],
     "groups": [
       { "id": "classics", "title": "Classics" },
       { "id": "custom", "title": "Custom" }
@@ -51,7 +51,7 @@ Each puzzle entry inside `puzzles` has these fields:
 | `title` | yes | string | Display name shown in the puzzle browser |
 | `file` | yes | string | Filename relative to `puzzles/` |
 | `source` | yes | string | Free-text attribution |
-| `difficulty` | yes | integer | Numeric difficulty, selected from `registries.difficulties` |
+| `difficulty` | yes | integer | Numeric difficulty on the fixed 1-5 scale |
 | `group_id` | yes | string | Stable group identifier selected from `registries.groups` |
 | `min_moves` | no | integer | Minimum move target shown in the UI |
 

@@ -23,8 +23,9 @@ The editor SHALL operate on the complete puzzle set rather than on per-group sub
 The system SHALL treat numeric `difficulty` and groups as controlled metadata backed by registries embedded in `index.json`.
 
 The system SHALL provide a separate metadata-management interface for editing:
-- allowed numeric difficulties
 - allowed groups by editable title
+
+The system SHALL treat puzzle difficulty as a fixed numeric scale from 1 through 5.
 
 The system SHALL manage group IDs internally and SHALL NOT require direct user editing of `group.id`.
 
@@ -42,6 +43,7 @@ The editor SHALL prevent export while any row references a value outside the reg
 
 #### Scenario: Invalid registry reference blocks export
 - **GIVEN** at least one puzzle row references a difficulty or group not present in the current registries
+- **GIVEN** at least one puzzle row references a difficulty outside the fixed 1-5 scale or a group not present in the current registries
 - **WHEN** the admin attempts to export the catalog
 - **THEN** the system SHALL reject the export
 

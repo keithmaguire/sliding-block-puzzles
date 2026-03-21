@@ -293,7 +293,7 @@ Repeated values SHALL be treated as interchangeable target requirements subject 
 ### Requirement: PuzzleJSON contract defines index formats and canonical form
 The system SHALL define `puzzles/index.json` as the v3 flat catalog object with:
 - `version: 3`
-- registry collections for sources, numeric difficulties, and groups
+- a fixed numeric difficulty scale and group registry
 - flat puzzle rows keyed by puzzle `id`
 
 #### Scenario: Index format is defined

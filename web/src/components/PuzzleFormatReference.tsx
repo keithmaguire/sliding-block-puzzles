@@ -20,13 +20,13 @@ export function PuzzleFormatReference({ onBack }: Props) {
         </p>
         <FieldTable rows={[
           { name: 'version', type: 'integer', required: true,  description: 'Must be 3 for the current catalog format.' },
-          { name: 'registries', type: 'object', required: true, description: 'Controlled values for numeric difficulties and groups.' },
+          { name: 'registries', type: 'object', required: true, description: 'Fixed difficulty scale (1-5) and allowed groups.' },
           { name: 'puzzles',  type: 'array',   required: true,  description: 'Flat array of built-in puzzle rows keyed by puzzle id.' },
         ]} />
         <Pre>{`{
   "version": 3,
   "registries": {
-    "difficulties": [1, 2, 3, 4],
+    "difficulties": [1, 2, 3, 4, 5],
     "groups": [
       { "id": "classics", "title": "Classics" },
       { "id": "custom", "title": "Custom" }
@@ -52,7 +52,7 @@ export function PuzzleFormatReference({ onBack }: Props) {
           { name: 'title',      type: 'string',  required: true,  description: 'Display name shown in the puzzle browser.' },
           { name: 'file',       type: 'string',  required: true,  description: 'Filename relative to puzzles/ (e.g. "001-slide-right.json").' },
           { name: 'source',     type: 'string',  required: true, description: 'Free-text attribution string.' },
-          { name: 'difficulty', type: 'integer', required: true, description: 'Numeric difficulty selected from registries.difficulties.' },
+          { name: 'difficulty', type: 'integer', required: true, description: 'Numeric difficulty on the fixed 1-5 scale.' },
           { name: 'group_id',   type: 'string',  required: true, description: 'Stable group identifier selected from registries.groups.' },
           { name: 'min_moves',  type: 'integer', required: false, description: 'Minimum move count displayed alongside the move counter.' },
         ]} />
