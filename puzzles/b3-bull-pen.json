@@ -1,0 +1,217 @@
+{
+  "id": "b3-bull-pen",
+  "title": "Bull Pen",
+  "source": "Hornden B3",
+  "difficulty": 1,
+  "min_moves": 22,
+  "board": {
+    "width": 3,
+    "height": 3
+  },
+  "blocks": [
+    {
+      "id": "A",
+      "movable": false,
+      "appearance": {
+        "type": "plain",
+        "color": "background"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "1",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#22c55e",
+        "value": "2",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "D",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#ec4899",
+        "value": "6",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "5"
+      },
+      "cells": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "F",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#fb923c",
+        "value": "4"
+      },
+      "cells": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "G",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#e11d48",
+        "value": "3"
+      },
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ]
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "background"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "1",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#22c55e",
+            "value": "2",
+            "text_color": "black"
+          }
+        },
+        "col": 1,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#e11d48",
+            "value": "3",
+            "text_color": "white"
+          }
+        },
+        "col": 2,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#fb923c",
+            "value": "4",
+            "text_color": "white"
+          }
+        },
+        "col": 0,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "5",
+            "text_color": "white"
+          }
+        },
+        "col": 1,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#ec4899",
+            "value": "6",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 2
+      }
+    ]
+  },
+  "catalog": {
+    "group": {
+      "id": "custom",
+      "title": "Custom"
+    }
+  }
+}

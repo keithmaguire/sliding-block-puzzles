@@ -1,0 +1,125 @@
+{
+  "version": 2,
+  "groups": [
+    {
+      "id": "custom",
+      "title": "Custom",
+      "items": [
+        {
+          "id": "a9-puzzle-of-the-heads",
+          "title": "Archie's Puzzle of the Heads",
+          "file": "a9-puzzle-of-the-heads.json",
+          "source": "Hornden A9",
+          "difficulty": 2
+        },
+        {
+          "id": "b3-bull-pen",
+          "title": "Bull Pen",
+          "file": "b3-bull-pen.json",
+          "source": "Hornden B3",
+          "difficulty": 1,
+          "min_moves": 22
+        },
+        {
+          "id": "b32-get-my-goat",
+          "title": "Shifty",
+          "file": "b32-get-my-goat.json",
+          "source": "Hornden B32",
+          "difficulty": 3,
+          "min_moves": 28
+        },
+        {
+          "id": "my-puzzle",
+          "title": "The Premier",
+          "file": "A2-the-premier.json",
+          "source": "Horndern A2",
+          "difficulty": 2
+        },
+        {
+          "id": "d12-traffic-jam-a",
+          "title": "Traffic Jam 1",
+          "file": "d12-traffic-jam-a.json",
+          "source": "Hornden D12",
+          "difficulty": 2
+        },
+        {
+          "id": "a4-united-states",
+          "title": "United States",
+          "file": "a4-united-states.json",
+          "source": "Hornden A4",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "id": "easy",
+      "title": "easy",
+      "items": [
+        {
+          "id": "my-puzzle",
+          "title": "Fifteen",
+          "file": "fifteen.json",
+          "source": "Hordern B10",
+          "difficulty": 2
+        },
+        {
+          "id": "my-puzzle",
+          "title": "Rate Your Mind Pal",
+          "file": "A1-rate-your-mind-pal.json",
+          "source": "Horndern A1",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "id": "classics",
+      "title": "Classics",
+      "items": [
+        {
+          "id": "d24-block-10-1",
+          "title": "Block-10 1",
+          "file": "d24-block-10-1.json",
+          "source": "Hornden D24",
+          "difficulty": 4,
+          "min_moves": 49
+        },
+        {
+          "id": "d25-block-10-2",
+          "title": "Block-10 2",
+          "file": "d25-block-10-2.json",
+          "source": "Hornden D25",
+          "difficulty": 4,
+          "min_moves": 49
+        },
+        {
+          "id": "d26-block-10-3",
+          "title": "Block-10 3",
+          "file": "d26-block-10-3.json",
+          "source": "Hornden D26",
+          "difficulty": 4,
+          "min_moves": 49
+        }
+      ]
+    },
+    {
+      "id": "hornden",
+      "title": "Hornden Series",
+      "items": [
+        {
+          "id": "d44-white-black",
+          "title": "WHITE & BLACK",
+          "file": "d44-white-black.json",
+          "source": "Hornden D44",
+          "difficulty": 3
+        },
+        {
+          "id": "d11",
+          "title": "Dingbat",
+          "file": "d11-dingbat.json",
+          "source": "Hornden D11",
+          "difficulty": 3
+        }
+      ]
+    }
+  ]
+}
