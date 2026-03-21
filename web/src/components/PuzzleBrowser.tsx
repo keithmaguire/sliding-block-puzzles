@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import type { PuzzleJSON, IndexEntry, PuzzleGroup, PuzzleIndex } from '../puzzleTypes'
-import { isGroup } from '../puzzleTypes'
+import type { CustomPuzzleRecord, PuzzleJSON, IndexEntry, PuzzleGroup, PuzzleIndex } from '../puzzleTypes'
+import { groupIndexPuzzles } from '../puzzleTypes'
 import { getProgress } from '../progress'
-import { getCustomPuzzles, removeCustomPuzzle, getHiddenPuzzleIds, hidePuzzle, restoreHiddenPuzzle } from '../customPuzzles'
+import { buildPuzzleWithMetadata, getCustomPuzzleRecords, removeCustomPuzzle, getHiddenPuzzleIds, hidePuzzle, restoreHiddenPuzzle } from '../customPuzzles'
 import { difficultyColor } from './difficultyColor'
 import { fetchJsonWithCache } from '../cachedFetch'
 
@@ -11,40 +11,25 @@ const BASE_URL = import.meta.env.BASE_URL
 interface PuzzleBrowserProps {
   onSelect: (puzzle: PuzzleJSON) => void
   onDocs: () => void
-  onCreate: () => void
   onEdit: (puzzle: PuzzleJSON) => void
 }
 
-/** Flatten a group tree into a list of all leaf IndexEntry objects. */
-function flattenGroups(groups: PuzzleGroup[]): IndexEntry[] {
-  const out: IndexEntry[] = []
-  function walk(items: (IndexEntry | PuzzleGroup)[]) {
-    for (const item of items) {
-      if (isGroup(item)) walk(item.items)
-      else out.push(item)
-    }
-  }
-  groups.forEach((g) => walk(g.items))
-  return out
-}
-
-/** Parse the canonical v2 grouped index response. */
 function parseIndex(raw: unknown): PuzzleGroup[] {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    throw new Error('index.json must be a v2 grouped object')
+    throw new Error('index.json must be a v3 catalog object')
   }
   const idx = raw as PuzzleIndex
-  if (idx.version !== 2 || !Array.isArray(idx.groups)) {
-    throw new Error('index.json must contain version: 2 and a groups array')
+  if (idx.version !== 3 || !idx.registries || !Array.isArray(idx.registries.groups) || !Array.isArray(idx.puzzles)) {
+    throw new Error('index.json must contain version: 3, registries, and puzzles')
   }
-  return idx.groups
+  return groupIndexPuzzles(idx)
 }
 
-export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrowserProps) {
+export function PuzzleBrowser({ onSelect, onDocs, onEdit }: PuzzleBrowserProps) {
   const [groups, setGroups] = useState<PuzzleGroup[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [custom, setCustom] = useState<PuzzleJSON[]>(() => getCustomPuzzles())
+  const [custom, setCustom] = useState<CustomPuzzleRecord[]>(() => getCustomPuzzleRecords())
   const [hiddenIds, setHiddenIds] = useState<string[]>(() => getHiddenPuzzleIds())
   const [showHidden, setShowHidden] = useState(false)
   const latestLibraryRequest = useRef(0)
@@ -52,7 +37,7 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
 
   function handleRemoveCustom(id: string) {
     removeCustomPuzzle(id)
-    setCustom(getCustomPuzzles())
+    setCustom(getCustomPuzzleRecords())
   }
 
   function handleHideLibrary(id: string) {
@@ -87,7 +72,14 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
   }, [])
 
   async function fetchLibraryPuzzle(entry: IndexEntry): Promise<PuzzleJSON> {
-    return fetchJsonWithCache<PuzzleJSON>(`${BASE_URL}puzzles/${entry.file}`)
+    const puzzle = await fetchJsonWithCache<PuzzleJSON>(`${BASE_URL}puzzles/${entry.file}`)
+    return {
+      ...puzzle,
+      title: entry.title,
+      source: entry.source,
+      difficulty: entry.difficulty,
+      ...(entry.min_moves != null ? { min_moves: entry.min_moves } : {}),
+    }
   }
 
   async function handleSelect(entry: IndexEntry) {
@@ -114,7 +106,7 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
     }
   }
 
-  const allEntries = flattenGroups(groups)
+  const allEntries = groups.flatMap((group) => group.items)
   const hiddenEntries = allEntries.filter((e) => hiddenIds.includes(e.id))
 
   return (
@@ -124,12 +116,8 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
       <div style={headerStyle}>
         <span style={titleGradientStyle}>Sliding Block Puzzles</span>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <button onClick={onCreate} style={createBtnStyle} title="Create puzzle">
-            <PlusIcon />
-            Create
-          </button>
-          <button onClick={onDocs} style={iconBtnStyle} title="Documentation" aria-label="Documentation">
-            <HelpIcon />
+          <button onClick={onDocs} style={iconBtnStyle} title="Settings and documentation" aria-label="Settings and documentation">
+            <CogIcon />
           </button>
         </div>
       </div>
@@ -144,7 +132,6 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
           key={group.id}
           group={group}
           hiddenIds={hiddenIds}
-          depth={0}
           onSelect={handleSelect}
           onEditLibrary={handleEditLibrary}
           onHide={handleHideLibrary}
@@ -176,13 +163,14 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
           <div style={{ height: 1, background: 'var(--border)', margin: '24px 0 16px' }} />
           <div style={sectionLabelStyle}>My Puzzles</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {custom.map((puzzle) => {
+            {custom.map((record) => {
+              const puzzle = buildPuzzleWithMetadata(record)
               const progress = getProgress(puzzle.id)
               return (
                 <PuzzleCard
                   key={puzzle.id}
-                  entry={{ id: puzzle.id, title: puzzle.title, file: '', source: puzzle.source, difficulty: puzzle.difficulty ?? 1, min_moves: puzzle.min_moves }}
-                  diff={puzzle.difficulty ?? 1}
+                  entry={{ id: puzzle.id, title: record.metadata.title, file: '', source: record.metadata.source, difficulty: record.metadata.difficulty, group_id: record.metadata.group_id, min_moves: puzzle.min_moves }}
+                  diff={record.metadata.difficulty}
                   solved={progress.solved}
                   bestMoves={progress.bestMoves}
                   onClick={() => onSelect(puzzle)}
@@ -204,46 +192,34 @@ export function PuzzleBrowser({ onSelect, onDocs, onCreate, onEdit }: PuzzleBrow
 interface GroupSectionProps {
   group: PuzzleGroup
   hiddenIds: string[]
-  depth: number
   onSelect: (e: IndexEntry) => void
   onEditLibrary: (e: IndexEntry) => void
   onHide: (id: string) => void
 }
 
-function GroupSection({ group, hiddenIds, depth, onSelect, onEditLibrary, onHide }: GroupSectionProps) {
+function GroupSection({ group, hiddenIds, onSelect, onEditLibrary, onHide }: GroupSectionProps) {
   const [open, setOpen] = useState(true)
-
-  // Count visible items recursively
-  function countVisible(items: (IndexEntry | PuzzleGroup)[]): number {
-    let n = 0
-    for (const item of items) {
-      if (isGroup(item)) n += countVisible(item.items)
-      else if (!hiddenIds.includes(item.id)) n++
-    }
-    return n
-  }
-  const visible = countVisible(group.items)
-
-  const indent = depth * 14
+  const visibleItems = group.items.filter((item) => !hiddenIds.includes(item.id))
+  const visible = visibleItems.length
 
   return (
-    <div style={{ marginBottom: depth === 0 ? 18 : 10 }}>
+    <div style={{ marginBottom: 18 }}>
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
           display: 'flex', alignItems: 'center', gap: 7,
           background: 'none', border: 'none', cursor: 'pointer',
-          padding: `4px 0 4px ${indent}px`,
+          padding: '4px 0',
           marginBottom: open ? 8 : 4,
           width: '100%', textAlign: 'left',
         }}
       >
         <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)', width: 12 }}>{open ? '▾' : '▸'}</span>
         <span style={{
-          fontSize: depth === 0 ? '0.82rem' : '0.78rem',
+          fontSize: '0.82rem',
           fontWeight: 600,
           letterSpacing: '0.07em',
-          color: depth === 0 ? 'var(--text-dim)' : 'var(--text-muted)',
+          color: 'var(--text-dim)',
           textTransform: 'uppercase',
         }}>
           {group.title}
@@ -257,24 +233,10 @@ function GroupSection({ group, hiddenIds, depth, onSelect, onEditLibrary, onHide
 
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {group.items.map((item) => {
-            if (isGroup(item)) {
-              return (
-                <GroupSection
-                  key={item.id}
-                  group={item}
-                  hiddenIds={hiddenIds}
-                  depth={depth + 1}
-                  onSelect={onSelect}
-                  onEditLibrary={onEditLibrary}
-                  onHide={onHide}
-                />
-              )
-            }
-            if (hiddenIds.includes(item.id)) return null
+          {visibleItems.map((item) => {
             const progress = getProgress(item.id)
             return (
-              <div key={item.id} style={{ paddingLeft: indent + 14 }}>
+              <div key={item.id} style={{ paddingLeft: 14 }}>
                 <PuzzleCard
                   entry={item}
                   diff={item.difficulty ?? 1}
@@ -399,21 +361,6 @@ const titleGradientStyle: React.CSSProperties = {
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
-}
-
-const createBtnStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 5,
-  padding: '0 14px',
-  borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(240,165,0,0.35)',
-  background: 'rgba(240,165,0,0.1)',
-  color: '#fbbf24',
-  fontSize: '0.98rem',
-  fontWeight: 600,
-  height: 40,
-  flexShrink: 0,
 }
 
 const sectionLabelStyle: React.CSSProperties = {
@@ -553,21 +500,11 @@ const restoreBtnStyle: React.CSSProperties = {
   cursor: 'pointer',
 }
 
-function PlusIcon() {
+function CogIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-      <line x1="8" y1="3" x2="8" y2="13" />
-      <line x1="3" y1="8" x2="13" y2="8" />
-    </svg>
-  )
-}
-
-function HelpIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="8" cy="8" r="6.5" />
-      <path d="M6.5 6a1.5 1.5 0 0 1 3 0c0 1-1.5 1.5-1.5 2.5" strokeLinecap="round" />
-      <circle cx="8" cy="11.5" r="0.75" fill="currentColor" stroke="none" />
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="2.3" />
+      <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
     </svg>
   )
 }

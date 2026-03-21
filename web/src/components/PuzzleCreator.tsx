@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { normalizePuzzleJSONInput } from '../puzzleTypes'
 import type { PuzzleJSON } from '../puzzleTypes'
-import { saveCustomPuzzle } from '../customPuzzles'
+import { saveCustomPuzzleRecord } from '../customPuzzles'
 import { PuzzleEditorVisual } from './PuzzleEditorVisual'
-import { visualStateToPuzzleJSON, type VisualState } from './puzzleEditorState'
+import { visualStateToPuzzleJSON, visualStateToPuzzleMetadata, type VisualState } from './puzzleEditorState'
 import {
   applyVisualStateChange,
   canTryPuzzle,
@@ -44,9 +44,11 @@ export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
     }, 3000)
   }
 
-  function handleAddToLibrary(puzzle: PuzzleJSON) {
-    saveCustomPuzzle(puzzle)
-    showAddedMessage(`"${puzzle.title}" added to library`)
+  function handleAddToLibrary() {
+    const gameplay = visualStateToPuzzleJSON(visualState)
+    const metadata = visualStateToPuzzleMetadata(visualState)
+    saveCustomPuzzleRecord({ puzzle: gameplay, metadata })
+    showAddedMessage(`"${metadata.title}" added to library`)
   }
 
   function handleExport(puzzle: PuzzleJSON) {
@@ -68,7 +70,7 @@ export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
       setVisualState(next.visualState)
       setUndoHistory([])
       setCleanSnapshot(next.cleanSnapshot)
-      showAddedMessage(`Imported "${puzzle.title}" from JSON`)
+      showAddedMessage(`Imported "${puzzle.title ?? puzzle.id}" from JSON`)
       setErrorMsg(null)
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : 'Failed to import puzzle JSON')
@@ -137,7 +139,7 @@ export function PuzzleCreator({ onBack, onTryIt, initialPuzzle }: Props) {
 
       <div style={{ display: 'flex', gap: 8, marginTop: 18, flexWrap: 'wrap' }}>
         <button onClick={handleTryIt} style={primaryBtn}>Try It</button>
-        <button onClick={() => handleAddToLibrary(puzzle)} style={secondaryBtn}>Add to Library</button>
+        <button onClick={handleAddToLibrary} style={secondaryBtn}>Add to Library</button>
         <button onClick={handleImportClick} style={secondaryBtn}>Import JSON</button>
         <button onClick={() => handleExport(puzzle)} style={secondaryBtn}>Export JSON</button>
         <button onClick={handleClearPuzzle} style={secondaryBtn}>Clear Puzzle</button>

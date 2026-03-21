@@ -27,10 +27,6 @@ interface VisualState {
   source: string
   difficulty: number
   minMoves: string
-  catalogGroupId: string
-  catalogGroupTitle: string
-  catalogGroupOrder: string
-  catalogOrder: string
   width: number
   height: number
   startGrid: CellValue[][]
@@ -332,44 +328,6 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
             value={state.minMoves}
             onChange={(e) => set({ minMoves: e.target.value.replace(/[^0-9]/g, '') })}
             style={{ ...inputStyle, width: 110, fontFamily: 'monospace' }}
-            placeholder="Optional"
-            inputMode="numeric"
-          />
-        </div>
-        <div style={fieldWrap}>
-          <label style={fieldLabel}>Group ID</label>
-          <input
-            value={state.catalogGroupId}
-            onChange={(e) => set({ catalogGroupId: e.target.value.replace(/\s/g, '-').toLowerCase() })}
-            style={{ ...inputStyle, fontFamily: 'monospace', width: 120 }}
-            placeholder="custom"
-          />
-        </div>
-        <div style={fieldWrap}>
-          <label style={fieldLabel}>Group title</label>
-          <input
-            value={state.catalogGroupTitle}
-            onChange={(e) => set({ catalogGroupTitle: e.target.value })}
-            style={{ ...inputStyle, width: 128 }}
-            placeholder="Custom"
-          />
-        </div>
-        <div style={fieldWrap}>
-          <label style={fieldLabel}>Group order</label>
-          <input
-            value={state.catalogGroupOrder}
-            onChange={(e) => set({ catalogGroupOrder: e.target.value.replace(/[^0-9]/g, '') })}
-            style={{ ...inputStyle, width: 96, fontFamily: 'monospace' }}
-            placeholder="Optional"
-            inputMode="numeric"
-          />
-        </div>
-        <div style={fieldWrap}>
-          <label style={fieldLabel}>Puzzle order</label>
-          <input
-            value={state.catalogOrder}
-            onChange={(e) => set({ catalogOrder: e.target.value.replace(/[^0-9]/g, '') })}
-            style={{ ...inputStyle, width: 96, fontFamily: 'monospace' }}
             placeholder="Optional"
             inputMode="numeric"
           />

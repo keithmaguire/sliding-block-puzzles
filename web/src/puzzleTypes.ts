@@ -59,27 +59,65 @@ export type WinCondition =
 
 export interface IndexEntry {
   id: string
-  title: string
   file: string
-  source?: string
+  title: string
+  source: string
   difficulty: number
+  group_id: string
   min_moves?: number
+}
+
+export interface IndexGroupDefinition {
+  id: string
+  title: string
+}
+
+export interface IndexRegistries {
+  sources: string[]
+  difficulties: number[]
+  groups: IndexGroupDefinition[]
+}
+
+export interface PuzzleIndex {
+  version: 3
+  registries: IndexRegistries
+  puzzles: IndexEntry[]
 }
 
 export interface PuzzleGroup {
   id: string
   title: string
-  items: (IndexEntry | PuzzleGroup)[]
+  items: IndexEntry[]
 }
 
-export interface PuzzleIndex {
-  version: 2
-  groups: PuzzleGroup[]
-}
+export function groupIndexPuzzles(index: PuzzleIndex): PuzzleGroup[] {
+  const groups = new Map<string, PuzzleGroup>(
+    index.registries.groups.map((group) => [group.id, { ...group, items: [] }]),
+  )
 
-/** Type guard: is this item a group (has `items`) or a leaf puzzle entry? */
-export function isGroup(item: IndexEntry | PuzzleGroup): item is PuzzleGroup {
-  return 'items' in item
+  for (const puzzle of index.puzzles) {
+    const group = groups.get(puzzle.group_id)
+    if (!group) {
+      throw new Error(`index.json references unknown group_id "${puzzle.group_id}" for puzzle "${puzzle.id}"`)
+    }
+    group.items.push(puzzle)
+  }
+
+  return [...groups.values()]
+    .filter((group) => group.items.length > 0)
+    .map((group) => ({
+      ...group,
+      items: [...group.items].sort((a, b) => (
+        a.title === b.title
+          ? a.id.localeCompare(b.id)
+          : a.title.localeCompare(b.title)
+      )),
+    }))
+    .sort((a, b) => (
+      a.title === b.title
+        ? a.id.localeCompare(b.id)
+        : a.title.localeCompare(b.title)
+    ))
 }
 
 export interface SetupOptions {
@@ -88,19 +126,23 @@ export interface SetupOptions {
   [key: string]: unknown
 }
 
-export interface PuzzleCatalog {
-  group: {
-    id: string
-    title: string
-    order?: number
-  }
-  order?: number
+export interface PuzzleMetadata {
+  title: string
+  source: string
+  difficulty: number
+  group_id: string
+  group_title?: string
+}
+
+export interface CustomPuzzleRecord {
+  puzzle: PuzzleJSON
+  metadata: PuzzleMetadata
 }
 
 /** Serialized PuzzleJSON structure. */
 export interface PuzzleJSON {
   id: string
-  title: string
+  title?: string
   source?: string
   difficulty?: number
   min_moves?: number
@@ -109,7 +151,6 @@ export interface PuzzleJSON {
   win_condition: WinCondition
   win_description?: string
   setup_options?: SetupOptions
-  catalog?: PuzzleCatalog
 }
 
 // Derived meta for the Board component — keyed by block ID.
@@ -214,15 +255,12 @@ export function normalizePuzzleJSONInput(input: unknown): PuzzleJSON {
   const raw = input as PuzzleJSON & Record<string, unknown>
   assertAllowedKeys(
     raw,
-    ['id', 'title', 'source', 'difficulty', 'min_moves', 'board', 'blocks', 'win_condition', 'win_description', 'setup_options', 'catalog'],
+    ['id', 'title', 'source', 'difficulty', 'min_moves', 'board', 'blocks', 'win_condition', 'win_description', 'setup_options'],
     'root object',
   )
 
   if (typeof raw.id !== 'string' || raw.id.trim() === '') {
     throw new Error('Puzzle JSON is missing a valid id')
-  }
-  if (typeof raw.title !== 'string' || raw.title.trim() === '') {
-    throw new Error('Puzzle JSON is missing a valid title')
   }
   if (!raw.board || typeof raw.board !== 'object' || Array.isArray(raw.board)) {
     throw new Error('Puzzle JSON is missing a valid board')
@@ -239,27 +277,9 @@ export function normalizePuzzleJSONInput(input: unknown): PuzzleJSON {
   }
   validateWinCondition(raw.win_condition as Record<string, unknown>, true)
 
-  if (raw.catalog != null) {
-    if (typeof raw.catalog !== 'object' || Array.isArray(raw.catalog)) {
-      throw new Error('Puzzle JSON catalog must be an object')
-    }
-    const catalogObj = raw.catalog as unknown as Record<string, unknown>
-    const group = catalogObj.group
-    if (!group || typeof group !== 'object' || Array.isArray(group)) {
-      throw new Error('Puzzle JSON catalog.group must be an object')
-    }
-    const groupObj = group as Record<string, unknown>
-    if (typeof groupObj.id !== 'string' || !groupObj.id.trim()) {
-      throw new Error('Puzzle JSON catalog.group.id must be a non-empty string')
-    }
-    if (typeof groupObj.title !== 'string' || !groupObj.title.trim()) {
-      throw new Error('Puzzle JSON catalog.group.title must be a non-empty string')
-    }
-  }
-
   return {
     id: raw.id,
-    title: raw.title,
+    ...(typeof raw.title === 'string' && raw.title.trim() ? { title: raw.title } : {}),
     ...(typeof raw.source === 'string' ? { source: raw.source } : {}),
     ...(typeof raw.difficulty === 'number' ? { difficulty: raw.difficulty } : {}),
     ...(typeof raw.min_moves === 'number' ? { min_moves: raw.min_moves } : {}),
@@ -269,9 +289,6 @@ export function normalizePuzzleJSONInput(input: unknown): PuzzleJSON {
     ...(typeof raw.win_description === 'string' ? { win_description: raw.win_description } : {}),
     ...(raw.setup_options && typeof raw.setup_options === 'object' && !Array.isArray(raw.setup_options)
       ? { setup_options: raw.setup_options as SetupOptions }
-      : {}),
-    ...(raw.catalog && typeof raw.catalog === 'object' && !Array.isArray(raw.catalog)
-      ? { catalog: raw.catalog as PuzzleCatalog }
       : {}),
   }
 }

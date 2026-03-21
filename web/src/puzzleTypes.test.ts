@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { getSupportedSetupOptions, normalizePuzzleJSONInput } from './puzzleTypes'
-import type { PuzzleJSON, SetupOptions } from './puzzleTypes'
+import { getSupportedSetupOptions, groupIndexPuzzles, normalizePuzzleJSONInput } from './puzzleTypes'
+import type { PuzzleIndex, PuzzleJSON, SetupOptions } from './puzzleTypes'
 
 describe('SetupOptions typing', () => {
   it('allows current public fields', () => {
@@ -25,7 +25,6 @@ describe('getSupportedSetupOptions', () => {
   function makePuzzle(setup_options?: SetupOptions): PuzzleJSON {
     return {
       id: 'setup-test',
-      title: 'Setup Test',
       board: { width: 3, height: 2 },
       blocks: [
         { id: 'A', movable: true, cells: [[0, 0]], appearance: { type: 'plain', color: '#f00' } },
@@ -66,7 +65,6 @@ describe('getSupportedSetupOptions', () => {
 describe('normalizePuzzleJSONInput', () => {
   const canonical: PuzzleJSON = {
     id: 'imported',
-    title: 'Imported Puzzle',
     board: { width: 3, height: 2 },
     blocks: [],
     win_condition: { type: 'position', positions: [{ match: { appearance: { color: '#f0a500' } }, col: 1, row: 1 }] },
@@ -76,11 +74,18 @@ describe('normalizePuzzleJSONInput', () => {
     expect(normalizePuzzleJSONInput(canonical)).toEqual(canonical)
   })
 
-  it('accepts valid catalog metadata', () => {
+  it('accepts optional runtime metadata fields without requiring them', () => {
     expect(normalizePuzzleJSONInput({
       ...canonical,
-      catalog: { group: { id: 'easy', title: 'easy', order: 10 }, order: 20 },
-    }).catalog).toEqual({ group: { id: 'easy', title: 'easy', order: 10 }, order: 20 })
+      title: 'Imported Puzzle',
+      source: 'Tests',
+      difficulty: 3,
+    })).toEqual({
+      ...canonical,
+      title: 'Imported Puzzle',
+      source: 'Tests',
+      difficulty: 3,
+    })
   })
 
   it('accepts text appearance colors white and black', () => {
@@ -132,7 +137,6 @@ describe('normalizePuzzleJSONInput', () => {
   it('rejects unsupported win condition types', () => {
     expect(() => normalizePuzzleJSONInput({
       id: 'invalid-teleport',
-      title: 'Invalid Teleport',
       board: { width: 4, height: 3 },
       blocks: [
         { id: 'A', movable: true, cells: [[0, 1], [1, 1]], appearance: { type: 'plain', color: '#f00' } },
@@ -179,10 +183,63 @@ describe('normalizePuzzleJSONInput', () => {
     expect(() => normalizePuzzleJSONInput([])).toThrow(/puzzle object/)
   })
 
-  it('rejects invalid catalog metadata', () => {
+  it('rejects superseded catalog metadata', () => {
     expect(() => normalizePuzzleJSONInput({
       ...canonical,
       catalog: { group: { id: '', title: 'Group' } },
-    })).toThrow(/catalog\.group\.id/)
+    } as unknown as PuzzleJSON)).toThrow(/unknown field "catalog"/)
+  })
+})
+
+describe('groupIndexPuzzles', () => {
+  it('groups flat index rows using the group registry', () => {
+    const index: PuzzleIndex = {
+      version: 3,
+      registries: {
+        sources: ['Unknown'],
+        difficulties: [1],
+        groups: [
+          { id: 'b', title: 'Beta' },
+          { id: 'a', title: 'Alpha' },
+        ],
+      },
+      puzzles: [
+        { id: 'p2', file: 'p2.json', title: 'Puzzle Two', source: 'Unknown', difficulty: 1, group_id: 'b' },
+        { id: 'p1', file: 'p1.json', title: 'Puzzle One', source: 'Unknown', difficulty: 1, group_id: 'a' },
+      ],
+    }
+
+    expect(groupIndexPuzzles(index)).toEqual([
+      {
+        id: 'a',
+        title: 'Alpha',
+        items: [
+          { id: 'p1', file: 'p1.json', title: 'Puzzle One', source: 'Unknown', difficulty: 1, group_id: 'a' },
+        ],
+      },
+      {
+        id: 'b',
+        title: 'Beta',
+        items: [
+          { id: 'p2', file: 'p2.json', title: 'Puzzle Two', source: 'Unknown', difficulty: 1, group_id: 'b' },
+        ],
+      },
+    ])
+  })
+
+  it('rejects puzzle rows that reference unknown groups', () => {
+    const index: PuzzleIndex = {
+      version: 3,
+      registries: {
+        sources: ['Unknown'],
+        difficulties: [1],
+        groups: [],
+      },
+      puzzles: [
+        { id: 'p1', file: 'p1.json', title: 'Puzzle One', source: 'Unknown', difficulty: 1, group_id: 'missing' },
+      ],
+    }
+
+    expect(() => groupIndexPuzzles(index)).toThrow(/unknown group_id/)
   })
 })

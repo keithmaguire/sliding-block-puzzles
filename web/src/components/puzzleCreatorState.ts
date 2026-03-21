@@ -14,7 +14,14 @@ export function makeInitialVisualState(initialPuzzle?: PuzzleJSON): VisualState 
 }
 
 export function snapshotAuthoringState(state: VisualState): string {
-  return JSON.stringify(visualStateToPuzzleJSON(state))
+  return JSON.stringify({
+    puzzle: visualStateToPuzzleJSON(state),
+    metadata: {
+      title: state.title,
+      source: state.source,
+      difficulty: state.difficulty,
+    },
+  })
 }
 
 export function replaceAuthoringStateFromPuzzle(puzzle: PuzzleJSON): {

@@ -2,6 +2,7 @@ import {
   blockMatchesPhysicalMatch,
   canonicalizeAppearance,
   normalizeShapeCells,
+  type PuzzleMetadata,
   type PhysicalMatch,
   type PositionTarget,
   type PuzzleAppearanceType,
@@ -30,10 +31,6 @@ export interface VisualState {
   source: string
   difficulty: number
   minMoves: string
-  catalogGroupId: string
-  catalogGroupTitle: string
-  catalogGroupOrder: string
-  catalogOrder: string
   width: number
   height: number
   startGrid: CellValue[][]
@@ -90,10 +87,6 @@ export function defaultVisualState(): VisualState {
     source: '',
     difficulty: 2,
     minMoves: '',
-    catalogGroupId: 'custom',
-    catalogGroupTitle: 'Custom',
-    catalogGroupOrder: '',
-    catalogOrder: '',
     width: 5,
     height: 4,
     startGrid: makeGrid(4, 5, ''),
@@ -110,25 +103,13 @@ export function defaultVisualState(): VisualState {
 }
 
 export function visualStateToPuzzleJSON(state: VisualState): PuzzleJSON {
-  const { title, puzzleId, source, difficulty, minMoves, catalogGroupId, catalogGroupTitle, catalogGroupOrder, catalogOrder, width, height, startGrid, winGrid, blocks, winType, winDescription, allowShuffle, removableBlocks } = state
+  const { puzzleId, minMoves, width, height, startGrid, winGrid, blocks, winType, winDescription, allowShuffle, removableBlocks } = state
 
   const setup_options: SetupOptions | undefined =
     (allowShuffle || removableBlocks.length > 0)
       ? {
           ...(allowShuffle ? { allow_shuffle: true } : {}),
           ...(removableBlocks.length > 0 ? { removable_blocks: removableBlocks } : {}),
-        }
-      : undefined
-
-  const catalog =
-    catalogGroupId.trim() && catalogGroupTitle.trim()
-      ? {
-          group: {
-            id: catalogGroupId.trim(),
-            title: catalogGroupTitle.trim(),
-            ...(catalogGroupOrder.trim() ? { order: Number(catalogGroupOrder) } : {}),
-          },
-          ...(catalogOrder.trim() ? { order: Number(catalogOrder) } : {}),
         }
       : undefined
 
@@ -204,16 +185,22 @@ export function visualStateToPuzzleJSON(state: VisualState): PuzzleJSON {
 
   return {
     id: puzzleId || 'my-puzzle',
-    title: title || 'My Puzzle',
-    ...(source.trim() ? { source: source.trim() } : {}),
-    difficulty,
     ...(minMoves.trim() ? { min_moves: Number(minMoves) } : {}),
     board: { width, height },
     blocks: puzzleBlocks,
     win_condition,
     ...(winDescription.trim() ? { win_description: winDescription.trim() } : {}),
     ...(setup_options ? { setup_options } : {}),
-    ...(catalog ? { catalog } : {}),
+  }
+}
+
+export function visualStateToPuzzleMetadata(state: VisualState): PuzzleMetadata {
+  return {
+    title: state.title.trim() || 'My Puzzle',
+    source: state.source.trim() || 'Custom',
+    difficulty: Math.max(1, Math.trunc(state.difficulty || 1)),
+    group_id: 'custom-local',
+    group_title: 'Custom',
   }
 }
 
@@ -290,15 +277,11 @@ export function puzzleJSONToVisualState(puzzle: PuzzleJSON): Partial<VisualState
 
   const firstBlock = blocks[0]?.id ?? ''
   return {
-    title: puzzle.title,
+    title: puzzle.title ?? 'My Puzzle',
     puzzleId: puzzle.id,
     source: puzzle.source ?? '',
-    difficulty: puzzle.difficulty,
+    difficulty: puzzle.difficulty ?? 2,
     minMoves: puzzle.min_moves != null ? String(puzzle.min_moves) : '',
-    catalogGroupId: puzzle.catalog?.group.id ?? 'custom',
-    catalogGroupTitle: puzzle.catalog?.group.title ?? 'Custom',
-    catalogGroupOrder: puzzle.catalog?.group.order != null ? String(puzzle.catalog.group.order) : '',
-    catalogOrder: puzzle.catalog?.order != null ? String(puzzle.catalog.order) : '',
     width,
     height,
     startGrid,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PuzzleJSON } from '../puzzleTypes'
-import { visualStateToPuzzleJSON } from './puzzleEditorState'
+import { visualStateToPuzzleJSON, visualStateToPuzzleMetadata } from './puzzleEditorState'
 import {
   applyVisualStateChange,
   canTryPuzzle,
@@ -26,10 +26,6 @@ const EDIT_PUZZLE: PuzzleJSON = {
   ],
   win_condition: { type: 'position', positions: [{ match: { appearance: { type: 'plain', color: '#f0a500' } }, col: 2, row: 1 }] },
   setup_options: { allow_shuffle: true, removable_blocks: ['B'] },
-  catalog: {
-    group: { id: 'easy', title: 'easy', order: 10 },
-    order: 20,
-  },
 }
 
 const IMPORT_PUZZLE: PuzzleJSON = {
@@ -57,11 +53,16 @@ describe('PuzzleCreator authoring state', () => {
     const puzzle = visualStateToPuzzleJSON(state)
 
     expect(puzzle.id).toBe('my-puzzle')
-    expect(puzzle.title).toBe('My Puzzle')
     expect(puzzle.board).toEqual({ width: 5, height: 4 })
-    expect(puzzle.catalog).toEqual({ group: { id: 'custom', title: 'Custom' } })
     expect(puzzle.blocks).toEqual([])
     expect(puzzle.win_condition).toEqual({ type: 'position', positions: [{ match: { appearance: { type: 'plain', color: '#f0a500' } }, col: 0, row: 0 }] })
+    expect(visualStateToPuzzleMetadata(state)).toEqual({
+      title: 'My Puzzle',
+      source: 'Custom',
+      difficulty: 2,
+      group_id: 'custom-local',
+      group_title: 'Custom',
+    })
   })
 
   it('initializes edit flow from an existing PuzzleJSON object', () => {
@@ -69,14 +70,17 @@ describe('PuzzleCreator authoring state', () => {
     const puzzle = visualStateToPuzzleJSON(state)
 
     expect(puzzle.id).toBe(EDIT_PUZZLE.id)
-    expect(puzzle.title).toBe(EDIT_PUZZLE.title)
-    expect(puzzle.source).toBe(EDIT_PUZZLE.source)
-    expect(puzzle.difficulty).toBe(EDIT_PUZZLE.difficulty)
     expect(puzzle.min_moves).toBe(EDIT_PUZZLE.min_moves)
     expect(puzzle.setup_options).toEqual(EDIT_PUZZLE.setup_options)
-    expect(puzzle.catalog).toEqual(EDIT_PUZZLE.catalog)
     expect(puzzle.win_condition).toEqual(EDIT_PUZZLE.win_condition)
     expect(puzzle.blocks).toMatchObject(EDIT_PUZZLE.blocks)
+    expect(visualStateToPuzzleMetadata(state)).toEqual({
+      title: 'Edit Me',
+      source: 'Tests',
+      difficulty: 3,
+      group_id: 'custom-local',
+      group_title: 'Custom',
+    })
   })
 
   it('treats changes from the clean snapshot as dirty', () => {
@@ -98,13 +102,16 @@ describe('PuzzleCreator authoring state', () => {
     expect(next.cleanSnapshot).toBe(snapshotAuthoringState(next.visualState))
     expect(importedPuzzle).toMatchObject({
       id: IMPORT_PUZZLE.id,
-      title: IMPORT_PUZZLE.title,
-      source: IMPORT_PUZZLE.source,
-      difficulty: IMPORT_PUZZLE.difficulty,
       board: IMPORT_PUZZLE.board,
       win_condition: IMPORT_PUZZLE.win_condition,
       blocks: IMPORT_PUZZLE.blocks,
-      catalog: { group: { id: 'custom', title: 'Custom' } },
+    })
+    expect(visualStateToPuzzleMetadata(next.visualState)).toEqual({
+      title: IMPORT_PUZZLE.title!,
+      source: IMPORT_PUZZLE.source!,
+      difficulty: IMPORT_PUZZLE.difficulty!,
+      group_id: 'custom-local',
+      group_title: 'Custom',
     })
   })
 
@@ -125,10 +132,15 @@ describe('PuzzleCreator authoring state', () => {
     expect(roundTripped.setup_options).toEqual(puzzleWithSetup.setup_options)
   })
 
-  it('round-trips catalog through the authoring state', () => {
+  it('produces separate custom metadata from the authoring state', () => {
     const state = makeInitialVisualState(EDIT_PUZZLE)
-    const roundTripped = visualStateToPuzzleJSON(state)
-    expect(roundTripped.catalog).toEqual(EDIT_PUZZLE.catalog)
+    expect(visualStateToPuzzleMetadata(state)).toEqual({
+      title: EDIT_PUZZLE.title!,
+      source: EDIT_PUZZLE.source!,
+      difficulty: EDIT_PUZZLE.difficulty!,
+      group_id: 'custom-local',
+      group_title: 'Custom',
+    })
   })
 
   it('round-trips win_description through the authoring state', () => {
@@ -232,7 +244,6 @@ describe('PuzzleCreator authoring state', () => {
   it('does not allow Try It for an empty puzzle draft', () => {
     expect(canTryPuzzle({
       id: 'empty',
-      title: 'Empty',
       board: { width: 2, height: 2 },
       blocks: [],
       win_condition: { type: 'position', positions: [{ match: { appearance: { type: 'plain', color: '#f0a500' } }, col: 0, row: 0 }] },

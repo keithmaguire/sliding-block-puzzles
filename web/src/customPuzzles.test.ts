@@ -25,9 +25,10 @@ beforeEach(() => {
 // (Vitest re-uses the module cache, so we import at top-level and rely on
 // localStorage being stubbed before any function is called.)
 import {
-  getCustomPuzzles,
-  saveCustomPuzzle,
+  buildPuzzleWithMetadata,
+  getCustomPuzzleRecords,
   removeCustomPuzzle,
+  saveCustomPuzzleRecord,
   getHiddenPuzzleIds,
   hidePuzzle,
   restoreHiddenPuzzle,
@@ -47,46 +48,62 @@ function makePuzzle(id: string): PuzzleJSON {
 }
 
 describe('customPuzzles', () => {
-  describe('getCustomPuzzles', () => {
+  describe('getCustomPuzzleRecords', () => {
     it('returns empty array when storage is empty', () => {
-      expect(getCustomPuzzles()).toEqual([])
+      expect(getCustomPuzzleRecords()).toEqual([])
     })
 
     it('returns empty array when storage contains invalid JSON', () => {
       storage.setItem('sliding-puzzle-custom', 'not-json')
-      expect(getCustomPuzzles()).toEqual([])
+      expect(getCustomPuzzleRecords()).toEqual([])
     })
 
-    it('returns stored puzzles', () => {
+    it('migrates legacy stored puzzles into metadata records', () => {
       const p = makePuzzle('test-1')
       storage.setItem('sliding-puzzle-custom', JSON.stringify([p]))
-      expect(getCustomPuzzles()).toEqual([p])
+      expect(getCustomPuzzleRecords()).toEqual([{
+        puzzle: {
+          id: p.id,
+          board: p.board,
+          blocks: p.blocks,
+          win_condition: p.win_condition,
+        },
+        metadata: {
+          title: p.title!,
+          source: p.source!,
+          difficulty: p.difficulty!,
+          group_id: 'custom-local',
+          group_title: 'Custom',
+        },
+      }])
     })
   })
 
-  describe('saveCustomPuzzle', () => {
-    it('adds a new puzzle to an empty list', () => {
+  describe('saveCustomPuzzleRecord', () => {
+    it('adds a new custom record to an empty list', () => {
       const p = makePuzzle('p1')
-      saveCustomPuzzle(p)
-      expect(getCustomPuzzles()).toEqual([p])
+      saveCustomPuzzleRecord({
+        puzzle: p,
+        metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' },
+      })
+      expect(buildPuzzleWithMetadata(getCustomPuzzleRecords()[0])).toEqual(p)
     })
 
     it('adds multiple puzzles', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
-      saveCustomPuzzle(makePuzzle('p2'))
-      expect(getCustomPuzzles().map(p => p.id)).toEqual(['p1', 'p2'])
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p2'), metadata: { title: 'Puzzle p2', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
+      expect(getCustomPuzzleRecords().map((entry) => entry.puzzle.id)).toEqual(['p1', 'p2'])
     })
 
     it('updates an existing puzzle with the same id', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
-      const updated = { ...makePuzzle('p1'), title: 'Updated' }
-      saveCustomPuzzle(updated)
-      const list = getCustomPuzzles()
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Updated', source: 'Tests', difficulty: 3, group_id: 'group-a', group_title: 'Group A' } })
+      const list = getCustomPuzzleRecords()
       expect(list).toHaveLength(1)
-      expect(list[0].title).toBe('Updated')
+      expect(list[0].metadata.title).toBe('Updated')
     })
 
-    it('preserves extensible setup_options fields when storing puzzles', () => {
+    it('preserves extensible setup_options fields while stripping metadata from gameplay JSON', () => {
       const puzzle = {
         ...makePuzzle('p1'),
         setup_options: {
@@ -94,34 +111,38 @@ describe('customPuzzles', () => {
           future_flag: { mode: 'experimental' },
         },
       }
-      saveCustomPuzzle(puzzle)
-      const [stored] = getCustomPuzzles()
-      expect(stored.setup_options).toEqual({
+      saveCustomPuzzleRecord({
+        puzzle,
+        metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' },
+      })
+      const [stored] = getCustomPuzzleRecords()
+      expect(stored.puzzle.setup_options).toEqual({
         allow_shuffle: true,
         future_flag: { mode: 'experimental' },
       })
+      expect(stored.puzzle.title).toBeUndefined()
     })
   })
 
   describe('removeCustomPuzzle', () => {
     it('removes a puzzle by id', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
-      saveCustomPuzzle(makePuzzle('p2'))
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p2'), metadata: { title: 'Puzzle p2', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
       removeCustomPuzzle('p1')
-      const ids = getCustomPuzzles().map(p => p.id)
+      const ids = getCustomPuzzleRecords().map((entry) => entry.puzzle.id)
       expect(ids).toEqual(['p2'])
     })
 
     it('is a no-op when id does not exist', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
       removeCustomPuzzle('does-not-exist')
-      expect(getCustomPuzzles()).toHaveLength(1)
+      expect(getCustomPuzzleRecords()).toHaveLength(1)
     })
 
     it('results in empty list when last puzzle removed', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
       removeCustomPuzzle('p1')
-      expect(getCustomPuzzles()).toEqual([])
+      expect(getCustomPuzzleRecords()).toEqual([])
     })
   })
 
@@ -183,12 +204,12 @@ describe('customPuzzles', () => {
 
   describe('clearLocalMemory', () => {
     it('removes custom puzzles and hidden ids from storage', () => {
-      saveCustomPuzzle(makePuzzle('p1'))
+      saveCustomPuzzleRecord({ puzzle: makePuzzle('p1'), metadata: { title: 'Puzzle p1', source: 'custom', difficulty: 1, group_id: 'custom-local', group_title: 'Custom' } })
       hidePuzzle('p1')
 
       clearLocalMemory()
 
-      expect(getCustomPuzzles()).toEqual([])
+      expect(getCustomPuzzleRecords()).toEqual([])
       expect(getHiddenPuzzleIds()).toEqual([])
     })
   })
