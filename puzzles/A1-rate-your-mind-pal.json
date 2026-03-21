@@ -1,8 +1,5 @@
 {
-  "id": "my-puzzle",
-  "title": "Rate Your Mind Pal",
-  "source": "Horndern A1",
-  "difficulty": 2,
+  "id": "a1-rate-your-mind-pal",
   "board": {
     "width": 4,
     "height": 4
@@ -429,11 +426,5 @@
   },
   "setup_options": {
     "allow_shuffle": true
-  },
-  "catalog": {
-    "group": {
-      "id": "easy",
-      "title": "easy"
-    }
   }
 }

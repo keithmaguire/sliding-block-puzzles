@@ -1,8 +1,5 @@
 {
   "id": "a9-puzzle-of-the-heads",
-  "title": "Archie's Puzzle of the Heads",
-  "source": "Hornden A9",
-  "difficulty": 2,
   "board": {
     "width": 4,
     "height": 4
@@ -225,11 +222,5 @@
   "win_description": "Arrange the pieces so that no two of the same colour touch orthogonally or diagonally. The space should be at a corner.",
   "setup_options": {
     "allow_shuffle": true
-  },
-  "catalog": {
-    "group": {
-      "id": "custom",
-      "title": "Custom"
-    }
   }
 }

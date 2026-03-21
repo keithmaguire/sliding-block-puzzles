@@ -1,8 +1,5 @@
 {
   "id": "d12-traffic-jam-a",
-  "title": "Traffic Jam 1",
-  "source": "Hornden D12",
-  "difficulty": 2,
   "board": {
     "width": 6,
     "height": 5
@@ -275,11 +272,5 @@
         "row": 3
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "custom",
-      "title": "Custom"
-    }
   }
 }

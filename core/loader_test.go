@@ -78,8 +78,19 @@ func TestLoadMeta(t *testing.T) {
 
 func TestLoadMissingRequiredFields(t *testing.T) {
 	mustFail(t, `{"title":"T","board":{"width":3,"height":3},"blocks":[],"win_condition":{"type":"position","positions":[{"match":{"appearance":{"color":"#f00"}},"col":0,"row":0}]}}`, "id")
-	mustFail(t, `{"id":"x","board":{"width":3,"height":3},"blocks":[],"win_condition":{"type":"position","positions":[{"match":{"appearance":{"color":"#f00"}},"col":0,"row":0}]}}`, "title")
 	mustFail(t, `{"id":"x","title":"T","board":{"width":3,"height":3},"blocks":[]}`, "win_condition")
+}
+
+func TestLoadAllowsMissingTitle(t *testing.T) {
+	r := mustLoad(t, `{
+		"id": "x",
+		"board": {"width": 3, "height": 3},
+		"blocks": [{"id": "A", "cells": [[0,0]], "movable": true, "appearance": {"type":"plain","color":"#f00"}}],
+		"win_condition": {"type":"position","positions":[{"match":{"appearance":{"color":"#f00"}},"col":0,"row":0}]}
+	}`)
+	if r.Meta.Title != "" {
+		t.Fatalf("Meta.Title = %q, want empty string", r.Meta.Title)
+	}
 }
 
 func TestLoadBoardAndBlockValidation(t *testing.T) {

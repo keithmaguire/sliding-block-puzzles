@@ -6,38 +6,27 @@ import (
 	"testing"
 )
 
-func TestBuildIndexGroupsAndSortsPuzzlesFromCatalogMetadata(t *testing.T) {
+func TestBuildIndexBuildsFlatCatalogWithPlaceholderRegistries(t *testing.T) {
 	dir := t.TempDir()
 
 	writePuzzle(t, dir, "b.json", `{
   "id": "b",
   "title": "Beta",
-  "difficulty": 2,
   "board": { "width": 3, "height": 3 },
   "blocks": [
     { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "plain", "color": "#f00" } }
   ],
-  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] },
-  "catalog": {
-    "group": { "id": "g2", "title": "Second", "order": 20 },
-    "order": 20
-  }
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
 	writePuzzle(t, dir, "a.json", `{
   "id": "a",
   "title": "Alpha",
-  "source": "original",
-  "difficulty": 2,
   "min_moves": 7,
   "board": { "width": 3, "height": 3 },
   "blocks": [
     { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "plain", "color": "#f00" } }
   ],
-  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] },
-  "catalog": {
-    "group": { "id": "g1", "title": "First", "order": 10 },
-    "order": 20
-  }
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
 	writePuzzle(t, dir, "c.json", `{
   "id": "c",
@@ -46,46 +35,45 @@ func TestBuildIndexGroupsAndSortsPuzzlesFromCatalogMetadata(t *testing.T) {
   "blocks": [
     { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "plain", "color": "#f00" } }
   ],
-  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] },
-  "catalog": {
-    "group": { "id": "g1", "title": "First", "order": 10 },
-    "order": 10
-  }
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
-	writePuzzle(t, dir, "index.json", `{"version":2,"groups":[]}`)
+	writePuzzle(t, dir, "index.json", `{"version":3,"registries":{"sources":[],"difficulties":[],"groups":[]},"puzzles":[]}`)
 
 	index, err := BuildIndex(dir)
 	if err != nil {
 		t.Fatalf("BuildIndex returned error: %v", err)
 	}
 
-	if index.Version != 2 {
-		t.Fatalf("Version = %d, want 2", index.Version)
+	if index.Version != IndexVersion {
+		t.Fatalf("Version = %d, want %d", index.Version, IndexVersion)
 	}
-	if len(index.Groups) != 2 {
-		t.Fatalf("len(Groups) = %d, want 2", len(index.Groups))
+	if got := index.Registries.Sources; len(got) != 1 || got[0] != PlaceholderSource {
+		t.Fatalf("Sources = %v, want [%q]", got, PlaceholderSource)
 	}
-	if index.Groups[0].ID != "g1" || index.Groups[0].Title != "First" {
-		t.Fatalf("first group = %+v, want g1/First", index.Groups[0])
+	if got := index.Registries.Difficulties; len(got) != 1 || got[0] != PlaceholderDifficulty {
+		t.Fatalf("Difficulties = %v, want [%d]", got, PlaceholderDifficulty)
 	}
-	if got := []string{index.Groups[0].Items[0].ID, index.Groups[0].Items[1].ID}; got[0] != "c" || got[1] != "a" {
-		t.Fatalf("first group item order = %v, want [c a]", got)
+	if len(index.Registries.Groups) != 1 || index.Registries.Groups[0].ID != PlaceholderGroupID || index.Registries.Groups[0].Title != PlaceholderGroupTitle {
+		t.Fatalf("Groups = %+v, want placeholder group", index.Registries.Groups)
 	}
-	if index.Groups[1].ID != "g2" || len(index.Groups[1].Items) != 1 || index.Groups[1].Items[0].ID != "b" {
-		t.Fatalf("second group = %+v, want g2 with b", index.Groups[1])
+	if len(index.Puzzles) != 3 {
+		t.Fatalf("len(Puzzles) = %d, want 3", len(index.Puzzles))
 	}
-	if index.Groups[0].Items[1].Source != "original" {
-		t.Fatalf("source not preserved")
+	if got := []string{index.Puzzles[0].ID, index.Puzzles[1].ID, index.Puzzles[2].ID}; got[0] != "a" || got[1] != "b" || got[2] != "c" {
+		t.Fatalf("puzzle order = %v, want [a b c]", got)
 	}
-	if index.Groups[0].Items[1].MinMoves == nil || *index.Groups[0].Items[1].MinMoves != 7 {
+	if index.Puzzles[0].Title != "A" || index.Puzzles[0].Source != PlaceholderSource || index.Puzzles[0].Difficulty != PlaceholderDifficulty || index.Puzzles[0].GroupID != PlaceholderGroupID {
+		t.Fatalf("first puzzle = %+v, want placeholder metadata", index.Puzzles[0])
+	}
+	if index.Puzzles[0].MinMoves == nil || *index.Puzzles[0].MinMoves != 7 {
 		t.Fatalf("min_moves not preserved")
 	}
-	if index.Groups[0].Items[1].Difficulty == nil || *index.Groups[0].Items[1].Difficulty != 2 {
-		t.Fatalf("difficulty not preserved")
+	if index.Puzzles[1].Title != "B" || index.Puzzles[2].Title != "C" {
+		t.Fatalf("placeholder titles = %q, %q, want B/C", index.Puzzles[1].Title, index.Puzzles[2].Title)
 	}
 }
 
-func TestBuildIndexRequiresCatalogMetadata(t *testing.T) {
+func TestBuildIndexRequiresUniquePuzzleIDs(t *testing.T) {
 	dir := t.TempDir()
 	writePuzzle(t, dir, "broken.json", `{
   "id": "broken",
@@ -96,10 +84,19 @@ func TestBuildIndexRequiresCatalogMetadata(t *testing.T) {
   ],
   "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
+	writePuzzle(t, dir, "duplicate.json", `{
+  "id": "broken",
+  "title": "Duplicate Broken",
+  "board": { "width": 3, "height": 3 },
+  "blocks": [
+    { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "plain", "color": "#0f0" } }
+  ],
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#0f0" } }, "col": 2, "row": 2 }] }
+}`)
 
 	_, err := BuildIndex(dir)
 	if err == nil || err.Error() == "" {
-		t.Fatalf("BuildIndex error = %v, want missing catalog error", err)
+		t.Fatalf("BuildIndex error = %v, want duplicate id error", err)
 	}
 }
 
@@ -112,10 +109,7 @@ func TestWriteIndexFileWritesCanonicalIndexJSON(t *testing.T) {
   "blocks": [
     { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "plain", "color": "#f00" } }
   ],
-  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] },
-  "catalog": {
-    "group": { "id": "group-a", "title": "Group A" }
-  }
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
 
 	if err := WriteIndexFile(dir); err != nil {
@@ -140,10 +134,7 @@ func TestBuildIndexRejectsInvalidPuzzleJSON(t *testing.T) {
   "blocks": [
     { "id": "A", "cells": [[0,0]], "movable": true, "appearance": { "type": "text", "color": "#f00", "value": "A", "text_color": "blue" } }
   ],
-  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] },
-  "catalog": {
-    "group": { "id": "group-a", "title": "Group A" }
-  }
+  "win_condition": { "type": "position", "positions": [{ "match": { "appearance": { "color": "#f00" } }, "col": 2, "row": 2 }] }
 }`)
 
 	_, err := BuildIndex(dir)

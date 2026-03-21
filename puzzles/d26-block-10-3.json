@@ -1,8 +1,5 @@
 {
   "id": "d26-block-10-3",
-  "title": "Block-10 3",
-  "source": "Hornden D26",
-  "difficulty": 4,
   "min_moves": 49,
   "board": {
     "width": 4,
@@ -214,13 +211,5 @@
         "row": 0
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "classics",
-      "title": "Classics",
-      "order": 40
-    },
-    "order": 12
   }
 }

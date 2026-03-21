@@ -1,14 +1,5 @@
 {
-  "id": "my-puzzle",
-  "title": "Fifteen",
-  "source": "Hordern B10",
-  "difficulty": 2,
-  "catalog": {
-    "group": {
-      "id": "easy",
-      "title": "easy"
-    }
-  },
+  "id": "fifteen",
   "board": {
     "width": 4,
     "height": 4
@@ -17,112 +8,382 @@
     {
       "id": "A",
       "movable": true,
-      "cells": [[0, 0]],
-      "appearance": { "type": "text", "value": "1", "color": "#f0a500" }
+      "cells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "1",
+        "color": "#f0a500"
+      }
     },
     {
       "id": "B",
       "movable": true,
-      "cells": [[1, 0]],
-      "appearance": { "type": "text", "value": "2", "color": "#06b6d4" }
+      "cells": [
+        [
+          1,
+          0
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "2",
+        "color": "#06b6d4"
+      }
     },
     {
       "id": "C",
       "movable": true,
-      "cells": [[2, 0]],
-      "appearance": { "type": "text", "value": "3", "color": "#22c55e" }
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "3",
+        "color": "#22c55e"
+      }
     },
     {
       "id": "D",
       "movable": true,
-      "cells": [[3, 0]],
-      "appearance": { "type": "text", "value": "4", "color": "#ec4899" }
+      "cells": [
+        [
+          3,
+          0
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "4",
+        "color": "#ec4899"
+      }
     },
     {
       "id": "E",
       "movable": true,
-      "cells": [[0, 1]],
-      "appearance": { "type": "text", "value": "5", "color": "#8b5cf6" }
+      "cells": [
+        [
+          0,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "5",
+        "color": "#8b5cf6"
+      }
     },
     {
       "id": "F",
       "movable": true,
-      "cells": [[1, 1]],
-      "appearance": { "type": "text", "value": "6", "color": "#fb923c" }
+      "cells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "6",
+        "color": "#fb923c"
+      }
     },
     {
       "id": "G",
       "movable": true,
-      "cells": [[2, 1]],
-      "appearance": { "type": "text", "value": "7", "color": "#e11d48" }
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "7",
+        "color": "#e11d48"
+      }
     },
     {
       "id": "H",
       "movable": true,
-      "cells": [[3, 1]],
-      "appearance": { "type": "text", "value": "8", "color": "#14b8a6" }
+      "cells": [
+        [
+          3,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "8",
+        "color": "#14b8a6"
+      }
     },
     {
       "id": "I",
       "movable": true,
-      "cells": [[0, 2]],
-      "appearance": { "type": "text", "value": "9", "color": "#f0a500" }
+      "cells": [
+        [
+          0,
+          2
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "9",
+        "color": "#f0a500"
+      }
     },
     {
       "id": "J",
       "movable": true,
-      "cells": [[1, 2]],
-      "appearance": { "type": "text", "value": "10", "color": "#06b6d4" }
+      "cells": [
+        [
+          1,
+          2
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "10",
+        "color": "#06b6d4"
+      }
     },
     {
       "id": "K",
       "movable": true,
-      "cells": [[2, 2]],
-      "appearance": { "type": "text", "value": "11", "color": "#22c55e" }
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "11",
+        "color": "#22c55e"
+      }
     },
     {
       "id": "L",
       "movable": true,
-      "cells": [[3, 2]],
-      "appearance": { "type": "text", "value": "12", "color": "#ec4899" }
+      "cells": [
+        [
+          3,
+          2
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "12",
+        "color": "#ec4899"
+      }
     },
     {
       "id": "M",
       "movable": true,
-      "cells": [[0, 3]],
-      "appearance": { "type": "text", "value": "13", "color": "#8b5cf6" }
+      "cells": [
+        [
+          0,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "13",
+        "color": "#8b5cf6"
+      }
     },
     {
       "id": "N",
       "movable": true,
-      "cells": [[1, 3]],
-      "appearance": { "type": "text", "value": "14", "color": "#fb923c" }
+      "cells": [
+        [
+          1,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "14",
+        "color": "#fb923c"
+      }
     },
     {
       "id": "O",
       "movable": true,
-      "cells": [[2, 3]],
-      "appearance": { "type": "text", "value": "15", "color": "#e11d48" }
+      "cells": [
+        [
+          2,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "text",
+        "value": "15",
+        "color": "#e11d48"
+      }
     }
   ],
   "win_condition": {
     "type": "position",
     "positions": [
-      { "match": { "appearance": { "type": "text", "value": "1" } }, "col": 0, "row": 0 },
-      { "match": { "appearance": { "type": "text", "value": "2" } }, "col": 1, "row": 0 },
-      { "match": { "appearance": { "type": "text", "value": "3" } }, "col": 2, "row": 0 },
-      { "match": { "appearance": { "type": "text", "value": "4" } }, "col": 3, "row": 0 },
-      { "match": { "appearance": { "type": "text", "value": "5" } }, "col": 0, "row": 1 },
-      { "match": { "appearance": { "type": "text", "value": "6" } }, "col": 1, "row": 1 },
-      { "match": { "appearance": { "type": "text", "value": "7" } }, "col": 2, "row": 1 },
-      { "match": { "appearance": { "type": "text", "value": "8" } }, "col": 3, "row": 1 },
-      { "match": { "appearance": { "type": "text", "value": "9" } }, "col": 0, "row": 2 },
-      { "match": { "appearance": { "type": "text", "value": "10" } }, "col": 1, "row": 2 },
-      { "match": { "appearance": { "type": "text", "value": "11" } }, "col": 2, "row": 2 },
-      { "match": { "appearance": { "type": "text", "value": "12" } }, "col": 3, "row": 2 },
-      { "match": { "appearance": { "type": "text", "value": "13" } }, "col": 0, "row": 3 },
-      { "match": { "appearance": { "type": "text", "value": "14" } }, "col": 1, "row": 3 },
-      { "match": { "appearance": { "type": "text", "value": "15" } }, "col": 2, "row": 3 }
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "1"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "2"
+          }
+        },
+        "col": 1,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "3"
+          }
+        },
+        "col": 2,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "4"
+          }
+        },
+        "col": 3,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "5"
+          }
+        },
+        "col": 0,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "6"
+          }
+        },
+        "col": 1,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "7"
+          }
+        },
+        "col": 2,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "8"
+          }
+        },
+        "col": 3,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "9"
+          }
+        },
+        "col": 0,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "10"
+          }
+        },
+        "col": 1,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "11"
+          }
+        },
+        "col": 2,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "12"
+          }
+        },
+        "col": 3,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "13"
+          }
+        },
+        "col": 0,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "14"
+          }
+        },
+        "col": 1,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "value": "15"
+          }
+        },
+        "col": 2,
+        "row": 3
+      }
     ]
   },
   "setup_options": {

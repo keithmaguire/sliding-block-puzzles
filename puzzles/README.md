@@ -5,43 +5,55 @@ format used by the app.
 
 ## `puzzles/index.json`
 
-`puzzles/index.json` is generated from the puzzle JSON files in this directory.
-Do not maintain it by hand. Instead, add or update each puzzle file's
-top-level `catalog` metadata and then run `make index` or `make build`.
+`puzzles/index.json` is the canonical built-in library catalog. It owns browse-time
+metadata such as puzzle titles, sources, difficulties, and groups.
 
-The canonical index format is a versioned hierarchical object:
+`make index` regenerates a fresh placeholder `index.json` from the puzzle JSON files
+in this directory. The intended admin workflow is:
+
+1. Export or update a puzzle gameplay JSON file.
+2. Place that file in `puzzles/`.
+3. Run `make index`.
+4. Edit the regenerated metadata in the app.
+5. Export the updated `index.json` and replace this file.
+
+The canonical index format is a flat versioned catalog:
 
 ```json
 {
-  "version": 2,
-  "groups": [
+  "version": 3,
+  "registries": {
+    "sources": ["Hornden D24", "Hornden D25"],
+    "difficulties": [1, 2, 3, 4],
+    "groups": [
+      { "id": "classics", "title": "Classics" },
+      { "id": "custom", "title": "Custom" }
+    ]
+  },
+  "puzzles": [
     {
-      "id": "beginner",
-      "title": "Beginner",
-      "items": [
-        {
-          "id": "001-slide-right",
-          "title": "Slide Right",
-          "file": "001-slide-right.json",
-          "source": "original",
-          "difficulty": 1,
-          "min_moves": 4
-        }
-      ]
+      "id": "d24-block-10-1",
+      "title": "Block-10 1",
+      "file": "d24-block-10-1.json",
+      "source": "Hornden D24",
+      "difficulty": 4,
+      "group_id": "classics",
+      "min_moves": 49
     }
   ]
 }
 ```
 
-Each puzzle entry inside a group's `items` array has these fields:
+Each puzzle entry inside `puzzles` has these fields:
 
 | Field | Required | Type | Notes |
 |---|---|---|---|
 | `id` | yes | string | Unique identifier, must match the puzzle file `id` |
 | `title` | yes | string | Display name shown in the puzzle browser |
 | `file` | yes | string | Filename relative to `puzzles/` |
-| `source` | no | string | Attribution, e.g. `"Hornden p.42"` |
-| `difficulty` | no | integer | `1..5` |
+| `source` | yes | string | Attribution, selected from `registries.sources` |
+| `difficulty` | yes | integer | Numeric difficulty, selected from `registries.difficulties` |
+| `group_id` | yes | string | Stable group identifier selected from `registries.groups` |
 | `min_moves` | no | integer | Minimum move target shown in the UI |
 
 ## Canonical puzzle file
@@ -51,7 +63,6 @@ Required top-level fields:
 ```json
 {
   "id": "001-slide-right",
-  "title": "Slide Right",
   "board": { "width": 4, "height": 3 },
   "blocks": [],
   "win_condition": {}
@@ -60,35 +71,9 @@ Required top-level fields:
 
 Optional top-level fields:
 
-- `source`
-- `difficulty`
 - `min_moves`
-- `catalog`
 - `win_description`
 - `setup_options`
-
-## `catalog`
-
-The optional `catalog` object controls how a puzzle appears in the generated
-browser index.
-
-```json
-"catalog": {
-  "group": {
-    "id": "advanced",
-    "title": "Advanced",
-    "order": 30
-  },
-  "order": 10
-}
-```
-
-| Field | Required | Type | Notes |
-|---|---|---|---|
-| `group.id` | yes | string | Stable browser group identifier |
-| `group.title` | yes | string | Browser-visible group heading |
-| `group.order` | no | integer | Sort order for groups; lower comes first |
-| `order` | no | integer | Sort order for this puzzle inside its group |
 
 ## `board`
 

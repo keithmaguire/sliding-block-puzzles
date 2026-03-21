@@ -1,8 +1,5 @@
 {
   "id": "a4-united-states",
-  "title": "United States",
-  "source": "Hornden A4",
-  "difficulty": 1,
   "board": {
     "width": 6,
     "height": 3
@@ -388,11 +385,5 @@
   },
   "setup_options": {
     "allow_shuffle": true
-  },
-  "catalog": {
-    "group": {
-      "id": "custom",
-      "title": "Custom"
-    }
   }
 }

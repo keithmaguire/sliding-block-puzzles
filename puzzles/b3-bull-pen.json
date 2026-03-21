@@ -1,8 +1,5 @@
 {
   "id": "b3-bull-pen",
-  "title": "Bull Pen",
-  "source": "Hornden B3",
-  "difficulty": 1,
   "min_moves": 22,
   "board": {
     "width": 3,
@@ -207,11 +204,5 @@
         "row": 2
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "custom",
-      "title": "Custom"
-    }
   }
 }

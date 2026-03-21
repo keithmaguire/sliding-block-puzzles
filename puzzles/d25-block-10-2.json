@@ -1,8 +1,5 @@
 {
   "id": "d25-block-10-2",
-  "title": "Block-10 2",
-  "source": "Hornden D25",
-  "difficulty": 4,
   "min_moves": 49,
   "board": {
     "width": 4,
@@ -214,13 +211,5 @@
         "row": 0
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "classics",
-      "title": "Classics",
-      "order": 40
-    },
-    "order": 11
   }
 }

@@ -16,7 +16,6 @@ type puzzleJSON struct {
 	MinMoves       int             `json:"min_moves"`
 	WinDescription string          `json:"win_description"`
 	SetupOptions   json.RawMessage `json:"setup_options"`
-	Catalog        json.RawMessage `json:"catalog"`
 	Board          boardJSON       `json:"board"`
 	Blocks         []blockJSON     `json:"blocks"`
 	WinCondition   json.RawMessage `json:"win_condition"`
@@ -92,9 +91,6 @@ func LoadPuzzle(data []byte) (*LoadResult, error) {
 	// Required fields
 	if pj.ID == "" {
 		return nil, fmt.Errorf("puzzle missing required field: id")
-	}
-	if pj.Title == "" {
-		return nil, fmt.Errorf("puzzle missing required field: title")
 	}
 	if pj.WinCondition == nil {
 		return nil, fmt.Errorf("puzzle missing required field: win_condition")

@@ -1,8 +1,5 @@
 {
   "id": "d44-white-black",
-  "title": "WHITE & BLACK",
-  "source": "Hornden D44",
-  "difficulty": 3,
   "board": {
     "width": 5,
     "height": 4
@@ -360,13 +357,5 @@
         "row": 3
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "hornden",
-      "title": "Hornden Series",
-      "order": 50
-    },
-    "order": 10
   }
 }

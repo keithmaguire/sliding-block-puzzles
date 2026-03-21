@@ -1,8 +1,5 @@
 {
   "id": "b32-get-my-goat",
-  "title": "Shifty",
-  "source": "Hornden B32",
-  "difficulty": 3,
   "min_moves": 28,
   "board": {
     "width": 3,
@@ -278,11 +275,5 @@
         "row": 3
       }
     ]
-  },
-  "catalog": {
-    "group": {
-      "id": "custom",
-      "title": "Custom"
-    }
   }
 }
