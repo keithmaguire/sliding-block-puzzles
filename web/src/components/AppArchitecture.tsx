@@ -252,6 +252,14 @@ Admin metadata editing
 cp $(go env GOROOT)/lib/wasm/wasm_exec.js ../web/public/wasm_exec.js
 cd web && npm run build`}</Pre>
         <p>
+          The repo also includes a <Code>Makefile</Code> so you usually do not need to remember the
+          raw build commands. The main commands are:
+        </p>
+        <Pre>{`make wasm   # compile the Go engine to web/public/
+make build  # build the full static site into web/dist/
+make test   # run the Go test suite
+make serve  # serve web/dist/ locally on http://localhost:8080`}</Pre>
+        <p>
           The result is a folder of static files in <Code>web/dist/</Code> that can be served by
           any normal static web host.
         </p>
