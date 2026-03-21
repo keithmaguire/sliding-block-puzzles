@@ -10,6 +10,21 @@ interface LegacyCustomPuzzle extends PuzzleJSON {
   difficulty?: number
 }
 
+function isLegacyCustomPuzzle(raw: unknown): raw is LegacyCustomPuzzle {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false
+  const candidate = raw as Record<string, unknown>
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.board === 'object' &&
+    candidate.board != null &&
+    !Array.isArray(candidate.board) &&
+    Array.isArray(candidate.blocks) &&
+    typeof candidate.win_condition === 'object' &&
+    candidate.win_condition != null &&
+    !Array.isArray(candidate.win_condition)
+  )
+}
+
 function migrateRecord(entry: unknown): CustomPuzzleRecord | null {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null
 
@@ -25,8 +40,8 @@ function migrateRecord(entry: unknown): CustomPuzzleRecord | null {
     }
   }
 
-  const legacy = raw as LegacyCustomPuzzle
-  if (typeof legacy.id !== 'string' || !legacy.id) return null
+  if (!isLegacyCustomPuzzle(raw)) return null
+  const legacy = raw
   return {
     puzzle: stripPuzzleMetadata(legacy),
     metadata: {
