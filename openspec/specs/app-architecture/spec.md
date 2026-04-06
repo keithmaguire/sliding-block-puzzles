@@ -17,6 +17,18 @@ The system SHALL document the WASM module entry point and the exported functions
 - **WHEN** the user reads the WASM section
 - **THEN** the page SHALL list each exported function with its arguments and return shape
 
+### Requirement: App Architecture page describes the visual theme system
+The system SHALL describe the visual theme approach:
+- All UI design tokens (colours, radii) are defined as CSS custom properties in `web/src/index.css`
+- Components consume tokens via `var(--token-name)` in inline styles
+- Puzzle piece colours are gameplay data constants, not CSS tokens
+
+For the full token inventory and theming rules, see the `visual-theme` spec.
+
+#### Scenario: Theme system described
+- **WHEN** the user reads the App Architecture page
+- **THEN** the page SHALL explain that `index.css` is the single location for UI design values
+
 ### Requirement: App Architecture page describes the React layer
 The system SHALL describe the React frontend structure:
 - `useWasm`

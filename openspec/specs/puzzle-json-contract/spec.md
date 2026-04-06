@@ -37,6 +37,9 @@ The contract SHALL state these invariants:
 - all cells are within board bounds
 - no two blocks overlap
 
+The block object MAY additionally contain:
+- `movement`
+
 #### Scenario: Block invariants are defined
 - **WHEN** an author reads the block section
 - **THEN** the contract SHALL state uniqueness, non-overlap, and bounds rules
@@ -78,6 +81,33 @@ If omitted for text appearance, `text_color` SHALL default to `white`.
 #### Scenario: SVG appearance carries its matching value
 - **WHEN** an author defines `appearance.type = "svg"`
 - **THEN** the visible SVG fragment SHALL come from `appearance.value`
+
+### Requirement: PuzzleJSON contract defines optional movement constraints on blocks
+The system SHALL define an optional `movement` field on block objects.
+
+When present, `movement` SHALL restrict the directions in which a movable block may be moved.
+
+The supported `movement` values SHALL be:
+- `"vertical"` — the block may only be moved up or down; horizontal movement is not permitted
+- `"horizontal"` — the block may only be moved left or right; vertical movement is not permitted
+
+When `movement` is absent, the block SHALL be unconstrained and may be moved in any valid direction.
+
+`movement` SHALL only have a gameplay effect when `movable` is `true`. It SHALL be ignored on immovable blocks.
+
+#### Scenario: Vertical movement constraint limits block to up and down
+- **WHEN** a movable block defines `movement: "vertical"`
+- **THEN** the move engine SHALL allow only upward and downward moves for that block
+- **AND** leftward and rightward moves SHALL be rejected
+
+#### Scenario: Horizontal movement constraint limits block to left and right
+- **WHEN** a movable block defines `movement: "horizontal"`
+- **THEN** the move engine SHALL allow only leftward and rightward moves for that block
+- **AND** upward and downward moves SHALL be rejected
+
+#### Scenario: Absent movement field means no constraint
+- **WHEN** a movable block omits the `movement` field
+- **THEN** the move engine SHALL permit moves in all valid directions for that block
 
 ### Requirement: Background areas are modeled as fixed plain blocks
 The system SHALL represent non-playable or visually inactive board areas using non-movable blocks with plain background appearance.

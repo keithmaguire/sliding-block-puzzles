@@ -59,7 +59,12 @@ Required:
 - `movable`
 - `appearance`
 
+Optional:
+- `movement`
+
 The page SHALL explain `[col, row]` coordinate order, uniqueness, bounds, and non-overlap.
+
+The page SHALL document `movement` as an optional constraint with values `"vertical"` (up/down only) and `"horizontal"` (left/right only). When absent, the block is unconstrained. When present on an immovable block, `movement` is ignored.
 
 #### Scenario: All block fields documented with coordinate order
 - **WHEN** the user reads the blocks section

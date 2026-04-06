@@ -88,7 +88,7 @@ Opening a puzzle and then saving or exporting it SHALL preserve its authored sem
 #### Scenario: Existing puzzle round-trips without semantic loss
 - **GIVEN** a valid puzzle is opened in Puzzle Authoring
 - **WHEN** the user exports or saves it without changing its meaning
-- **THEN** the resulting puzzle SHALL preserve board, blocks, appearance, movability, win condition, and setup options
+- **THEN** the resulting puzzle SHALL preserve board, blocks, appearance, movability, movement constraints, win condition, and setup options
 
 #### Scenario: Immovable background-colored blocks round-trip correctly
 - **GIVEN** a puzzle contains an immovable plain block with `appearance.color = "background"`

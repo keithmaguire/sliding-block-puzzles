@@ -76,7 +76,11 @@ The visual editor SHALL NOT offer block creation while the Win Grid phase is act
 - **AND** the user SHALL be able to drag it to a different win-grid location
 
 ### Requirement: Block config panel
-The visual editor SHALL provide block appearance type, block color, appearance value, text color, movability, removable-block toggle, and delete controls for the selected block.
+The visual editor SHALL provide block appearance type, block color, appearance value, text color, movability, movement constraint, removable-block toggle, and delete controls for the selected block.
+
+The movement constraint control SHALL offer three options: unconstrained (no restriction), vertical (up/down only), and horizontal (left/right only).
+
+The movement constraint control SHALL only be enabled when the block's `movable` setting is `true`. It SHALL be disabled or hidden for immovable blocks.
 
 The visual editor SHALL provide a `background` color choice for immovable blocks so they can visually match the board background while still appearing as outlined occupied blocks.
 The visual editor SHALL provide a fixed palette that includes these existing colors:
@@ -98,6 +102,10 @@ The visual editor SHALL additionally provide these colors:
 - green `#008000`
 
 For text appearance, the visual editor SHALL allow the author to choose either white or black text.
+
+#### Scenario: Movement constraint control is disabled for immovable blocks
+- **WHEN** a block's `movable` setting is `false`
+- **THEN** the movement constraint control SHALL be disabled or hidden
 
 #### Scenario: Changing a block's color updates visible cells
 - **WHEN** the user changes a block color
@@ -183,7 +191,7 @@ The system SHALL implement `visualStateToPuzzleJSON(state)` that converts visual
 
 The conversion SHALL:
 1. gather block cells from the start grid
-2. preserve each authored block's appearance and movability
+2. preserve each authored block's appearance, movability, and movement constraint
 3. build the win condition from visual win controls
 4. preserve appearance criteria and optional shape criteria for position-based win targets
 5. preserve metadata, appearance data, and setup options
@@ -212,6 +220,7 @@ Immovable blocks SHALL load back into the editor as ordinary editable blocks wit
 - **WHEN** the editor renders
 - **THEN** the grids and win controls SHALL reflect that puzzle's authored structure and goal
 - **AND** text appearance SHALL preserve its authored text color
+- **AND** each block's movement constraint SHALL be reflected in the config panel
 
 #### Scenario: Immovable background-colored blocks stay editable
 - **GIVEN** a puzzle contains an immovable block colored `background`
