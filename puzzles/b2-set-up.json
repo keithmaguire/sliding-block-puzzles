@@ -1,0 +1,155 @@
+{
+  "id": "b2-set-up",
+  "min_moves": 16,
+  "board": {
+    "width": 3,
+    "height": 2
+  },
+  "blocks": [
+    {
+      "id": "A",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "T",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#06b6d4",
+        "value": "P",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#22c55e",
+        "value": "S",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "D",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#ec4899",
+        "value": "E",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "U",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ]
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#22c55e",
+            "value": "S",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#ec4899",
+            "value": "E",
+            "text_color": "black"
+          }
+        },
+        "col": 1,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "T",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "U",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#06b6d4",
+            "value": "P",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 1
+      }
+    ]
+  }
+}

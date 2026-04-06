@@ -1,9 +1,4 @@
 {
-  "id": "a4-united-states",
-  "board": {
-    "width": 6,
-    "height": 3
-  },
   "blocks": [
     {
       "id": "A",
@@ -224,6 +219,15 @@
       ]
     }
   ],
+  "board": {
+    "width": 6,
+    "height": 3
+  },
+  "id": "a4-united-states",
+  "min_moves": 0,
+  "setup_options": {
+    "allow_shuffle": true
+  },
   "win_condition": {
     "type": "position",
     "positions": [
@@ -382,8 +386,5 @@
         "row": 2
       }
     ]
-  },
-  "setup_options": {
-    "allow_shuffle": true
   }
 }

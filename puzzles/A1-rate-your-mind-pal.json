@@ -1,9 +1,4 @@
 {
-  "id": "a1-rate-your-mind-pal",
-  "board": {
-    "width": 4,
-    "height": 4
-  },
   "blocks": [
     {
       "id": "A",
@@ -239,6 +234,15 @@
       ]
     }
   ],
+  "board": {
+    "width": 4,
+    "height": 4
+  },
+  "id": "a1-rate-your-mind-pal",
+  "min_moves": 0,
+  "setup_options": {
+    "allow_shuffle": true
+  },
   "win_condition": {
     "type": "position",
     "positions": [
@@ -423,8 +427,5 @@
         "row": 3
       }
     ]
-  },
-  "setup_options": {
-    "allow_shuffle": true
   }
 }

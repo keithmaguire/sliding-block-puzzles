@@ -19,7 +19,7 @@
       },
       {
         "id": "easy",
-        "title": "easy"
+        "title": "Easy"
       },
       {
         "id": "hornden",
@@ -56,22 +56,6 @@
       "min_moves": 49
     },
     {
-      "id": "a2-the-premier",
-      "file": "A2-the-premier.json",
-      "title": "The Premier",
-      "source": "Horndern A2",
-      "difficulty": 2,
-      "group_id": "custom"
-    },
-    {
-      "id": "a4-united-states",
-      "file": "a4-united-states.json",
-      "title": "United States",
-      "source": "Hornden A4",
-      "difficulty": 1,
-      "group_id": "custom"
-    },
-    {
       "id": "a9-puzzle-of-the-heads",
       "file": "a9-puzzle-of-the-heads.json",
       "title": "Archie's Puzzle of the Heads",
@@ -98,12 +82,45 @@
       "min_moves": 28
     },
     {
+      "id": "a2-the-premier",
+      "file": "A2-the-premier.json",
+      "title": "The Premier",
+      "source": "Horndern A2",
+      "difficulty": 2,
+      "group_id": "custom"
+    },
+    {
       "id": "d12-traffic-jam-a",
       "file": "d12-traffic-jam-a.json",
       "title": "Traffic Jam 1",
       "source": "Hornden D12",
       "difficulty": 2,
       "group_id": "custom"
+    },
+    {
+      "id": "a4-united-states",
+      "file": "a4-united-states.json",
+      "title": "United States",
+      "source": "Hornden A4",
+      "difficulty": 1,
+      "group_id": "custom"
+    },
+    {
+      "id": "fifteen",
+      "file": "fifteen.json",
+      "title": "Fifteen",
+      "source": "Hordern B10",
+      "difficulty": 2,
+      "group_id": "easy"
+    },
+    {
+      "id": "b1-moving-day",
+      "file": "b1-moving-day.json",
+      "title": "Moving Day",
+      "source": "Hornden B1",
+      "difficulty": 1,
+      "group_id": "easy",
+      "min_moves": 17
     },
     {
       "id": "a1-rate-your-mind-pal",
@@ -114,12 +131,13 @@
       "group_id": "easy"
     },
     {
-      "id": "fifteen",
-      "file": "fifteen.json",
-      "title": "Fifteen",
-      "source": "Hordern B10",
-      "difficulty": 2,
-      "group_id": "easy"
+      "id": "b2-set-up",
+      "file": "b2-set-up.json",
+      "title": "Set Up",
+      "source": "Hornden B2",
+      "difficulty": 1,
+      "group_id": "easy",
+      "min_moves": 16
     },
     {
       "id": "d11",

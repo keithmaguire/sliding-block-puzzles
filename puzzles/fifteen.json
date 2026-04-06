@@ -1,9 +1,4 @@
 {
-  "id": "fifteen",
-  "board": {
-    "width": 4,
-    "height": 4
-  },
   "blocks": [
     {
       "id": "A",
@@ -231,6 +226,15 @@
       }
     }
   ],
+  "board": {
+    "width": 4,
+    "height": 4
+  },
+  "id": "fifteen",
+  "min_moves": 0,
+  "setup_options": {
+    "allow_shuffle": true
+  },
   "win_condition": {
     "type": "position",
     "positions": [
@@ -385,8 +389,5 @@
         "row": 3
       }
     ]
-  },
-  "setup_options": {
-    "allow_shuffle": true
   }
 }
