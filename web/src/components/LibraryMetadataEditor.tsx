@@ -221,6 +221,7 @@ export function LibraryMetadataEditor({ onBack }: Props) {
               groups={groups}
               onChangeGroupTitle={(id, title) => setGroups((current) => current.map((group) => group.id === id ? { ...group, title } : group))}
               onRemoveGroup={(id) => setGroups((current) => current.filter((group) => group.id !== id))}
+              onReorderGroups={setGroups}
               newGroupTitle={newGroupTitle}
               onNewGroupTitleChange={setNewGroupTitle}
               onAddGroup={addGroup}
@@ -465,22 +466,72 @@ function RegistryPanel(props: {
   groups: GroupOption[]
   onChangeGroupTitle: (id: string, title: string) => void
   onRemoveGroup: (id: string) => void
+  onReorderGroups: (newGroups: GroupOption[]) => void
   newGroupTitle: string
   onNewGroupTitleChange: (value: string) => void
   onAddGroup: () => void
 }) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  function handleDragStart(index: number) {
+    setDragIndex(index)
+  }
+
+  function handleDragOver(event: React.DragEvent, index: number) {
+    event.preventDefault()
+    setDragOverIndex(index)
+  }
+
+  function handleDrop(index: number) {
+    if (dragIndex === null || dragIndex === index) {
+      setDragIndex(null)
+      setDragOverIndex(null)
+      return
+    }
+    const next = [...props.groups]
+    const [moved] = next.splice(dragIndex, 1)
+    next.splice(index, 0, moved)
+    props.onReorderGroups(next)
+    setDragIndex(null)
+    setDragOverIndex(null)
+  }
+
+  function handleDragEnd() {
+    setDragIndex(null)
+    setDragOverIndex(null)
+  }
+
   return (
     <div style={panelStyle}>
       <div style={registryGridStyle}>
         <RegistrySection
           title="Groups"
-          items={props.groups.map((group) => (
-            <div key={group.id} style={groupEditRowStyle}>
-              <span style={groupIdStyle}>{group.id}</span>
-              <input value={group.title} onChange={(event) => props.onChangeGroupTitle(group.id, event.target.value)} style={textInputStyle} />
-              <button onClick={() => props.onRemoveGroup(group.id)} style={miniDangerStyle}>Remove</button>
-            </div>
-          ))}
+          items={props.groups.map((group, index) => {
+            const isDragging = dragIndex === index
+            const isOver = dragOverIndex === index && dragIndex !== index
+            return (
+              <div
+                key={group.id}
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={(event) => handleDragOver(event, index)}
+                onDrop={() => handleDrop(index)}
+                onDragEnd={handleDragEnd}
+                style={{
+                  ...groupEditRowStyle,
+                  opacity: isDragging ? 0.4 : 1,
+                  outline: isOver ? '2px solid var(--accent)' : undefined,
+                  borderRadius: isOver ? 4 : undefined,
+                }}
+              >
+                <span style={dragHandleStyle} title="Drag to reorder">⠿</span>
+                <span style={groupIdStyle}>{group.id}</span>
+                <input value={group.title} onChange={(event) => props.onChangeGroupTitle(group.id, event.target.value)} style={textInputStyle} />
+                <button onClick={() => props.onRemoveGroup(group.id)} style={miniDangerStyle}>Remove</button>
+              </div>
+            )
+          })}
           input={(
             <div style={inlineFormStyle}>
               <input value={props.newGroupTitle} onChange={(event) => props.onNewGroupTitleChange(event.target.value)} style={textInputStyle} placeholder="New group title" />
@@ -552,9 +603,9 @@ const miniBtnStyle: React.CSSProperties = {
   padding: '5px 10px',
   minHeight: 32,
   borderRadius: 6,
-  border: '1px solid rgba(240,165,0,0.35)',
-  background: 'rgba(240,165,0,0.1)',
-  color: '#fbbf24',
+  border: '1px solid var(--accent-border)',
+  background: 'var(--accent-button-bg)',
+  color: 'var(--accent-text)',
   cursor: 'pointer',
   flexShrink: 0,
 }
@@ -568,9 +619,19 @@ const miniDangerStyle: React.CSSProperties = {
 
 const groupEditRowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'minmax(110px, auto) minmax(0, 1fr) auto',
+  gridTemplateColumns: 'auto minmax(110px, auto) minmax(0, 1fr) auto',
   gap: 8,
   alignItems: 'center',
+  cursor: 'grab',
+}
+
+const dragHandleStyle: React.CSSProperties = {
+  fontSize: '1.1rem',
+  color: 'var(--text-dim)',
+  cursor: 'grab',
+  lineHeight: 1,
+  userSelect: 'none',
+  opacity: 0.6,
 }
 
 const groupIdStyle: React.CSSProperties = {
@@ -589,9 +650,9 @@ const infoBox: React.CSSProperties = {
 
 const warningBox: React.CSSProperties = {
   ...infoBox,
-  border: '1px solid rgba(251,191,36,0.34)',
-  background: 'rgba(240,165,0,0.08)',
-  color: '#fcd34d',
+  border: '1px solid var(--accent-border)',
+  background: 'var(--accent-button-bg)',
+  color: 'var(--accent-text)',
 }
 
 const errorBox: React.CSSProperties = {
@@ -677,9 +738,9 @@ const primaryBtnStyle: React.CSSProperties = {
   padding: '9px 16px',
   minHeight: 40,
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(74,222,128,0.35)',
-  background: 'rgba(34,197,94,0.12)',
-  color: '#4ade80',
+  border: '1px solid var(--success-border)',
+  background: 'var(--success-dim)',
+  color: 'var(--success)',
   fontWeight: 600,
   cursor: 'pointer',
 }
