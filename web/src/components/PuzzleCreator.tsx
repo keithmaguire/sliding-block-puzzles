@@ -186,7 +186,7 @@ const headerStyle: React.CSSProperties = {
 const titleStyle: React.CSSProperties = {
   fontWeight: 700,
   fontSize: 'clamp(1.18rem, 3.2vw, 1.3rem)',
-  background: 'linear-gradient(120deg, #f0a500 0%, #fbbf24 100%)',
+  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-text) 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -205,9 +205,9 @@ const ghostBtn: React.CSSProperties = {
 const primaryBtn: React.CSSProperties = {
   padding: '9px 22px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(240,165,0,0.35)',
-  background: 'rgba(240,165,0,0.12)',
-  color: '#fcd34d',
+  border: '1px solid var(--accent-border)',
+  background: 'var(--accent-button-bg)',
+  color: 'var(--accent-text)',
   fontWeight: 600,
   fontSize: '1rem',
   minHeight: 40,
@@ -227,9 +227,9 @@ const feedbackBox: React.CSSProperties = {
   padding: '10px 14px',
   borderRadius: 'var(--radius-md)',
   marginTop: 10,
-  background: 'rgba(34,197,94,0.1)',
-  border: '1px solid rgba(34,197,94,0.28)',
-  color: '#4ade80',
+  background: 'var(--success-dim)',
+  border: '1px solid var(--success-border)',
+  color: 'var(--success)',
   fontSize: '1rem',
 }
 
@@ -237,8 +237,8 @@ const errorBox: React.CSSProperties = {
   padding: '10px 14px',
   borderRadius: 'var(--radius-md)',
   marginTop: 10,
-  background: 'rgba(239,68,68,0.1)',
-  border: '1px solid rgba(239,68,68,0.28)',
+  background: 'var(--danger-dim)',
+  border: '1px solid var(--danger-border)',
   color: 'var(--danger)',
   fontSize: '1rem',
 }

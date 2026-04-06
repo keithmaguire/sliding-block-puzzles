@@ -84,7 +84,7 @@ export function WinPreview({ puzzle }: WinPreviewProps) {
                     dominantBaseline="central"
                     fontSize={MINI * 0.48}
                     fontWeight="bold"
-                    fill={rb.appearance.text_color === 'black' ? '#111' : '#fff'}
+                    fill={rb.appearance.text_color === 'black' ? 'var(--text-on-block)' : '#fff'}
                     pointerEvents="none"
                     style={{ userSelect: 'none' }}
                   >

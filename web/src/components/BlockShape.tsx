@@ -42,7 +42,7 @@ export function BlockShape({
     : isSelected
       ? '#fff'
       : isOutlined
-        ? '#fbbf24'
+        ? 'var(--accent-text)'
         : 'rgba(0,0,0,0.2)'
   const strokeWidth = isBackground ? 1 : isSelected ? 3 : isOutlined ? 3 : 1
   const path = buildRoundedJoinedBlockPath(cells, CELL, CORNER_RADIUS)
@@ -81,7 +81,7 @@ export function BlockShape({
               dominantBaseline="central"
               fontSize={CELL * 0.45}
               fontWeight="bold"
-              fill={appearance.text_color === 'black' ? '#111' : '#fff'}
+              fill={appearance.text_color === 'black' ? 'var(--text-on-block)' : '#fff'}
               pointerEvents="none"
               style={{ userSelect: 'none' }}
             >

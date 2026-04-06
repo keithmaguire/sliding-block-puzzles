@@ -7,7 +7,7 @@ export function Code({ children }: { children: React.ReactNode }) {
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: '0.9em',
       border: '1px solid var(--border)',
-      color: '#fcd34d',
+      color: 'var(--accent-text)',
     }}>
       {children}
     </code>
@@ -19,7 +19,7 @@ export function Pre({ children }: { children: string }) {
     <pre style={{
       background: 'rgba(0,0,0,0.4)',
       borderRadius: 'var(--radius-md)',
-      borderLeft: '3px solid rgba(240,165,0,0.5)',
+      borderLeft: '3px solid var(--accent-border)',
       padding: '14px 18px',
       overflowX: 'auto',
       fontFamily: "'JetBrains Mono', monospace",
@@ -43,8 +43,8 @@ export function H2({ children }: { children: React.ReactNode }) {
       paddingBottom: 8,
       paddingLeft: 10,
       borderBottom: '1px solid var(--border)',
-      borderLeft: '3px solid #f0a500',
-      color: '#fcd34d',
+      borderLeft: '3px solid var(--accent)',
+      color: 'var(--accent-text)',
     }}>
       {children}
     </h2>

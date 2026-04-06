@@ -78,7 +78,7 @@ const titleStyle: React.CSSProperties = {
   fontSize: 'clamp(1.9rem, 6vw, 2.8rem)',
   fontWeight: 700,
   letterSpacing: '-0.03em',
-  background: 'linear-gradient(135deg, #f0a500 0%, #fbbf24 45%, #fb923c 85%)',
+  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-text) 45%, var(--accent-text) 85%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -88,20 +88,20 @@ const titleStyle: React.CSSProperties = {
 const playBtnStyle: React.CSSProperties = {
   padding: '15px 64px',
   borderRadius: 12,
-  border: '1px solid rgba(240,165,0,0.35)',
-  background: 'linear-gradient(135deg, rgba(240,165,0,0.22), rgba(251,191,36,0.16))',
-  color: '#fbbf24',
+  border: '1px solid var(--accent-border)',
+  background: 'linear-gradient(135deg, var(--accent-button-bg), var(--accent-dim))',
+  color: 'var(--accent-text)',
   fontFamily: 'inherit',
   fontWeight: 700,
   fontSize: 'clamp(1.08rem, 2.5vw, 1.18rem)',
   letterSpacing: '0.04em',
   cursor: 'pointer',
-  boxShadow: '0 4px 24px rgba(240,165,0,0.2)',
+  boxShadow: '0 4px 24px var(--accent-dim)',
   transition: 'transform 0.15s, box-shadow 0.15s, background 0.15s',
 }
 
 const playBtnHover: React.CSSProperties = {
   transform: 'translateY(-2px)',
-  background: 'linear-gradient(135deg, rgba(240,165,0,0.32), rgba(251,191,36,0.24))',
-  boxShadow: '0 8px 32px rgba(240,165,0,0.35)',
+  background: 'linear-gradient(135deg, var(--accent-glow), var(--accent-button-bg))',
+  boxShadow: '0 8px 32px var(--accent-border)',
 }

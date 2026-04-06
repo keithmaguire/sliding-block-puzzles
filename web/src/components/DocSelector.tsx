@@ -9,30 +9,46 @@ interface Props {
   onAdmin?: () => void
 }
 
+const CATEGORY_COLORS = {
+  howToPlay: {
+    color: '#22d3ee',
+    bg: 'rgba(6,182,212,0.08)',
+  },
+  puzzleFormat: {
+    color: '#a78bfa',
+    bg: 'rgba(139,92,246,0.08)',
+  },
+  architecture: {
+    color: '#fb923c',
+    bg: 'rgba(249,115,22,0.08)',
+  },
+  admin: {
+    color: 'var(--accent-text)',
+    bg: 'var(--accent-button-bg)',
+  },
+} as const
+
 const pages: { key: DocPageKey; title: string; description: string; icon: string; color: string; bg: string }[] = [
   {
     key: 'how-to-play',
     title: 'How to Play',
     description: 'Block selection, drag and keyboard controls, HUD buttons, and the win screen.',
     icon: '🎮',
-    color: '#22d3ee',
-    bg: 'rgba(6,182,212,0.08)',
+    ...CATEGORY_COLORS.howToPlay,
   },
   {
     key: 'puzzle-format',
     title: 'Puzzle Format Reference',
     description: 'JSON schema for puzzle files — board, blocks, appearance, selector-based wins, and index.json.',
     icon: '📐',
-    color: '#a78bfa',
-    bg: 'rgba(139,92,246,0.08)',
+    ...CATEGORY_COLORS.puzzleFormat,
   },
   {
     key: 'architecture',
     title: 'App Architecture',
     description: 'Go WASM core, WASM export surface, React components, data flow, and build pipeline.',
     icon: '🏗️',
-    color: '#fb923c',
-    bg: 'rgba(249,115,22,0.08)',
+    ...CATEGORY_COLORS.architecture,
   },
 ]
 
@@ -57,8 +73,8 @@ export function DocSelector({ onSelect, onBack, onAdmin }: Props) {
             title="Admin"
             description="Create puzzles and edit library metadata."
             icon="🛠️"
-            color="#fbbf24"
-            bg="rgba(240,165,0,0.08)"
+            color={CATEGORY_COLORS.admin.color}
+            bg={CATEGORY_COLORS.admin.bg}
             onClick={onAdmin}
           />
         )}

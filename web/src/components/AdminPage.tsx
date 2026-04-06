@@ -28,16 +28,16 @@ export function AdminPage({ onBack, onCreate, onEditLibraryMetadata }: Props) {
           title="Create new puzzle"
           description="Open the visual authoring workflow for a new or resumed draft."
           icon="✏️"
-          color="#fbbf24"
-          bg="rgba(240,165,0,0.08)"
+          color="var(--accent-text)"
+          bg="var(--accent-button-bg)"
           onClick={onCreate}
         />
         <AdminCard
           title="Edit library metadata"
           description="Open the spreadsheet-style metadata editor for titles, sources, difficulties, groups, and index export."
           icon="🗂️"
-          color="#4ade80"
-          bg="rgba(34,197,94,0.08)"
+          color="var(--success)"
+          bg="var(--success-dim)"
           onClick={onEditLibraryMetadata}
         />
       </div>

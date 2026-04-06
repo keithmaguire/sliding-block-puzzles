@@ -1,8 +1,8 @@
 :root {
   /* ── Colour tokens ────────────────────────────────────────────────────────── */
   --bg:           #08090e;
-  --frame-bg:     #182132;
-  --frame-bg-hi:  #202b3e;
+  --frame-bg:     #808000;
+  --frame-bg-hi:  #909000;
   --surface:      #0d1022;
   --surface-hi:   #141829;
   --border:       rgba(255, 255, 255, 0.07);
@@ -14,8 +14,17 @@
   --text-soft:    rgba(237, 238, 248, 0.86);
   --text-dim:     rgba(237, 238, 248, 0.8);
   --text-muted:   rgba(237, 238, 248, 0.68);
-  --danger:       #fca5a5;
-  --board-bg:     #0a0f1a;
+  --danger:           #fca5a5;
+  --danger-dim:       rgba(239, 68, 68, 0.1);
+  --danger-border:    rgba(239, 68, 68, 0.28);
+  --success:          #4ade80;
+  --success-dim:      rgba(74, 222, 128, 0.1);
+  --success-border:   rgba(74, 222, 128, 0.35);
+  --accent-text:      #fcd34d;
+  --accent-border:    rgba(240, 165, 0, 0.35);
+  --accent-button-bg: rgba(240, 165, 0, 0.12);
+  --text-on-block:    #111;
+  --board-bg:         #0a0f1a;
 
   /* ── Radii ────────────────────────────────────────────────────────────────── */
   --radius-sm:  6px;

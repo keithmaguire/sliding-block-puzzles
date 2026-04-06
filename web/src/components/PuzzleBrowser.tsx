@@ -357,7 +357,7 @@ const titleGradientStyle: React.CSSProperties = {
   fontSize: 'clamp(1.3rem, 3.7vw, 1.5rem)',
   fontWeight: 700,
   letterSpacing: '-0.02em',
-  background: 'linear-gradient(120deg, #f0a500 0%, #fbbf24 55%, #fb923c 100%)',
+  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-text) 55%, var(--accent-text) 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -422,9 +422,9 @@ const solvedBadgeStyle: React.CSSProperties = {
   fontWeight: 600,
   padding: '2px 9px',
   borderRadius: 'var(--radius-sm)',
-  background: 'linear-gradient(120deg, rgba(34,197,94,0.18), rgba(6,182,212,0.12))',
-  color: '#34d399',
-  border: '1px solid rgba(52,211,153,0.3)',
+  background: 'var(--success-dim)',
+  color: 'var(--success)',
+  border: '1px solid var(--success-border)',
 }
 
 const confirmOverlayStyle: React.CSSProperties = {
@@ -502,7 +502,7 @@ const restoreBtnStyle: React.CSSProperties = {
 
 function CogIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="8" r="2.3" />
       <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
     </svg>
