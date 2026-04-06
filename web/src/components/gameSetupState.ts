@@ -2,10 +2,12 @@ import type { PuzzleJSON } from '../puzzleTypes'
 import { getSupportedSetupOptions } from '../puzzleTypes'
 
 const BASE_CELL = 64
+const MAX_CELL = 128
 const PORTRAIT_SIDE_GUTTER = 24
 const PORTRAIT_FRAME_PADDING = 24
-const PORTRAIT_RESERVED_HEIGHT = 320
-const PORTRAIT_MAX_VIEWPORT_SHARE = 0.88
+const PORTRAIT_RESERVED_HEIGHT = 260
+const PORTRAIT_MAX_VIEWPORT_SHARE = 0.92
+const LANDSCAPE_RESERVED_HEIGHT = 220
 
 export function countRemovedSetupBlocks(originalPuzzle: PuzzleJSON, playPuzzle: PuzzleJSON): number {
   const originalRemovable = new Set(getSupportedSetupOptions(originalPuzzle)?.removable_blocks ?? [])
@@ -37,7 +39,14 @@ export function computeBoardDisplayWidth(
 
   const widthLimit = Math.max(0, viewportWidth - PORTRAIT_SIDE_GUTTER * 2 - PORTRAIT_FRAME_PADDING)
   const isPortrait = viewportHeight > viewportWidth
-  if (!isPortrait) return Math.min(naturalWidth, widthLimit || naturalWidth)
+  if (!isPortrait) {
+    const maxBoardHeight = Math.max(0, viewportHeight - LANDSCAPE_RESERVED_HEIGHT)
+    const aspectRatio = boardCols / boardRows
+    const heightDrivenWidth = maxBoardHeight * aspectRatio - PORTRAIT_FRAME_PADDING
+    const maxByCell = boardCols * MAX_CELL
+    const expandedWidth = Math.max(naturalWidth, Math.min(heightDrivenWidth, maxByCell))
+    return Math.min(widthLimit || naturalWidth, expandedWidth)
+  }
 
   const aspectRatio = boardCols / boardRows
   const availableHeight = Math.max(0, viewportHeight - PORTRAIT_RESERVED_HEIGHT)

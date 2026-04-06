@@ -49,8 +49,12 @@ describe('getInitialShuffleAvailability', () => {
 })
 
 describe('computeBoardDisplayWidth', () => {
-  it('keeps landscape boards at their natural width', () => {
-    expect(computeBoardDisplayWidth(900, 700, 4, 5)).toBe(256)
+  it('expands landscape boards beyond natural width to fill more screen', () => {
+    expect(computeBoardDisplayWidth(900, 700, 4, 5)).toBeGreaterThan(256)
+  })
+
+  it('caps landscape board width to the available viewport width on narrow screens', () => {
+    expect(computeBoardDisplayWidth(260, 240, 4, 5)).toBeLessThanOrEqual(260 - 24 * 2 - 24)
   })
 
   it('expands portrait boards when extra viewport height is available', () => {
@@ -58,7 +62,7 @@ describe('computeBoardDisplayWidth', () => {
   })
 
   it('does not expand beyond the portrait comfort limit', () => {
-    expect(computeBoardDisplayWidth(430, 1400, 4, 5)).toBeLessThanOrEqual(430 * 0.88)
+    expect(computeBoardDisplayWidth(430, 1400, 4, 5)).toBeLessThanOrEqual(430 * 0.92)
   })
 })
 

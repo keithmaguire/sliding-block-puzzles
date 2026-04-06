@@ -72,13 +72,20 @@ function loadPlayState(api: PuzzleApi, basePuzzle: PlayablePuzzle, session = get
 function getLoadedGameState(api: PuzzleApi, puzzle: PlayablePuzzle): LoadedGameState {
   const session = getPuzzleSession(puzzle.id)
   const initialLoad = loadPlayState(api, puzzle, session)
+  const loadedWon = initialLoad.restored.ok ? initialLoad.restored.won : false
+  const loadedMoveCount = initialLoad.restored.ok ? initialLoad.restored.moveCount : 0
+  const allowShuffle = getSupportedSetupOptions(initialLoad.playPuzzle)?.allow_shuffle === true
+  // If a fresh (no session) puzzle starts already satisfying the win condition at move 0
+  // with shuffle enabled, the player hasn't actually played yet — don't flag it as won
+  // so the shuffle button is shown and the win banner is suppressed.
+  const startingWonNeedsPlay = !session && loadedWon && loadedMoveCount === 0 && allowShuffle
   return {
     playPuzzle: initialLoad.playPuzzle,
     restored: initialLoad.restored.ok ? initialLoad.restored : null,
     loadError: initialLoad.restored.ok ? null : initialLoad.restored.error,
     removableIds: new Set(getSupportedSetupOptions(initialLoad.playPuzzle)?.removable_blocks ?? []),
     shuffleAvailable: getInitialShuffleAvailability(puzzle, session?.shuffleAvailable),
-    won: initialLoad.restored.ok ? initialLoad.restored.won : false,
+    won: startingWonNeedsPlay ? false : loadedWon,
   }
 }
 
@@ -212,8 +219,11 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     playPuzzle.board.height,
   )
   const boardContainerWidth = Math.max(Math.min(boardMaxW, viewport.width), boardDisplayWidth)
-  const boardChromeWidth = Math.min(boardContainerWidth + 40, Math.max(320, viewport.width - 24))
-  const canUseInlineSetup = !won && moveCount === 0
+  // A shuffle puzzle whose initial arrangement satisfies the win condition hasn't been "played"
+  // yet — the player must shuffle first. Treat it as pre-play so the shuffle button shows and
+  // the win banner is suppressed regardless of the underlying WASM won flag.
+  const pendingShuffleStart = won && moveCount === 0 && shuffleAvailable && setupOptions?.allow_shuffle === true
+  const canUseInlineSetup = (!won || pendingShuffleStart) && moveCount === 0
   const showShuffleAction = canUseInlineSetup && shuffleAvailable && setupOptions?.allow_shuffle === true
   const outlinedBlocks = canUseInlineSetup ? removableIds : new Set<string>()
   const removedSetupCount = countRemovedSetupBlocks(puzzle, playPuzzle)
@@ -282,26 +292,28 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 clamp(12px, 4vw, 20px) 48px' }}>
 
       {/* Top bar */}
-      <div style={{ ...topBarStyle, maxWidth: boardChromeWidth }}>
-        <button onClick={onBack} style={ghostBtnStyle}>← Back</button>
-        <div style={{ flex: 1, textAlign: 'center', minWidth: 0 }}>
-          <span style={{ fontWeight: 600, fontSize: 'clamp(1rem, 2.7vw, 1.08rem)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {playPuzzle.title}
-          </span>
-          {playPuzzle.source && (
-            <span style={{ fontSize: '0.86rem', color: 'var(--text-soft)' }}>{playPuzzle.source}</span>
-          )}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <span style={{ fontSize: '0.9rem', letterSpacing: '0.04em', color: difficultyColor(diff) }}>
-            {'★'.repeat(Math.min(diff, 5))}<span style={{ color: 'var(--text-muted)' }}>{'★'.repeat(Math.max(0, 5 - diff))}</span>
-          </span>
-          <button onClick={onDocs} style={iconBtnStyle} title="Settings and documentation" aria-label="Settings and documentation">
-            <CogIcon />
-          </button>
+      <div style={topBarStyle}>
+        <div style={topBarRowStyle}>
+          <button onClick={onBack} style={ghostBtnStyle}>← Back</button>
+          <div style={topBarTitleStyle}>
+            <span style={{ fontWeight: 600, fontSize: 'clamp(1rem, 2.7vw, 1.1rem)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {playPuzzle.title}
+            </span>
+            {playPuzzle.source && (
+              <span style={{ fontSize: '0.86rem', color: 'var(--text-soft)' }}>{playPuzzle.source}</span>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '0.04em', color: difficultyColor(diff) }}>
+              {'★'.repeat(Math.min(diff, 5))}<span style={{ color: 'var(--text-muted)' }}>{'★'.repeat(Math.max(0, 5 - diff))}</span>
+            </span>
+            <button onClick={onDocs} style={iconBtnStyle} title="Settings and documentation" aria-label="Settings and documentation">
+              <CogIcon />
+            </button>
+          </div>
         </div>
       </div>
-      <div style={{ height: 1, background: 'var(--border)', width: '100%', maxWidth: boardChromeWidth, marginBottom: 20 }} />
+      <div style={{ height: 1, background: 'var(--border)', width: '100%', maxWidth: 900, marginBottom: 20 }} />
 
       {loadError && (
         <div style={errorBannerStyle}>
@@ -328,7 +340,7 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
       )}
 
       {/* Win description */}
-      {playPuzzle.win_description && !won && (
+      {playPuzzle.win_description && (!won || pendingShuffleStart) && (
         <div style={{ marginTop: 14, fontSize: '0.95rem', color: 'var(--text-dim)', textAlign: 'center', maxWidth: boardContainerWidth }}>
           <span style={{ color: 'var(--text-soft)', fontStyle: 'italic' }}>To win: </span>
           {playPuzzle.win_description}
@@ -336,10 +348,10 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
       )}
 
       {/* Win preview */}
-      {!won && <WinPreview puzzle={playPuzzle} />}
+      {(!won || pendingShuffleStart) && <WinPreview puzzle={playPuzzle} />}
 
       {/* Manual win button (for description_only win conditions) */}
-      {!won && showManualWin && (
+      {(!won || pendingShuffleStart) && showManualWin && (
         <div style={{ marginTop: 14 }}>
           <button onClick={handleManualWin} style={manualWinBtnStyle}>
             I've solved it!
@@ -391,7 +403,7 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
       </div>
 
       {/* Win banner */}
-      {won && (
+      {won && !pendingShuffleStart && (
         <div style={winBannerStyle}>
           <div style={{ fontSize: 'clamp(1rem, 3vw, 1.2rem)', fontWeight: 700 }}>
             🎉 Solved in {moveCount} move{moveCount !== 1 ? 's' : ''}
@@ -414,12 +426,22 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
 }
 
 const topBarStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: 900,
+  padding: 'clamp(14px, 4vw, 20px) 0 14px',
+}
+
+const topBarRowStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  width: '100%',
-  maxWidth: 640,
-  padding: 'clamp(14px, 4vw, 20px) 0 14px',
-  gap: 10,
+  gap: 12,
+  flexWrap: 'wrap',
+}
+
+const topBarTitleStyle: React.CSSProperties = {
+  flex: 1,
+  minWidth: 160,
+  textAlign: 'center',
 }
 
 const ghostBtnStyle: React.CSSProperties = {
@@ -450,9 +472,9 @@ const iconBtnStyle: React.CSSProperties = {
 const inlineSetupBtnStyle: React.CSSProperties = {
   padding: '9px 16px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(251,191,36,0.35)',
-  background: 'rgba(251,191,36,0.12)',
-  color: '#fbbf24',
+  border: '1px solid var(--accent-border)',
+  background: 'var(--accent-button-bg)',
+  color: 'var(--accent-text)',
   fontSize: '0.96rem',
   fontWeight: 600,
   flexShrink: 0,
@@ -494,8 +516,8 @@ const errorBannerStyle: React.CSSProperties = {
   marginBottom: 14,
   padding: '10px 14px',
   borderRadius: 'var(--radius-md)',
-  background: 'rgba(239,68,68,0.1)',
-  border: '1px solid rgba(239,68,68,0.28)',
+  background: 'var(--danger-dim)',
+  border: '1px solid var(--danger-border)',
   color: 'var(--danger)',
   fontSize: '0.98rem',
   textAlign: 'center',
@@ -539,8 +561,8 @@ const setupOverlayStyle: React.CSSProperties = {
   gap: 12,
   padding: '10px 14px',
   borderRadius: 'var(--radius-md)',
-  background: 'color-mix(in srgb, var(--surface) 88%, #fbbf24 12%)',
-  border: '1px solid rgba(251,191,36,0.2)',
+  background: 'color-mix(in srgb, var(--surface) 88%, var(--accent-text) 12%)',
+  border: '1px solid var(--accent-dim)',
   flexWrap: 'nowrap',
 }
 
@@ -566,8 +588,9 @@ const winBannerStyle: React.CSSProperties = {
   marginTop: 20,
   padding: 'clamp(16px, 4vw, 24px) clamp(20px, 6vw, 32px)',
   borderRadius: 'var(--radius-lg)',
+  // Keep the win banner's dark green gradient as a decorative one-off treatment.
   background: 'linear-gradient(135deg, #14532d 0%, #166534 100%)',
-  border: '1px solid rgba(74,222,128,0.22)',
+  border: '1px solid var(--success-border)',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -579,9 +602,9 @@ const winBannerStyle: React.CSSProperties = {
 const manualWinBtnStyle: React.CSSProperties = {
   padding: '9px 24px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(74,222,128,0.4)',
-  background: 'rgba(74,222,128,0.1)',
-  color: '#4ade80',
+  border: '1px solid var(--success-border)',
+  background: 'var(--success-dim)',
+  color: 'var(--success)',
   fontSize: '1.02rem',
   fontWeight: 600,
   cursor: 'pointer',
@@ -601,7 +624,7 @@ const winBtnStyle: React.CSSProperties = {
 
 function CogIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="8" r="2.3" />
       <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
     </svg>
