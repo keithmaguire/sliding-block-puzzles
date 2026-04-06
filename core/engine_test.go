@@ -31,6 +31,60 @@ func TestCanMove_NormalBlock(t *testing.T) {
 	}
 }
 
+func TestCanMove_VerticalConstraint(t *testing.T) {
+	gs := newTestState(4, 4, map[string]*Block{
+		"A": {ID: "A", Movable: true, Movement: "vertical", Cells: []Cell{{1, 1}}},
+	}, nil)
+	if !gs.CanMove("A", DirUp) {
+		t.Error("vertical block should be able to move up")
+	}
+	if !gs.CanMove("A", DirDown) {
+		t.Error("vertical block should be able to move down")
+	}
+	if gs.CanMove("A", DirLeft) {
+		t.Error("vertical block should not be able to move left")
+	}
+	if gs.CanMove("A", DirRight) {
+		t.Error("vertical block should not be able to move right")
+	}
+}
+
+func TestCanMove_HorizontalConstraint(t *testing.T) {
+	gs := newTestState(4, 4, map[string]*Block{
+		"A": {ID: "A", Movable: true, Movement: "horizontal", Cells: []Cell{{1, 1}}},
+	}, nil)
+	if !gs.CanMove("A", DirLeft) {
+		t.Error("horizontal block should be able to move left")
+	}
+	if !gs.CanMove("A", DirRight) {
+		t.Error("horizontal block should be able to move right")
+	}
+	if gs.CanMove("A", DirUp) {
+		t.Error("horizontal block should not be able to move up")
+	}
+	if gs.CanMove("A", DirDown) {
+		t.Error("horizontal block should not be able to move down")
+	}
+}
+
+func TestCanMove_NoMovementConstraint(t *testing.T) {
+	gs := newTestState(4, 4, map[string]*Block{
+		"A": {ID: "A", Movable: true, Cells: []Cell{{1, 1}}},
+	}, nil)
+	if !gs.CanMove("A", DirUp) {
+		t.Error("unconstrained block should be able to move up")
+	}
+	if !gs.CanMove("A", DirDown) {
+		t.Error("unconstrained block should be able to move down")
+	}
+	if !gs.CanMove("A", DirLeft) {
+		t.Error("unconstrained block should be able to move left")
+	}
+	if !gs.CanMove("A", DirRight) {
+		t.Error("unconstrained block should be able to move right")
+	}
+}
+
 func TestCanMove_FixedBlock(t *testing.T) {
 	gs := newTestState(4, 4, map[string]*Block{
 		"A": {ID: "A", Movable: false, Cells: []Cell{{1, 1}}},

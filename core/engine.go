@@ -10,6 +10,10 @@ func (gs *GameState) CanMove(blockID string, dir Direction) bool {
 	if !ok || !b.Movable {
 		return false
 	}
+	if (b.Movement == "vertical" && (dir == DirLeft || dir == DirRight)) ||
+		(b.Movement == "horizontal" && (dir == DirUp || dir == DirDown)) {
+		return false
+	}
 	dc, dr := dir.Delta()
 
 	// Build occupied set from all other blocks.

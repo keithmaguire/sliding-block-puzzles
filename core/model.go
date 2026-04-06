@@ -41,6 +41,7 @@ type Block struct {
 	ID         string
 	Cells      []Cell
 	Movable    bool
+	Movement   string
 	Appearance Appearance
 }
 

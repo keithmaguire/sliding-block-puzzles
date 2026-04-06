@@ -30,6 +30,7 @@ type blockJSON struct {
 	ID         string          `json:"id"`
 	Cells      [][2]int        `json:"cells"`
 	Movable    bool            `json:"movable"`
+	Movement   string          `json:"movement"`
 	Appearance *appearanceJSON `json:"appearance"`
 }
 
@@ -163,6 +164,12 @@ func parseBlocks(bjs []blockJSON, board Board) (map[string]*Block, error) {
 		if bj.Appearance == nil {
 			return nil, fmt.Errorf("block %q missing required field: appearance", bj.ID)
 		}
+		switch bj.Movement {
+		case "", "vertical", "horizontal":
+			// allowed
+		default:
+			return nil, fmt.Errorf("block %q has invalid movement %q", bj.ID, bj.Movement)
+		}
 
 		// Parse cells
 		cells := make([]Cell, len(bj.Cells))
@@ -190,6 +197,7 @@ func parseBlocks(bjs []blockJSON, board Board) (map[string]*Block, error) {
 			ID:         bj.ID,
 			Cells:      cells,
 			Movable:    bj.Movable,
+			Movement:   bj.Movement,
 			Appearance: appearance,
 		}
 	}
@@ -321,7 +329,7 @@ func parsePhysicalMatch(raw json.RawMessage) (PhysicalMatch, error) {
 	}
 	var payload struct {
 		Appearance *appearanceCriteriaJSON `json:"appearance"`
-		Shape      [][2]int               `json:"shape"`
+		Shape      [][2]int                `json:"shape"`
 	}
 	if err := strictUnmarshal(raw, &payload); err != nil {
 		return PhysicalMatch{}, fmt.Errorf("match must be a JSON object: %w", err)

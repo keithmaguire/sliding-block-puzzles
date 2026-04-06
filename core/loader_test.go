@@ -147,6 +147,31 @@ func TestLoadDefaultsTextAppearanceColorToWhite(t *testing.T) {
 	}
 }
 
+func TestLoadBlockMovementConstraint(t *testing.T) {
+	r := mustLoad(t, `{
+		"id":"x","title":"T","board":{"width":3,"height":3},
+		"blocks":[
+			{"id":"A","cells":[[0,0]],"movable":true,"movement":"vertical","appearance":{"type":"plain","color":"#f00"}},
+			{"id":"B","cells":[[1,0]],"movable":true,"appearance":{"type":"plain","color":"#00f"}}
+		],
+		"win_condition":{"type":"position","positions":[{"match":{"appearance":{"color":"#f00"}},"col":0,"row":0}]}
+	}`)
+	if got := r.State.Blocks["A"].Movement; got != "vertical" {
+		t.Fatalf("Movement = %q, want vertical", got)
+	}
+	if got := r.State.Blocks["B"].Movement; got != "" {
+		t.Fatalf("Movement = %q, want empty string when absent", got)
+	}
+}
+
+func TestLoadRejectsInvalidBlockMovementConstraint(t *testing.T) {
+	mustFail(t, `{
+		"id":"x","title":"T","board":{"width":3,"height":3},
+		"blocks":[{"id":"A","cells":[[0,0]],"movable":true,"movement":"diagonal","appearance":{"type":"plain","color":"#f00"}}],
+		"win_condition":{"type":"position","positions":[{"match":{"appearance":{"color":"#f00"}},"col":0,"row":0}]}
+	}`, `invalid movement`)
+}
+
 func TestLoadPositionWinWithAppearanceCriteria(t *testing.T) {
 	r := mustLoad(t, minimalPuzzle(`{"type":"position","positions":[{"match":{"appearance":{"color":"#ff0000"}},"col":2,"row":3}]}`))
 	cond, ok := r.State.Win.(*PositionCondition)
