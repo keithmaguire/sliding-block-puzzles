@@ -24,9 +24,12 @@ export interface PuzzleSvgAppearance {
 export type PuzzleAppearance = PuzzlePlainAppearance | PuzzleTextAppearance | PuzzleSvgAppearance
 export type PuzzleDecoratedAppearance = PuzzleTextAppearance | PuzzleSvgAppearance
 
+export type PuzzleMovement = 'vertical' | 'horizontal'
+
 export interface PuzzleBlock {
   id: string
   movable: boolean
+  movement?: PuzzleMovement
   cells: [number, number][]
   appearance: PuzzleAppearance
 }

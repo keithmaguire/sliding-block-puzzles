@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react'
 import {
   resolveBlockColor,
   type PuzzleAppearanceType,
+  type PuzzleMovement,
   type PuzzleTextColor,
 } from '../puzzleTypes'
 import { joinedCellBorderRadius, joinedCellBorderStyle } from './blockGeometry'
@@ -17,6 +18,7 @@ interface BlockConfig {
   appearanceType: PuzzleAppearanceType
   color: string
   movable: boolean
+  movement?: PuzzleMovement
   appearanceValue: string
   textColor: PuzzleTextColor
 }
@@ -560,7 +562,7 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                     style={{
                       ...miniChoiceBtn,
                       borderColor: selectedBlock.textColor === 'black' ? 'white' : 'rgba(255,255,255,0.14)',
-                      color: '#111',
+                      color: 'var(--text-on-block)',
                       background: 'rgba(255,255,255,0.92)',
                     }}
                   >
@@ -591,6 +593,45 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
               />
             </div>
 
+            <div style={{ marginBottom: 12, opacity: selectedBlock.movable ? 1 : 0.45 }}>
+              <label style={fieldLabel}>Movement</label>
+              <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  disabled={!selectedBlock.movable}
+                  onClick={() => updateBlock(selectedBlock.id, { movement: undefined })}
+                  style={{
+                    ...miniChoiceBtn,
+                    borderColor: selectedBlock.movement == null ? 'white' : 'rgba(255,255,255,0.14)',
+                  }}
+                >
+                  Unconstrained
+                </button>
+                <button
+                  type="button"
+                  disabled={!selectedBlock.movable}
+                  onClick={() => updateBlock(selectedBlock.id, { movement: 'vertical' })}
+                  style={{
+                    ...miniChoiceBtn,
+                    borderColor: selectedBlock.movement === 'vertical' ? 'white' : 'rgba(255,255,255,0.14)',
+                  }}
+                >
+                  Vertical
+                </button>
+                <button
+                  type="button"
+                  disabled={!selectedBlock.movable}
+                  onClick={() => updateBlock(selectedBlock.id, { movement: 'horizontal' })}
+                  style={{
+                    ...miniChoiceBtn,
+                    borderColor: selectedBlock.movement === 'horizontal' ? 'white' : 'rgba(255,255,255,0.14)',
+                  }}
+                >
+                  Horizontal
+                </button>
+              </div>
+            </div>
+
             {/* Player can remove */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, opacity: selectedBlock.movable ? 1 : 0.45 }}>
               <label style={{ ...fieldLabel, marginBottom: 0 }}>Player can remove</label>
@@ -615,9 +656,9 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                 width: '100%',
                 padding: '6px 0',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid rgba(239,68,68,0.4)',
-                background: 'rgba(239,68,68,0.08)',
-                color: '#fca5a5',
+                border: '1px solid var(--danger-border)',
+                background: 'var(--danger-dim)',
+                color: 'var(--danger)',
                 fontSize: '0.94rem',
                 cursor: 'pointer',
               }}
@@ -721,9 +762,9 @@ function ToolBtn({
       style={{
         padding: '5px 11px',
         borderRadius: 'var(--radius-sm)',
-        border: `1px solid ${active ? 'rgba(240,165,0,0.5)' : 'var(--border)'}`,
-        background: active ? 'rgba(240,165,0,0.12)' : 'transparent',
-        color: active ? '#fbbf24' : 'var(--text-dim)',
+        border: `1px solid ${active ? 'var(--accent-border)' : 'var(--border)'}`,
+        background: active ? 'var(--accent-button-bg)' : 'transparent',
+        color: active ? 'var(--accent-text)' : 'var(--text-dim)',
         fontSize: '0.92rem',
         cursor: 'pointer',
         minHeight: 32,
@@ -753,9 +794,9 @@ function PhaseBtn({
       style={{
         padding: '5px 14px',
         borderRadius: 'var(--radius-sm)',
-        border: `1px solid ${active ? 'rgba(240,165,0,0.6)' : 'var(--border)'}`,
-        background: active ? 'rgba(240,165,0,0.15)' : 'transparent',
-        color: active ? '#fbbf24' : 'var(--text-dim)',
+        border: `1px solid ${active ? 'var(--accent-border)' : 'var(--border)'}`,
+        background: active ? 'var(--accent-button-bg)' : 'transparent',
+        color: active ? 'var(--accent-text)' : 'var(--text-dim)',
         fontWeight: active ? 600 : 400,
         fontSize: '0.94rem',
         cursor: 'pointer',
@@ -840,9 +881,9 @@ const selectStyle: React.CSSProperties = {
 const addBlockBtn: React.CSSProperties = {
   padding: '5px 11px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(240,165,0,0.35)',
-  background: 'rgba(240,165,0,0.08)',
-  color: '#fbbf24',
+  border: '1px solid var(--accent-border)',
+  background: 'var(--accent-button-bg)',
+  color: 'var(--accent-text)',
   fontSize: '0.92rem',
   cursor: 'pointer',
   minHeight: 32,

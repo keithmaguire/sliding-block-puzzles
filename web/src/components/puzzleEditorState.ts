@@ -9,6 +9,7 @@ import {
   type PuzzleAppearanceType,
   type PuzzleBlock,
   type PuzzleJSON,
+  type PuzzleMovement,
   type PuzzleTextColor,
   type SetupOptions,
   type WinCondition,
@@ -22,6 +23,7 @@ interface BlockConfig {
   appearanceType: PuzzleAppearanceType
   color: string
   movable: boolean
+  movement?: PuzzleMovement
   appearanceValue: string
   textColor: PuzzleTextColor
 }
@@ -131,6 +133,7 @@ export function visualStateToPuzzleJSON(state: VisualState): PuzzleJSON {
     puzzleBlocks.push({
       id: block.id,
       movable: block.movable,
+      ...(block.movement ? { movement: block.movement } : {}),
       appearance: buildAppearance(block),
       cells,
     })
@@ -229,6 +232,7 @@ export function puzzleJSONToVisualState(puzzle: PlayablePuzzle): Partial<VisualS
       appearanceType: blk.appearance.type,
       color: blk.appearance.color || BLOCK_COLORS[blocks.length % BLOCK_COLORS.length],
       movable: blk.movable,
+      ...(blk.movement ? { movement: blk.movement } : {}),
       appearanceValue: 'value' in blk.appearance ? blk.appearance.value : '',
       textColor: blk.appearance.type === 'text' ? (blk.appearance.text_color ?? 'white') : 'white',
     })
