@@ -41,13 +41,13 @@ function PuzzleGraphic() {
       marginBottom: 40,
     }}>
       {/* Row 0 */}
-      <div style={{ ...blockStyle, gridColumn: '1 / 3', background: '#f97316', boxShadow: '0 4px 16px rgba(249,115,22,0.45)' }} />
-      <div style={{ ...blockStyle, background: '#8b5cf6', gridRow: '1 / 3', boxShadow: '0 4px 16px rgba(139,92,246,0.45)' }} />
+      <div style={{ ...blockStyle, gridColumn: '1 / 3', background: 'var(--fiery-terracotta)', boxShadow: '0 4px 16px rgba(242,84,45,0.24)' }} />
+      <div style={{ ...blockStyle, background: 'var(--stormy-teal)', gridRow: '1 / 3', boxShadow: '0 4px 16px rgba(18,116,117,0.22)' }} />
       {/* Row 1 */}
-      <div style={{ ...blockStyle, background: '#06b6d4', gridRow: '2 / 4', boxShadow: '0 4px 16px rgba(6,182,212,0.45)' }} />
-      <div style={{ ...blockStyle, background: '#22c55e', boxShadow: '0 4px 16px rgba(34,197,94,0.4)' }} />
+      <div style={{ ...blockStyle, background: 'var(--dark-cyan)', gridRow: '2 / 4', boxShadow: '0 4px 16px rgba(14,149,148,0.22)' }} />
+      <div style={{ ...blockStyle, background: 'var(--wheat)', boxShadow: '0 4px 16px rgba(245,223,187,0.18)' }} />
       {/* Row 2 */}
-      <div style={{ ...blockStyle, background: '#ec4899', gridColumn: '2 / 4', boxShadow: '0 4px 16px rgba(236,72,153,0.45)' }} />
+      <div style={{ ...blockStyle, background: 'var(--espresso)', gridColumn: '2 / 4', boxShadow: '0 4px 16px rgba(86,44,44,0.26)' }} />
     </div>
   )
 }
@@ -78,7 +78,7 @@ const titleStyle: React.CSSProperties = {
   fontSize: 'clamp(1.9rem, 6vw, 2.8rem)',
   fontWeight: 700,
   letterSpacing: '-0.03em',
-  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-text) 45%, var(--accent-text) 85%)',
+  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hi) 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -89,7 +89,7 @@ const playBtnStyle: React.CSSProperties = {
   padding: '15px 64px',
   borderRadius: 12,
   border: '1px solid var(--accent-border)',
-  background: 'linear-gradient(135deg, var(--accent-button-bg), var(--accent-dim))',
+  background: 'linear-gradient(135deg, var(--accent-button-bg), rgba(242,84,45,0.16))',
   color: 'var(--accent-text)',
   fontFamily: 'inherit',
   fontWeight: 700,
@@ -102,6 +102,6 @@ const playBtnStyle: React.CSSProperties = {
 
 const playBtnHover: React.CSSProperties = {
   transform: 'translateY(-2px)',
-  background: 'linear-gradient(135deg, var(--accent-glow), var(--accent-button-bg))',
+  background: 'linear-gradient(135deg, rgba(242,84,45,0.2), var(--accent-button-bg))',
   boxShadow: '0 8px 32px var(--accent-border)',
 }

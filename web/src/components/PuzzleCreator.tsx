@@ -186,7 +186,7 @@ const headerStyle: React.CSSProperties = {
 const titleStyle: React.CSSProperties = {
   fontWeight: 700,
   fontSize: 'clamp(1.18rem, 3.2vw, 1.3rem)',
-  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-text) 100%)',
+  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-hi) 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',

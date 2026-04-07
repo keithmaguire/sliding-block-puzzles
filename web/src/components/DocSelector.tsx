@@ -11,24 +11,20 @@ interface Props {
 
 const CATEGORY_COLORS = {
   howToPlay: {
-    color: '#22d3ee',
-    bg: 'rgba(6,182,212,0.08)',
+    bg: 'var(--accent-button-bg)',
   },
   puzzleFormat: {
-    color: '#a78bfa',
-    bg: 'rgba(139,92,246,0.08)',
+    bg: 'var(--accent-button-bg)',
   },
   architecture: {
-    color: '#fb923c',
-    bg: 'rgba(249,115,22,0.08)',
+    bg: 'var(--accent-button-bg)',
   },
   admin: {
-    color: 'var(--accent-text)',
     bg: 'var(--accent-button-bg)',
   },
 } as const
 
-const pages: { key: DocPageKey; title: string; description: string; icon: string; color: string; bg: string }[] = [
+const pages: { key: DocPageKey; title: string; description: string; icon: string; bg: string }[] = [
   {
     key: 'how-to-play',
     title: 'How to Play',
@@ -63,7 +59,6 @@ export function DocSelector({ onSelect, onBack, onAdmin }: Props) {
             title={p.title}
             description={p.description}
             icon={p.icon}
-            color={p.color}
             bg={p.bg}
             onClick={() => onSelect(p.key)}
           />
@@ -73,7 +68,6 @@ export function DocSelector({ onSelect, onBack, onAdmin }: Props) {
             title="Admin"
             description="Create puzzles and edit library metadata."
             icon="🛠️"
-            color={CATEGORY_COLORS.admin.color}
             bg={CATEGORY_COLORS.admin.bg}
             onClick={onAdmin}
           />
@@ -102,9 +96,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function DocCard({
-  title, description, icon, color, bg, onClick,
+  title, description, icon, bg, onClick,
 }: {
-  title: string; description: string; icon: string; color: string; bg: string; onClick: () => void
+  title: string; description: string; icon: string; bg: string; onClick: () => void
 }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -116,8 +110,8 @@ function DocCard({
         textAlign: 'left',
         padding: 'clamp(14px, 3vw, 18px)',
         borderRadius: 'var(--radius-md)',
-        border: `1px solid ${hovered ? color + '55' : color + '28'}`,
-        borderLeft: `3px solid ${color}`,
+        border: hovered ? '1px solid var(--accent-border)' : '1px solid var(--border)',
+        borderLeft: '3px solid var(--accent-border)',
         background: hovered ? bg : 'var(--surface)',
         color: 'inherit',
         width: '100%',
@@ -131,7 +125,7 @@ function DocCard({
     >
       <span style={{ fontSize: 'clamp(1.5rem, 4vw, 1.75rem)', lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{icon}</span>
       <div>
-        <div style={{ fontWeight: 700, marginBottom: 6, color: hovered ? color : 'var(--text)', fontSize: 'clamp(1.04rem, 2.5vw, 1.12rem)' }}>{title}</div>
+        <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text)', fontSize: 'clamp(1.04rem, 2.5vw, 1.12rem)' }}>{title}</div>
         <div style={{ color: 'var(--text-dim)', fontSize: 'clamp(0.94rem, 2vw, 1rem)', lineHeight: 1.6 }}>{description}</div>
       </div>
     </button>

@@ -340,9 +340,9 @@ const memoryBoxStyle: React.CSSProperties = {
 const clearBtnStyle: React.CSSProperties = {
   padding: '10px 16px',
   borderRadius: 'var(--radius-sm)',
-  border: '1px solid rgba(225,29,72,0.45)',
-  background: 'rgba(225,29,72,0.12)',
-  color: '#ffd4de',
+  border: '1px solid var(--danger-border)',
+  background: 'var(--danger-dim)',
+  color: 'var(--danger)',
   fontSize: '0.98rem',
   fontWeight: 600,
   cursor: 'pointer',

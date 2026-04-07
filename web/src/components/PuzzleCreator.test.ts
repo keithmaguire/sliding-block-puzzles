@@ -52,7 +52,7 @@ describe('PuzzleCreator authoring state', () => {
     expect(puzzle.id).toBe('my-puzzle')
     expect(puzzle.board).toEqual({ width: 5, height: 4 })
     expect(puzzle.blocks).toEqual([])
-    expect(puzzle.win_condition).toEqual({ type: 'position', positions: [{ match: { appearance: { type: 'plain', color: '#f0a500' } }, col: 0, row: 0 }] })
+    expect(puzzle.win_condition).toEqual({ type: 'position', positions: [{ match: { appearance: { type: 'plain', color: '#f2542d' } }, col: 0, row: 0 }] })
     expect(visualStateToPuzzleMetadata(state)).toEqual({
       title: 'My Puzzle',
       source: 'Custom',

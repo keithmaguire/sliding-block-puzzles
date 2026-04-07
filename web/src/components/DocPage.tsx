@@ -35,7 +35,7 @@ const headingStyle: React.CSSProperties = {
   margin: 0,
   fontSize: 'clamp(1.3rem, 3.2vw, 1.5rem)',
   fontWeight: 700,
-  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-text) 100%)',
+  background: 'linear-gradient(120deg, var(--accent) 0%, var(--accent-hi) 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',

@@ -44,15 +44,15 @@ interface VisualState {
 }
 
 const BLOCK_COLORS = [
-  '#f0a500',
-  '#06b6d4',
-  '#22c55e',
-  '#ec4899',
-  '#8b5cf6',
-  '#fb923c',
-  '#e11d48',
-  '#14b8a6',
-  '#78909c',
+  '#f2542d',
+  '#0e9594',
+  '#127475',
+  '#f5dfbb',
+  '#562c2c',
+  '#d96b52',
+  '#6faeab',
+  '#94584d',
+  '#8a6f62',
   '#000000',
   '#ffffff',
   '#ff0000',
@@ -308,7 +308,7 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                 onClick={() => set({ difficulty: d })}
                 style={{
                   width: 20, height: 20, borderRadius: '50%', border: 'none',
-                  background: d <= state.difficulty ? '#f0a500' : 'rgba(255,255,255,0.12)',
+                  background: d <= state.difficulty ? 'var(--accent)' : 'rgba(245,223,187,0.14)',
                   cursor: 'pointer', padding: 0,
                 }}
               />
@@ -581,7 +581,7 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                 onChange={(e) => {
                   const movable = e.target.checked
                   const patch: Partial<BlockConfig> = { movable }
-                  if (!movable && selectedBlock.color === BLOCK_COLORS[0]) patch.color = '#78909c'
+                  if (!movable && selectedBlock.color === BLOCK_COLORS[0]) patch.color = '#8a6f62'
                   set({
                     blocks: state.blocks.map((b) => (b.id === selectedBlock.id ? { ...b, ...patch } : b)),
                     removableBlocks: movable

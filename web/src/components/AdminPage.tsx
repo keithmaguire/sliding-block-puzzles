@@ -14,7 +14,7 @@ export function AdminPage({ onBack, onCreate, onEditLibraryMetadata }: Props) {
         <div style={infoPanelStyle}>
           <p style={infoParagraphStyle}>
             Built-in puzzle maintenance happens entirely through exported files and the app’s
-            metadata editor. There is no command-line index generator in the supported workflow.
+            metadata editor.
           </p>
           <ol style={infoListStyle}>
             <li>Create or edit a puzzle in <strong>Create new puzzle</strong>, then export its JSON file.</li>

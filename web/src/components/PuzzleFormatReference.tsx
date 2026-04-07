@@ -124,7 +124,7 @@ export function PuzzleFormatReference({ onBack }: Props) {
         ]} />
         <Pre>{`{ "type": "plain", "color": "#e74c3c" }
 
-{ "type": "text", "value": "R", "color": "#f0a500", "text_color": "black" }
+{ "type": "text", "value": "R", "color": "#f2542d", "text_color": "black" }
 
 { "type": "svg", "value": "<path d='M8 48 Q32 8 56 48' stroke='white' stroke-width='5' fill='none'/>", "color": "#1f2937" }`}</Pre>
         <p>
@@ -205,8 +205,8 @@ export function PuzzleFormatReference({ onBack }: Props) {
         <Pre>{`{
   "type": "adjacency",
   "positions": [
-    { "match": { "appearance": { "type": "plain", "color": "#f0a500" } }, "col": 0, "row": 0 },
-    { "match": { "appearance": { "type": "plain", "color": "#06b6d4" } }, "col": 1, "row": 0 }
+    { "match": { "appearance": { "type": "plain", "color": "#f2542d" } }, "col": 0, "row": 0 },
+    { "match": { "appearance": { "type": "plain", "color": "#0e9594" } }, "col": 1, "row": 0 }
   ]
 }`}</Pre>
 
