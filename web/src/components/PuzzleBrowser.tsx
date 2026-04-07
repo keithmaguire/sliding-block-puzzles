@@ -5,6 +5,8 @@ import { getProgress } from '../progress'
 import { buildPuzzleWithMetadata, getCustomPuzzleRecords, removeCustomPuzzle, getHiddenPuzzleIds, hidePuzzle, restoreHiddenPuzzle } from '../customPuzzles'
 import { difficultyColor } from './difficultyColor'
 import { fetchJsonWithCache } from '../cachedFetch'
+import { iconBtnStyle } from './sharedStyles'
+import { CogIcon } from './sharedUi'
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -372,20 +374,6 @@ const sectionLabelStyle: React.CSSProperties = {
   marginBottom: 8,
 }
 
-const iconBtnStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 40,
-  height: 40,
-  borderRadius: 'var(--radius-sm)',
-  border: '1px solid var(--border)',
-  background: 'transparent',
-  color: 'var(--text)',
-  padding: 0,
-  flexShrink: 0,
-}
-
 const cardBaseStyle: React.CSSProperties = {
   textAlign: 'left',
   padding: '12px 16px',
@@ -498,15 +486,6 @@ const restoreBtnStyle: React.CSSProperties = {
   color: 'var(--text)',
   fontSize: '0.92rem',
   cursor: 'pointer',
-}
-
-function CogIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="8" r="2.3" />
-      <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
-    </svg>
-  )
 }
 
 function EditIcon() {

@@ -15,6 +15,8 @@ import { appendDebugLog } from '../debugLog'
 import { shouldReloadGameState } from './gameScreenUtils'
 import type { GameLoadKey } from './gameScreenUtils'
 import { CELL_SIZE } from './blockGeometry'
+import { iconBtnStyle } from './sharedStyles'
+import { CogIcon } from './sharedUi'
 
 function hasDescriptionOnly(wc: WinCondition): boolean {
   if (wc.type === 'description_only') return true
@@ -430,20 +432,6 @@ const ghostBtnStyle: React.CSSProperties = {
   minHeight: 40,
 }
 
-const iconBtnStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 40,
-  height: 40,
-  borderRadius: 'var(--radius-sm)',
-  border: '1px solid var(--border)',
-  background: 'transparent',
-  color: 'var(--text)',
-  padding: 0,
-  flexShrink: 0,
-}
-
 const inlineSetupBtnStyle: React.CSSProperties = {
   padding: '9px 16px',
   borderRadius: 'var(--radius-sm)',
@@ -594,13 +582,4 @@ const winBtnStyle: React.CSSProperties = {
   fontSize: '1.02rem',
   fontWeight: 500,
   minHeight: 40,
-}
-
-function CogIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="8" r="2.3" />
-      <path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.62 3.62l.99.99M11.39 11.39l.99.99M12.38 3.62l-.99.99M4.61 11.39l-.99.99" />
-    </svg>
-  )
 }
