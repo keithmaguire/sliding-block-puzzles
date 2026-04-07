@@ -17,9 +17,9 @@ import {
 import { CUSTOM_GROUP_ID, CUSTOM_GROUP_TITLE, normalizeCustomMetadata } from '../customPuzzles'
 
 type CellValue = string
-type WinType = 'position' | 'adjacency' | 'description_only'
+export type WinType = 'position' | 'adjacency' | 'description_only'
 
-interface BlockConfig {
+export interface BlockConfig {
   id: string
   appearanceType: PuzzleAppearanceType
   color: string

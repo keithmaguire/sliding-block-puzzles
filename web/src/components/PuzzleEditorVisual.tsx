@@ -1,132 +1,20 @@
 import { useCallback, useRef } from 'react'
-import {
-  resolveBlockColor,
-  type PuzzleAppearanceType,
-  type PuzzleMovement,
-  type PuzzleTextColor,
-} from '../puzzleTypes'
+import { resolveBlockColor } from '../puzzleTypes'
 import { joinedCellBorderRadius, joinedCellBorderStyle } from './blockGeometry'
-import { clearedWinGrid, toggleEraseTool } from './puzzleEditorState'
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-type CellValue = string // blockId | ''
-type WinType = 'position' | 'adjacency' | 'description_only'
-
-interface BlockConfig {
-  id: string
-  appearanceType: PuzzleAppearanceType
-  color: string
-  movable: boolean
-  movement?: PuzzleMovement
-  appearanceValue: string
-  textColor: PuzzleTextColor
-}
-
-interface VisualState {
-  title: string
-  puzzleId: string
-  source: string
-  difficulty: number
-  minMoves: string
-  width: number
-  height: number
-  startGrid: CellValue[][]
-  winGrid: CellValue[][] // '?' = don't-care
-  blocks: BlockConfig[]
-  winType: WinType
-  activeTool: string | null // 'erase' | blockId | null
-  activePhase: 'start' | 'win'
-  selectedBlockId: string | null
-  winDescription: string
-  allowShuffle: boolean
-  removableBlocks: string[]  // block IDs the player may remove before starting
-}
-
-const BLOCK_COLORS = [
-  '#f2542d',
-  '#0e9594',
-  '#127475',
-  '#f5dfbb',
-  '#562c2c',
-  '#d96b52',
-  '#6faeab',
-  '#94584d',
-  '#8a6f62',
-  '#000000',
-  '#ffffff',
-  '#ff0000',
-  '#0000ff',
-  '#008000',
-]
-
-const BACKGROUND_COLOR = 'background'
-
-/** Convert a 0-based index to a block ID: 0→A, 25→Z, 26→AA, 51→AZ, 52→BA, … */
-function indexToBlockId(n: number): string {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  let result = ''
-  n += 1 // bijective base-26: no zero digit
-  while (n > 0) {
-    n--
-    result = letters[n % 26] + result
-    n = Math.floor(n / 26)
-  }
-  return result
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function blockDisplayValue(block: BlockConfig): string {
-  if (block.appearanceType === 'text' && block.appearanceValue.trim()) return block.appearanceValue
-  if (block.appearanceType === 'svg') return 'SVG'
-  return block.id
-}
-
-function usedTargetIds(state: VisualState): string[] {
-  if (state.winType !== 'position') return []
-  const ids = new Set<string>()
-  for (const row of state.winGrid) {
-    for (const cell of row) {
-      if (cell !== '' && cell !== '?') ids.add(cell)
-    }
-  }
-  return [...ids]
-}
-
-function nextBlockId(blocks: BlockConfig[]): string {
-  const used = new Set(blocks.map((b) => b.id))
-  for (let i = 0; ; i++) {
-    const id = indexToBlockId(i)
-    if (!used.has(id)) return id
-  }
-}
-
-function cellsForBlockInGrid(grid: CellValue[][], blockId: string): { col: number; row: number }[] {
-  const cells: { col: number; row: number }[] = []
-  for (let row = 0; row < grid.length; row++) {
-    for (let col = 0; col < (grid[row]?.length ?? 0); col++) {
-      if (grid[row][col] === blockId) cells.push({ col, row })
-    }
-  }
-  return cells
-}
-
-function removeBlockFromVisualState(state: VisualState, id: string): VisualState {
-  const newBlocks = state.blocks.filter((block) => block.id !== id)
-  const newStartGrid = state.startGrid.map((row) => row.map((cell) => (cell === id ? '' : cell)))
-  const newWinGrid = state.winGrid.map((row) => row.map((cell) => (cell === id ? '?' : cell)))
-  const nextTool = newBlocks[0]?.id ?? 'erase'
-  return {
-    ...state,
-    blocks: newBlocks,
-    startGrid: newStartGrid,
-    winGrid: newWinGrid,
-    activeTool: nextTool,
-    selectedBlockId: null,
-    removableBlocks: state.removableBlocks.filter((rid) => rid !== id),
-  }
-}
+import {
+  BACKGROUND_COLOR,
+  BLOCK_COLORS,
+  blockDisplayValue,
+  cellsForBlockInGrid,
+  clearedWinGrid,
+  nextBlockId,
+  removeBlockFromVisualState,
+  toggleEraseTool,
+  usedTargetIds,
+  type BlockConfig,
+  type VisualState,
+  type WinType,
+} from './puzzleEditorState'
 
 // ── Main component ────────────────────────────────────────────────────────────
 
