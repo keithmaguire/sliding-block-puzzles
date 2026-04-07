@@ -94,6 +94,7 @@ func cloneGameState(gs *GameState) *GameState {
 		blocks[id] = &Block{
 			ID:         b.ID,
 			Movable:    b.Movable,
+			Movement:   b.Movement,
 			Appearance: b.Appearance,
 			Cells:      cells,
 		}

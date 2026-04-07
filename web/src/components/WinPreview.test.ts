@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { computeRenderBlocks } from './winPreviewModel'
-import type { PuzzleBlock, WinCondition } from '../puzzleTypes'
+import { WinPreview } from './WinPreview'
+import type { PuzzleBlock, PuzzleJSON, WinCondition } from '../puzzleTypes'
 
 const blocks: PuzzleBlock[] = [
   { id: 'A', movable: true, cells: [[0, 0], [1, 0]], appearance: { type: 'plain', color: '#f0a500' } },
@@ -31,5 +34,49 @@ describe('computeRenderBlocks', () => {
 
     expect(rendered[0].isGhost).toBe(true)
     expect(rendered[0].cells).toEqual([{ col: 1, row: 2 }, { col: 2, row: 2 }])
+  })
+})
+
+describe('WinPreview', () => {
+  it('renders safe svg appearance fragments in target previews', () => {
+    const puzzle: PuzzleJSON = {
+      id: 'svg-preview',
+      board: { width: 3, height: 3 },
+      blocks: [
+        {
+          id: 'S',
+          movable: true,
+          cells: [[0, 0]],
+          appearance: { type: 'svg', color: '#111827', value: "<circle cx='8' cy='8' r='3' fill='white'/>" },
+        },
+      ],
+      win_condition: { type: 'position', positions: [{ match: { appearance: { type: 'svg', value: "<circle cx='8' cy='8' r='3' fill='white'/>" } }, col: 1, row: 1 }] },
+    }
+
+    const html = renderToStaticMarkup(createElement(WinPreview, { puzzle }))
+
+    expect(html).toContain('<circle')
+    expect(html).toContain("fill='white'")
+  })
+
+  it('does not render unsafe svg appearance fragments in target previews', () => {
+    const puzzle: PuzzleJSON = {
+      id: 'unsafe-svg-preview',
+      board: { width: 3, height: 3 },
+      blocks: [
+        {
+          id: 'S',
+          movable: true,
+          cells: [[0, 0]],
+          appearance: { type: 'svg', color: '#111827', value: '<path onload="alert(1)" d="M0 0"/>' },
+        },
+      ],
+      win_condition: { type: 'position', positions: [{ match: { appearance: { type: 'svg' } }, col: 1, row: 1 }] },
+    }
+
+    const html = renderToStaticMarkup(createElement(WinPreview, { puzzle }))
+
+    expect(html).not.toContain('onload')
+    expect(html).not.toContain('alert')
   })
 })
