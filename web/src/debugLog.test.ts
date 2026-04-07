@@ -1,18 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { appendDebugLog, clearDebugLog, getDebugLogEntries, getDebugLogText, isDebugEnabled, setDebugEnabled } from './debugLog'
 import { clearLocalMemory } from './localMemory'
-
-function makeStorage(): Storage {
-  const store: Record<string, string> = {}
-  return {
-    getItem: (k: string) => store[k] ?? null,
-    setItem: (k: string, v: string) => { store[k] = v },
-    removeItem: (k: string) => { delete store[k] },
-    clear: () => { Object.keys(store).forEach((k) => delete store[k]) },
-    key: (i: number) => Object.keys(store)[i] ?? null,
-    get length() { return Object.keys(store).length },
-  } as Storage
-}
+import { makeStorage } from './testStorage'
 
 let storage: Storage
 
