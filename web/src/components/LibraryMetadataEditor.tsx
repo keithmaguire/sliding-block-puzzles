@@ -1,31 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { normalizePuzzleJSONInput, type CustomPuzzleRecord, type PuzzleIndex } from '../puzzleTypes'
+import { normalizePuzzleJSONInput, type PuzzleIndex } from '../puzzleTypes'
 import { fetchJsonWithCache } from '../cachedFetch'
 import { getCustomPuzzleRecords, updateCustomPuzzleMetadata } from '../customPuzzles'
 import { DocPage } from './DocPage'
+import {
+  CUSTOM_GROUP_TITLE,
+  DIFFICULTY_OPTIONS,
+  buildExportIndex,
+  buildGroups,
+  buildRows,
+  findInvalidRows,
+  type EditorRow,
+  type GroupOption,
+  type RowOrigin,
+} from './libraryEditorUtils'
 
 const BASE_URL = import.meta.env.BASE_URL
-const CUSTOM_GROUP_ID = 'custom-local'
-const CUSTOM_GROUP_TITLE = 'Custom'
-const DIFFICULTY_OPTIONS = [1, 2, 3, 4, 5]
-
-type RowOrigin = 'built-in' | 'custom'
-
-interface EditorRow {
-  origin: RowOrigin
-  id: string
-  file: string
-  title: string
-  source: string
-  difficulty: number
-  groupId: string
-  minMoves?: number
-}
-
-interface GroupOption {
-  id: string
-  title: string
-}
 
 interface Props {
   onBack: () => void
@@ -248,32 +238,6 @@ export function LibraryMetadataEditor({ onBack }: Props) {
   )
 }
 
-export function buildRows(index: PuzzleIndex, customPuzzles: CustomPuzzleRecord[]): EditorRow[] {
-  const customRows = customPuzzles.map((record) => ({
-    origin: 'custom' as const,
-    id: record.puzzle.id,
-    file: '',
-    title: record.metadata.title,
-    source: record.metadata.source,
-    difficulty: record.metadata.difficulty,
-    groupId: record.metadata.group_id || CUSTOM_GROUP_ID,
-    minMoves: record.puzzle.min_moves,
-  }))
-
-  const builtInRows = index.puzzles.map((row) => ({
-    origin: 'built-in' as const,
-    id: row.id,
-    file: row.file,
-    title: row.title,
-    source: row.source,
-    difficulty: row.difficulty,
-    groupId: row.group_id,
-    minMoves: row.min_moves,
-  }))
-
-  return [...builtInRows, ...customRows]
-}
-
 function emptyIndex(): PuzzleIndex {
   return {
     version: 3,
@@ -300,70 +264,6 @@ function buildImportedRow(
     difficulty: 1,
     groupId,
     minMoves: puzzle.min_moves,
-  }
-}
-
-export function buildGroups(index: PuzzleIndex, customPuzzles: CustomPuzzleRecord[], rows: EditorRow[]): GroupOption[] {
-  const base = [
-    ...index.registries.groups,
-    ...customPuzzles
-      .map((record) => ({
-        id: record.metadata.group_id || CUSTOM_GROUP_ID,
-        title: record.metadata.group_title || CUSTOM_GROUP_TITLE,
-      })),
-  ]
-  if ((customPuzzles.length > 0 || rows.some((row) => row.groupId === CUSTOM_GROUP_ID)) && !base.some((group) => group.id === CUSTOM_GROUP_ID)) {
-    base.push({ id: CUSTOM_GROUP_ID, title: CUSTOM_GROUP_TITLE })
-  }
-
-  const seen = new Set<string>()
-  return base.filter((group) => {
-    if (seen.has(group.id)) return false
-    seen.add(group.id)
-    return true
-  })
-}
-
-export function findInvalidRows(
-  rows: EditorRow[],
-  difficulties: number[],
-  groups: GroupOption[],
-): EditorRow[] {
-  return rows.filter((row) => (
-    !difficulties.includes(row.difficulty) ||
-    !groups.some((group) => group.id === row.groupId) ||
-    row.title.trim() === ''
-  ))
-}
-
-export function buildExportIndex(
-  rows: EditorRow[],
-  groups: GroupOption[],
-): PuzzleIndex {
-  const builtInRows = rows.filter((row) => row.origin === 'built-in')
-  const usedGroupIds = new Set(builtInRows.map((row) => row.groupId))
-  const exportGroups = groups.filter((group) => group.id !== CUSTOM_GROUP_ID || usedGroupIds.has(group.id))
-  return {
-    version: 3,
-    registries: {
-      difficulties: [...DIFFICULTY_OPTIONS],
-      groups: exportGroups,
-    },
-    puzzles: builtInRows
-      .map((row) => ({
-        id: row.id,
-        file: row.file,
-        title: row.title.trim(),
-        source: row.source,
-        difficulty: row.difficulty,
-        group_id: row.groupId,
-        ...(row.minMoves != null ? { min_moves: row.minMoves } : {}),
-      }))
-      .sort((a, b) => (
-        a.group_id === b.group_id
-          ? (a.title === b.title ? a.id.localeCompare(b.id) : a.title.localeCompare(b.title))
-          : a.group_id.localeCompare(b.group_id)
-      )),
   }
 }
 
@@ -612,9 +512,9 @@ const miniBtnStyle: React.CSSProperties = {
 
 const miniDangerStyle: React.CSSProperties = {
   ...miniBtnStyle,
-  border: '1px solid rgba(248,113,113,0.35)',
-  background: 'rgba(248,113,113,0.08)',
-  color: '#f87171',
+  border: '1px solid var(--danger-border)',
+  background: 'var(--danger-dim)',
+  color: 'var(--danger)',
 }
 
 const groupEditRowStyle: React.CSSProperties = {
@@ -657,9 +557,9 @@ const warningBox: React.CSSProperties = {
 
 const errorBox: React.CSSProperties = {
   ...infoBox,
-  border: '1px solid rgba(248,113,113,0.34)',
-  background: 'rgba(248,113,113,0.08)',
-  color: '#f87171',
+  border: '1px solid var(--danger-border)',
+  background: 'var(--danger-dim)',
+  color: 'var(--danger)',
 }
 
 const tableWrapStyle: React.CSSProperties = {

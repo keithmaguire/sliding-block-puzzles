@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { CustomPuzzleRecord, PuzzleIndex } from '../puzzleTypes'
-import { buildExportIndex, buildGroups, buildRows, findInvalidRows } from './LibraryMetadataEditor'
+import { buildExportIndex, buildGroups, buildRows, findInvalidRows } from './libraryEditorUtils'
 
 const baseIndex: PuzzleIndex = {
   version: 3,

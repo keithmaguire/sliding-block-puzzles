@@ -12,6 +12,9 @@ import { difficultyColor } from './difficultyColor'
 import { clearPuzzleSession, getPuzzleSession, savePuzzleSession, serializeWasmBlocks, sessionBlocksToWasm, shouldPersistPuzzleSession } from '../puzzleSession'
 import { computeBoardDisplayWidth, countRemovedSetupBlocks, getInitialShuffleAvailability } from './gameSetupState'
 import { appendDebugLog } from '../debugLog'
+import { shouldReloadGameState } from './gameScreenUtils'
+import type { GameLoadKey } from './gameScreenUtils'
+import { CELL_SIZE } from './blockGeometry'
 
 function hasDescriptionOnly(wc: WinCondition): boolean {
   if (wc.type === 'description_only') return true
@@ -34,13 +37,6 @@ interface LoadedGameState {
   shuffleAvailable: boolean
   won: boolean
 }
-
-interface GameLoadKey {
-  api: PuzzleApi
-  puzzleId: string
-}
-
-const CELL = 64 // must match BlockShape.tsx
 
 function loadPlayState(api: PuzzleApi, basePuzzle: PlayablePuzzle, session = getPuzzleSession(basePuzzle.id)) {
   const playPuzzle = session?.puzzle ?? basePuzzle
@@ -89,26 +85,18 @@ function getLoadedGameState(api: PuzzleApi, puzzle: PlayablePuzzle): LoadedGameS
   }
 }
 
-export function shouldReloadGameState(lastLoaded: GameLoadKey | null, api: PuzzleApi, puzzleId: string): boolean {
-  return lastLoaded?.api !== api || lastLoaded?.puzzleId !== puzzleId
-}
-
 function readViewport() {
   if (typeof window === 'undefined') return { width: 0, height: 0 }
   return { width: window.innerWidth, height: window.innerHeight }
 }
 
 export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
-  const [initialLoad] = useState<LoadedGameState>(() => getLoadedGameState(api, puzzle))
+  const [gameLoad, setGameLoad] = useState<LoadedGameState>(() => getLoadedGameState(api, puzzle))
   const [viewport, setViewport] = useState(readViewport)
-  const [playPuzzle, setPlayPuzzle] = useState<PlayablePuzzle>(initialLoad.playPuzzle)
-  const [state, setState] = useState<WasmOk | null>(initialLoad.restored)
-  const [won, setWon] = useState(initialLoad.won)
-  const [loadError, setLoadError] = useState<string | null>(initialLoad.loadError)
-  const [removableIds, setRemovableIds] = useState<Set<string>>(initialLoad.removableIds)
-  const [shuffleAvailable, setShuffleAvailable] = useState(initialLoad.shuffleAvailable)
-  const progressRecorded = useRef(initialLoad.won)
+  const progressRecorded = useRef(gameLoad.won)
   const lastLoadedRef = useRef<GameLoadKey>({ api, puzzleId: puzzle.id })
+
+  const { playPuzzle, restored: state, won, loadError, removableIds, shuffleAvailable } = gameLoad
 
   useEffect(() => {
     function handleResize() {
@@ -123,12 +111,8 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
 
     lastLoadedRef.current = { api, puzzleId: puzzle.id }
     const loaded = getLoadedGameState(api, puzzle)
-    setPlayPuzzle(loaded.playPuzzle)
-    setState(loaded.restored)
-    setWon(loaded.won)
-    setLoadError(loaded.loadError)
-    setRemovableIds(loaded.removableIds)
-    setShuffleAvailable(loaded.shuffleAvailable)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGameLoad(loaded) // single atomic update driven by WASM engine reload
     progressRecorded.current = loaded.won
   }, [api, puzzle])
 
@@ -146,30 +130,24 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     const r = api.getState()
     if (!r.ok) return
     appendDebugLog('game.getState', { puzzleId: playPuzzle.id, moveCount: r.moveCount, won: r.won, blockIds: Object.keys(r.blocks) })
-    setState(r)
     if (r.won && !progressRecorded.current) {
       progressRecorded.current = true
       recordSolve(playPuzzle.id, r.moveCount)
-      setWon(true)
     }
+    setGameLoad(g => ({ ...g, restored: r, won: g.won || r.won }))
   }
 
   function applyLoadedPuzzle(nextPuzzle: PlayablePuzzle) {
     const loaded = api.loadPuzzle(JSON.stringify(nextPuzzle))
     appendDebugLog('game.applyLoadedPuzzle', { puzzleId: nextPuzzle.id, ok: loaded.ok, blockCount: nextPuzzle.blocks.length })
-    setPlayPuzzle(nextPuzzle)
-    setRemovableIds(new Set(getSupportedSetupOptions(nextPuzzle)?.removable_blocks ?? []))
+    const nextRemovableIds = new Set(getSupportedSetupOptions(nextPuzzle)?.removable_blocks ?? [])
     if (loaded.ok) {
-      setState(loaded)
-      setLoadError(null)
-      setWon(loaded.won)
       progressRecorded.current = loaded.won
       if (loaded.won) clearPuzzleSession(nextPuzzle.id)
+      setGameLoad(g => ({ ...g, playPuzzle: nextPuzzle, removableIds: nextRemovableIds, restored: loaded, loadError: null, won: loaded.won }))
     } else {
-      setState(null)
-      setLoadError(loaded.error)
-      setWon(false)
       progressRecorded.current = false
+      setGameLoad(g => ({ ...g, playPuzzle: nextPuzzle, removableIds: nextRemovableIds, restored: null, loadError: loaded.error, won: false }))
     }
   }
 
@@ -184,8 +162,7 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     const r = api.undo()
     if (r.ok) {
       appendDebugLog('game.undo', { puzzleId: playPuzzle.id, moveCount: r.moveCount, won: r.won })
-      setState(r)
-      if (!r.won) setWon(false)
+      setGameLoad(g => ({ ...g, restored: r, won: r.won ? g.won : false }))
     }
   }
 
@@ -193,9 +170,8 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     const r = api.reset()
     if (r.ok) {
       appendDebugLog('game.reset', { puzzleId: playPuzzle.id, moveCount: r.moveCount, won: r.won })
-      setState(r)
-      setWon(false)
       progressRecorded.current = false
+      setGameLoad(g => ({ ...g, restored: r, won: false }))
     }
   }
 
@@ -206,12 +182,12 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
     }
     appendDebugLog('game.manualWin', { puzzleId: playPuzzle.id, moveCount })
     clearPuzzleSession(playPuzzle.id)
-    setWon(true)
+    setGameLoad(g => ({ ...g, won: true }))
   }
 
   const moveCount = state?.moveCount ?? 0
   const diff = playPuzzle.difficulty ?? 1
-  const boardMaxW = playPuzzle.board.width * CELL
+  const boardMaxW = playPuzzle.board.width * CELL_SIZE
   const boardDisplayWidth = computeBoardDisplayWidth(
     viewport.width,
     viewport.height,
@@ -231,20 +207,19 @@ export function GameScreen({ puzzle, api, onBack, onDocs }: GameScreenProps) {
   function handleShuffle() {
     appendDebugLog('game.shuffle', { puzzleId: playPuzzle.id })
     applyLoadedPuzzle(shufflePuzzle(playPuzzle))
-    setShuffleAvailable(false)
-    setWon(false)
+    setGameLoad(g => ({ ...g, shuffleAvailable: false, won: false }))
   }
 
   function handleRemoveBlock(blockId: string) {
     appendDebugLog('game.removeBlock', { puzzleId: playPuzzle.id, blockId })
     applyLoadedPuzzle(removeBlocks(playPuzzle, [blockId]))
-    setWon(false)
+    setGameLoad(g => ({ ...g, won: false }))
   }
 
   function handleRestoreRemovedBlocks() {
     appendDebugLog('game.restoreRemovedBlocks', { puzzleId: puzzle.id })
     applyLoadedPuzzle(puzzle)
-    setWon(false)
+    setGameLoad(g => ({ ...g, won: false }))
   }
 
   function handleBoardBlockPointerDown(blockId: string, e: React.PointerEvent<SVGGElement>) {
@@ -535,8 +510,8 @@ const boardFrameStyle: React.CSSProperties = {
   padding: 12,
   borderRadius: '20px',
   background: 'var(--frame-bg)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  boxShadow: '0 12px 28px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.05)',
+  border: '1px solid rgba(245,223,187,0.22)',
+  boxShadow: '0 12px 28px rgba(242,84,45,0.22), inset 0 1px 0 rgba(245,223,187,0.14)',
 }
 
 const hudStyle: React.CSSProperties = {
@@ -588,8 +563,7 @@ const winBannerStyle: React.CSSProperties = {
   marginTop: 20,
   padding: 'clamp(16px, 4vw, 24px) clamp(20px, 6vw, 32px)',
   borderRadius: 'var(--radius-lg)',
-  // Keep the win banner's dark green gradient as a decorative one-off treatment.
-  background: 'linear-gradient(135deg, #14532d 0%, #166534 100%)',
+  background: 'linear-gradient(135deg, rgba(14,149,148,0.18), rgba(18,116,117,0.2))',
   border: '1px solid var(--success-border)',
   display: 'flex',
   flexDirection: 'column',

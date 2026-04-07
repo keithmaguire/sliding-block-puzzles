@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { computeBoardDisplayWidth, countRemovedSetupBlocks, getInitialShuffleAvailability } from './gameSetupState'
 import type { PlayablePuzzle } from '../puzzleTypes'
-import { shouldReloadGameState } from './GameScreen'
+import { shouldReloadGameState } from './gameScreenUtils'
 import type { PuzzleApi } from '../wasm'
 
 function makePuzzle(blockIds: string[], allowShuffle = false): PlayablePuzzle {
