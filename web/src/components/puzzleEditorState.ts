@@ -49,6 +49,11 @@ export interface VisualState {
   removableBlocks: string[]
 }
 
+export const EDITOR_BOARD_MIN_SIZE = 2
+export const EDITOR_BOARD_MAX_SIZE = 12
+export const EDITOR_CELL_SIZE = 40
+export const FIXED_BLOCK_FALLBACK_COLOR = '#8a6f62'
+
 const BLOCK_COLORS = [
   '#f2542d',
   '#0e9594',
@@ -58,7 +63,7 @@ const BLOCK_COLORS = [
   '#d96b52',
   '#6faeab',
   '#94584d',
-  '#8a6f62',
+  FIXED_BLOCK_FALLBACK_COLOR,
   '#000000',
   '#ffffff',
   '#ff0000',

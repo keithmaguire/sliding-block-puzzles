@@ -1,8 +1,9 @@
 import type { CustomPuzzleRecord, PuzzleIndex } from '../puzzleTypes'
 import { CUSTOM_GROUP_ID, CUSTOM_GROUP_TITLE } from '../customPuzzles'
+import { DIFFICULTY_OPTIONS } from '../puzzleConstants'
 
 export { CUSTOM_GROUP_ID, CUSTOM_GROUP_TITLE }
-export const DIFFICULTY_OPTIONS = [1, 2, 3, 4, 5]
+export { DIFFICULTY_OPTIONS }
 
 export type RowOrigin = 'built-in' | 'custom'
 

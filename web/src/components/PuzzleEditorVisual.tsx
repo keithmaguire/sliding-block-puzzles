@@ -1,9 +1,13 @@
 import { useCallback, useRef } from 'react'
-import { resolveBlockColor } from '../puzzleTypes'
+import { resolveBlockColor, type PuzzleAppearanceType } from '../puzzleTypes'
 import { joinedCellBorderRadius, joinedCellBorderStyle } from './blockGeometry'
 import {
   BACKGROUND_COLOR,
   BLOCK_COLORS,
+  EDITOR_BOARD_MAX_SIZE,
+  EDITOR_BOARD_MIN_SIZE,
+  EDITOR_CELL_SIZE,
+  FIXED_BLOCK_FALLBACK_COLOR,
   blockDisplayValue,
   cellsForBlockInGrid,
   clearedWinGrid,
@@ -15,6 +19,7 @@ import {
   type VisualState,
   type WinType,
 } from './puzzleEditorState'
+import { DIFFICULTY_OPTIONS } from '../puzzleConstants'
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -57,14 +62,14 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
     }
   }
 
-  function placeWinBlock(grid: CellValue[][], row: number, col: number, blockId: string, s: VisualState) {
+  function placeWinBlock(grid: VisualState['winGrid'], row: number, col: number, blockId: string, s: VisualState) {
     for (let r = 0; r < s.height; r++)
       for (let c = 0; c < s.width; c++)
         if (grid[r][c] === blockId) grid[r][c] = '?'
     paintBlockShape(grid, row, col, blockId, s)
   }
 
-  function paintBlockShape(grid: CellValue[][], row: number, col: number, blockId: string, s: VisualState) {
+  function paintBlockShape(grid: VisualState['winGrid'], row: number, col: number, blockId: string, s: VisualState) {
     // Get the block's cells from startGrid
     const cells: [number, number][] = []
     for (let r = 0; r < s.height; r++)
@@ -134,8 +139,8 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
 
   // Board resize
   function resizeBoard(newW: number, newH: number) {
-    const w = Math.max(2, Math.min(12, newW))
-    const h = Math.max(2, Math.min(12, newH))
+    const w = Math.max(EDITOR_BOARD_MIN_SIZE, Math.min(EDITOR_BOARD_MAX_SIZE, newW))
+    const h = Math.max(EDITOR_BOARD_MIN_SIZE, Math.min(EDITOR_BOARD_MAX_SIZE, newH))
     const sg = Array.from({ length: h }, (_, r) =>
       Array.from({ length: w }, (_, c) => (r < state.height && c < state.width ? state.startGrid[r][c] : '')),
     )
@@ -162,7 +167,6 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
   }
 
   const selectedBlock = state.blocks.find((b) => b.id === state.selectedBlockId) ?? null
-  const CELL = 40
 
   return (
     <div onMouseUp={handleMouseUp} style={{ userSelect: 'none' }}>
@@ -190,7 +194,7 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <label style={fieldLabel}>Difficulty</label>
           <div style={{ display: 'flex', gap: 3 }}>
-            {[1, 2, 3, 4, 5].map((d) => (
+            {DIFFICULTY_OPTIONS.map((d) => (
               <button
                 key={d}
                 onClick={() => set({ difficulty: d })}
@@ -315,8 +319,8 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                     onMouseDown={() => handleCellMouseDown(row, col)}
                     onMouseEnter={(e) => handleCellMouseEnter(row, col, e)}
                     style={{
-                      width: CELL,
-                      height: CELL,
+                      width: EDITOR_CELL_SIZE,
+                      height: EDITOR_CELL_SIZE,
                       background: bg,
                       ...(blk
                         ? joinedCellBorderStyle(blockCells, col, row, 1, blockBorderColor)
@@ -469,7 +473,7 @@ export function PuzzleEditorVisual({ state, onChange, onUndo, canUndo = false }:
                 onChange={(e) => {
                   const movable = e.target.checked
                   const patch: Partial<BlockConfig> = { movable }
-                  if (!movable && selectedBlock.color === BLOCK_COLORS[0]) patch.color = '#8a6f62'
+                  if (!movable && selectedBlock.color === BLOCK_COLORS[0]) patch.color = FIXED_BLOCK_FALLBACK_COLOR
                   set({
                     blocks: state.blocks.map((b) => (b.id === selectedBlock.id ? { ...b, ...patch } : b)),
                     removableBlocks: movable
