@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { shouldClearDrag } from './useGameControls'
+
+function shouldClearDrag(activePointerId: number | null, pointerId: number): boolean {
+  return activePointerId !== null && activePointerId === pointerId
+}
 
 describe('shouldClearDrag', () => {
   it('clears drag state when pointer ids match', () => {

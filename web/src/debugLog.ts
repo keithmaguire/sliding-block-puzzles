@@ -1,4 +1,4 @@
-import { DEBUG_ENABLED_KEY, DEBUG_LOG_KEY } from './localMemory'
+import { DEBUG_ENABLED_KEY, DEBUG_LOG_KEY, loadJsonFromStorage, saveJsonToStorage } from './localMemory'
 
 const MAX_ENTRIES = 250
 
@@ -19,31 +19,19 @@ function loadEnabled(): boolean {
 }
 
 function saveEnabled(enabled: boolean) {
-  localStorage.setItem(DEBUG_ENABLED_KEY, String(enabled))
+  try {
+    localStorage.setItem(DEBUG_ENABLED_KEY, String(enabled))
+  } catch {
+    // silently fail — debug state is non-critical
+  }
 }
 
 function loadEntries(): string[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(DEBUG_LOG_KEY) ?? '[]') as unknown
-    return Array.isArray(raw) ? raw.filter((entry): entry is string => typeof entry === 'string') : []
-  } catch {
-    return []
-  }
+  const raw = loadJsonFromStorage<unknown>(DEBUG_LOG_KEY, [])
+  return Array.isArray(raw) ? raw.filter((entry): entry is string => typeof entry === 'string') : []
 }
 
-function saveEntries(entries: string[]) {
-  localStorage.setItem(DEBUG_LOG_KEY, JSON.stringify(entries))
-}
-
-function formatDetails(details: unknown): string {
-  if (details == null) return ''
-  if (typeof details === 'string') return details
-  try {
-    return JSON.stringify(details)
-  } catch {
-    return String(details)
-  }
-}
+const saveEntries = (entries: string[]) => saveJsonToStorage(DEBUG_LOG_KEY, entries)
 
 export function isDebugEnabled(): boolean {
   return loadEnabled()
@@ -73,7 +61,12 @@ export function clearDebugLog(): void {
 export function appendDebugLog(event: string, details?: unknown): void {
   if (!isDebugEnabled()) return
 
-  const entry = `[${new Date().toISOString()}] ${event}${details == null ? '' : ` ${formatDetails(details)}`}`
+  let detailStr = ''
+  if (details != null) {
+    if (typeof details === 'string') detailStr = details
+    else try { detailStr = JSON.stringify(details) } catch { detailStr = String(details) }
+  }
+  const entry = `[${new Date().toISOString()}] ${event}${detailStr ? ` ${detailStr}` : ''}`
   const nextEntries = [...loadEntries(), entry].slice(-MAX_ENTRIES)
   saveEntries(nextEntries)
   notifyListeners()

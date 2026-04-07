@@ -1,5 +1,5 @@
 // Progress persistence via localStorage.
-import { PROGRESS_KEY as KEY } from './localMemory'
+import { PROGRESS_KEY as KEY, loadJsonFromStorage, saveJsonToStorage } from './localMemory'
 
 export interface PuzzleProgress {
   solved: boolean
@@ -8,17 +8,8 @@ export interface PuzzleProgress {
 
 type ProgressStore = Record<string, PuzzleProgress>
 
-function load(): ProgressStore {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '{}') as ProgressStore
-  } catch {
-    return {}
-  }
-}
-
-function save(store: ProgressStore) {
-  localStorage.setItem(KEY, JSON.stringify(store))
-}
+const load = (): ProgressStore => loadJsonFromStorage<ProgressStore>(KEY, {})
+const save = (store: ProgressStore) => saveJsonToStorage(KEY, store)
 
 export function getProgress(puzzleId: string): PuzzleProgress {
   return load()[puzzleId] ?? { solved: false, bestMoves: 0 }

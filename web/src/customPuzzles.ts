@@ -1,8 +1,18 @@
 import type { CustomPuzzleRecord, PlayablePuzzle, PuzzleJSON, PuzzleMetadata } from './puzzleTypes'
-import { CUSTOM_PUZZLES_KEY as KEY, HIDDEN_PUZZLES_KEY as HIDDEN_KEY } from './localMemory'
+import { CUSTOM_PUZZLES_KEY as KEY, HIDDEN_PUZZLES_KEY as HIDDEN_KEY, loadJsonFromStorage, saveJsonToStorage } from './localMemory'
 
-const DEFAULT_GROUP_ID = 'custom-local'
-const DEFAULT_GROUP_TITLE = 'Custom'
+export const CUSTOM_GROUP_ID = 'custom-local'
+export const CUSTOM_GROUP_TITLE = 'Custom'
+
+export function normalizeCustomMetadata(metadata: PuzzleMetadata, titleFallback: string): PuzzleMetadata {
+  return {
+    title: metadata.title.trim() || titleFallback,
+    source: metadata.source.trim() || 'Custom',
+    difficulty: Math.max(1, Math.trunc(metadata.difficulty || 1)),
+    group_id: metadata.group_id || CUSTOM_GROUP_ID,
+    group_title: metadata.group_title?.trim() || CUSTOM_GROUP_TITLE,
+  }
+}
 
 function isPuzzleMetadata(raw: unknown): raw is PuzzleMetadata {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false
@@ -26,25 +36,14 @@ function isCurrentCustomPuzzleRecord(entry: unknown): entry is CustomPuzzleRecor
 }
 
 function readCustomPuzzleRecords(): CustomPuzzleRecord[] {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(KEY) ?? '[]') as unknown
-    if (!Array.isArray(parsed)) return []
-    return parsed
-      .filter((entry): entry is CustomPuzzleRecord => isCurrentCustomPuzzleRecord(entry))
-      .map((entry) => ({
-        puzzle: stripPuzzleMetadata(entry.puzzle),
-        metadata: {
-          ...entry.metadata,
-          title: entry.metadata.title.trim() || entry.puzzle.id,
-          source: entry.metadata.source.trim() || 'Custom',
-          difficulty: Math.max(1, Math.trunc(entry.metadata.difficulty || 1)),
-          group_id: entry.metadata.group_id || DEFAULT_GROUP_ID,
-          group_title: entry.metadata.group_title?.trim() || DEFAULT_GROUP_TITLE,
-        },
-      }))
-  } catch {
-    return []
-  }
+  const parsed = loadJsonFromStorage<unknown>(KEY, [])
+  if (!Array.isArray(parsed)) return []
+  return parsed
+    .filter((entry): entry is CustomPuzzleRecord => isCurrentCustomPuzzleRecord(entry))
+    .map((entry) => ({
+      puzzle: stripPuzzleMetadata(entry.puzzle),
+      metadata: normalizeCustomMetadata(entry.metadata, entry.puzzle.id),
+    }))
 }
 
 export function stripPuzzleMetadata(puzzle: PlayablePuzzle): PuzzleJSON {
@@ -68,21 +67,14 @@ export function getCustomPuzzleRecords(): CustomPuzzleRecord[] {
 export function saveCustomPuzzleRecord(record: CustomPuzzleRecord): void {
   const cleanRecord: CustomPuzzleRecord = {
     puzzle: stripPuzzleMetadata(record.puzzle),
-    metadata: {
-      ...record.metadata,
-      title: record.metadata.title.trim() || record.puzzle.id,
-      source: record.metadata.source.trim() || 'Custom',
-      difficulty: Math.max(1, Math.trunc(record.metadata.difficulty || 1)),
-      group_id: record.metadata.group_id || DEFAULT_GROUP_ID,
-      group_title: record.metadata.group_title?.trim() || DEFAULT_GROUP_TITLE,
-    },
+    metadata: normalizeCustomMetadata(record.metadata, record.puzzle.id),
   }
 
   const list = readCustomPuzzleRecords()
   const idx = list.findIndex((entry) => entry.puzzle.id === cleanRecord.puzzle.id)
   if (idx >= 0) list[idx] = cleanRecord
   else list.push(cleanRecord)
-  localStorage.setItem(KEY, JSON.stringify(list))
+  saveJsonToStorage(KEY, list)
 }
 
 export function updateCustomPuzzleMetadata(id: string, metadata: PuzzleMetadata): void {
@@ -90,29 +82,25 @@ export function updateCustomPuzzleMetadata(id: string, metadata: PuzzleMetadata)
   const idx = list.findIndex((entry) => entry.puzzle.id === id)
   if (idx < 0) return
   list[idx] = { ...list[idx], metadata }
-  localStorage.setItem(KEY, JSON.stringify(list))
+  saveJsonToStorage(KEY, list)
 }
 
 export function removeCustomPuzzle(id: string): void {
   const list = readCustomPuzzleRecords().filter((entry) => entry.puzzle.id !== id)
-  localStorage.setItem(KEY, JSON.stringify(list))
+  saveJsonToStorage(KEY, list)
 }
 
 export function getHiddenPuzzleIds(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem(HIDDEN_KEY) ?? '[]') as string[]
-  } catch {
-    return []
-  }
+  return loadJsonFromStorage<string[]>(HIDDEN_KEY, [])
 }
 
 export function hidePuzzle(id: string): void {
   const list = getHiddenPuzzleIds()
   if (!list.includes(id)) list.push(id)
-  localStorage.setItem(HIDDEN_KEY, JSON.stringify(list))
+  saveJsonToStorage(HIDDEN_KEY, list)
 }
 
 export function restoreHiddenPuzzle(id: string): void {
   const list = getHiddenPuzzleIds().filter((x) => x !== id)
-  localStorage.setItem(HIDDEN_KEY, JSON.stringify(list))
+  saveJsonToStorage(HIDDEN_KEY, list)
 }

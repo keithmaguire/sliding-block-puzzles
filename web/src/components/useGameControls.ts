@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Direction, PuzzleApi, WasmBlock } from '../wasm'
 import { appendDebugLog } from '../debugLog'
+import { CELL_SIZE } from './blockGeometry'
 
-const CELL = 64 // must match BlockShape.tsx
 const COMMIT_THRESHOLD = 0.5 // fraction of a cell before committing a drag
+const SHAKE_DURATION_MS = 260 // must match block-shake CSS animation duration
 
 interface DragState {
   blockID: string
@@ -27,7 +28,7 @@ interface UseGameControlsReturn {
   onBlockLostPointerCapture: (e: React.PointerEvent<SVGGElement>) => void
 }
 
-export function shouldClearDrag(activePointerId: number | null, pointerId: number): boolean {
+function shouldClearDrag(activePointerId: number | null, pointerId: number): boolean {
   return activePointerId === pointerId
 }
 
@@ -103,7 +104,7 @@ export function useGameControls(
     requestAnimationFrame(() => {
       setShakenBlock(blockID)
       if (shakeTimer.current) clearTimeout(shakeTimer.current)
-      shakeTimer.current = setTimeout(() => setShakenBlock(null), 260)
+      shakeTimer.current = setTimeout(() => setShakenBlock(null), SHAKE_DURATION_MS)
     })
   }
 
@@ -180,9 +181,9 @@ export function useGameControls(
       const dx = e.clientX - d.startX
       const dy = e.clientY - d.startY
 
-      // Scale CELL to screen pixels so drag works correctly when the SVG is
+      // Scale CELL_SIZE to screen pixels so drag works correctly when the SVG is
       // displayed smaller or larger than its natural SVG-coordinate size.
-      const scaledCell = CELL * d.scale
+      const scaledCell = CELL_SIZE * d.scale
 
       // Lock direction on first threshold crossing.
       if (d.lockedDir === null) {

@@ -1,4 +1,5 @@
 // Puzzle JSON format types (mirrors the Go loader's puzzleJSON struct).
+import { sanitizeSvgFragment } from './svgSafety'
 
 export type PuzzleTextColor = 'white' | 'black'
 export type PuzzleAppearanceType = 'plain' | 'text' | 'svg'
@@ -196,7 +197,7 @@ export function normalizeShapeCells(cells: [number, number][]): [number, number]
     .sort((a, b) => (a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]))
 }
 
-export function sameShape(a: [number, number][], b: [number, number][]): boolean {
+function sameShape(a: [number, number][], b: [number, number][]): boolean {
   return a.length === b.length && a.every((cell, index) => cell[0] === b[index]?.[0] && cell[1] === b[index]?.[1])
 }
 
@@ -334,6 +335,9 @@ function validateBlock(block: unknown) {
     case 'svg':
       if (typeof appearanceObj.value !== 'string' || appearanceObj.value === '') {
         throw new Error('Puzzle JSON svg appearance must include value')
+      }
+      if (sanitizeSvgFragment(appearanceObj.value) == null) {
+        throw new Error('Puzzle JSON svg appearance value must be a safe SVG shape fragment')
       }
       if ('text_color' in appearanceObj) {
         throw new Error('Puzzle JSON svg appearance must not include text_color')

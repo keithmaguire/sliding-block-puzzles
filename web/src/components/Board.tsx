@@ -1,6 +1,7 @@
 import type { WasmOk } from '../wasm'
 import type { PuzzleDecoratedAppearance } from '../puzzleTypes'
-import { BlockShape, CELL } from './BlockShape'
+import { BlockShape } from './BlockShape'
+import { CELL_SIZE } from './blockGeometry'
 
 interface PuzzleMeta {
   board: { width: number; height: number }
@@ -36,8 +37,8 @@ export function Board({
   onBlockLostPointerCapture,
 }: BoardProps) {
   const { width, height } = meta.board
-  const viewW = width * CELL
-  const viewH = height * CELL
+  const viewW = width * CELL_SIZE
+  const viewH = height * CELL_SIZE
   const renderedBlocks = Object.entries(state.blocks).sort(([aId], [bId]) => {
     const aMovable = meta.blocks[aId]?.movable ?? true
     const bMovable = meta.blocks[bId]?.movable ?? true
@@ -62,9 +63,9 @@ export function Board({
       {Array.from({ length: width + 1 }, (_, i) => (
         <line
           key={`v${i}`}
-          x1={i * CELL}
+          x1={i * CELL_SIZE}
           y1={0}
-          x2={i * CELL}
+          x2={i * CELL_SIZE}
           y2={viewH}
           stroke="rgba(255,255,255,0.09)"
           strokeWidth={1}
@@ -74,9 +75,9 @@ export function Board({
         <line
           key={`h${i}`}
           x1={0}
-          y1={i * CELL}
+          y1={i * CELL_SIZE}
           x2={viewW}
-          y2={i * CELL}
+          y2={i * CELL_SIZE}
           stroke="rgba(255,255,255,0.09)"
           strokeWidth={1}
         />

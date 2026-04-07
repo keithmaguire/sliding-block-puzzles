@@ -3,10 +3,13 @@ import {
   type PuzzleJSON,
   type WinCondition,
 } from '../puzzleTypes'
-import { buildJoinedBlockPath } from './blockGeometry'
+import { sanitizeSvgFragment } from '../svgSafety'
+import { buildJoinedBlockPath, computeBlockCentroid } from './blockGeometry'
 import { computeRenderBlocks } from './winPreviewModel'
 
 const MINI = 22
+const MINI_TEXT_FONT_RATIO = 0.48 // font size as fraction of mini cell size
+const MINI_SVG_OFFSET_RATIO = 0.3 // svg icon origin offset as fraction of mini cell size
 interface WinPreviewProps {
   puzzle: PuzzleJSON
 }
@@ -58,8 +61,8 @@ export function WinPreview({ puzzle }: WinPreviewProps) {
             if (rb.cells.length === 0) return null
             const path = buildJoinedBlockPath(rb.cells, MINI)
             const fill = resolveBlockColor(rb.color)
-            const cx = (rb.cells.reduce((sum, cell) => sum + cell.col, 0) / rb.cells.length + 0.5) * MINI
-            const cy = (rb.cells.reduce((sum, cell) => sum + cell.row, 0) / rb.cells.length + 0.5) * MINI
+            const { cx, cy } = computeBlockCentroid(rb.cells, MINI)
+            const safeSvgValue = rb.appearance?.type === 'svg' ? sanitizeSvgFragment(rb.appearance.value) : null
             return (
               <g key={rb.id}>
                 <path
@@ -82,7 +85,7 @@ export function WinPreview({ puzzle }: WinPreviewProps) {
                     y={cy}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={MINI * 0.48}
+                    fontSize={MINI * MINI_TEXT_FONT_RATIO}
                     fontWeight="bold"
                     fill={rb.appearance.text_color === 'black' ? 'var(--text-on-block)' : '#fff'}
                     pointerEvents="none"
@@ -90,6 +93,13 @@ export function WinPreview({ puzzle }: WinPreviewProps) {
                   >
                     {rb.appearance.value}
                   </text>
+                )}
+                {rb.appearance?.type === 'svg' && safeSvgValue && (
+                  <g
+                    transform={`translate(${cx - MINI * MINI_SVG_OFFSET_RATIO}, ${cy - MINI * MINI_SVG_OFFSET_RATIO})`}
+                    pointerEvents="none"
+                    dangerouslySetInnerHTML={{ __html: safeSvgValue }}
+                  />
                 )}
               </g>
             )

@@ -1,3 +1,12 @@
+export const CELL_SIZE = 64 // px per grid cell
+
+export function computeBlockCentroid(cells: { col: number; row: number }[], cellSize: number): { cx: number; cy: number } {
+  return {
+    cx: (cells.reduce((s, c) => s + c.col, 0) / cells.length + 0.5) * cellSize,
+    cy: (cells.reduce((s, c) => s + c.row, 0) / cells.length + 0.5) * cellSize,
+  }
+}
+
 interface GridPoint {
   x: number
   y: number
@@ -12,7 +21,7 @@ function pointKey(point: GridPoint): string {
   return `${point.x},${point.y}`
 }
 
-function cellKey(col: number, row: number): string {
+export function cellKey(col: number, row: number): string {
   return `${col},${row}`
 }
 

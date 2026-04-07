@@ -14,6 +14,7 @@ import {
   type SetupOptions,
   type WinCondition,
 } from '../puzzleTypes'
+import { CUSTOM_GROUP_ID, CUSTOM_GROUP_TITLE, normalizeCustomMetadata } from '../customPuzzles'
 
 type CellValue = string
 type WinType = 'position' | 'adjacency' | 'description_only'
@@ -49,15 +50,15 @@ export interface VisualState {
 }
 
 const BLOCK_COLORS = [
-  '#f0a500',
-  '#06b6d4',
-  '#22c55e',
-  '#ec4899',
-  '#8b5cf6',
-  '#fb923c',
-  '#e11d48',
-  '#14b8a6',
-  '#78909c',
+  '#f2542d',
+  '#0e9594',
+  '#127475',
+  '#f5dfbb',
+  '#562c2c',
+  '#d96b52',
+  '#6faeab',
+  '#94584d',
+  '#8a6f62',
   '#000000',
   '#ffffff',
   '#ff0000',
@@ -199,13 +200,13 @@ export function visualStateToPuzzleJSON(state: VisualState): PuzzleJSON {
 }
 
 export function visualStateToPuzzleMetadata(state: VisualState): PuzzleMetadata {
-  return {
-    title: state.title.trim() || 'My Puzzle',
-    source: state.source.trim() || 'Custom',
-    difficulty: Math.max(1, Math.trunc(state.difficulty || 1)),
-    group_id: 'custom-local',
-    group_title: 'Custom',
-  }
+  return normalizeCustomMetadata({
+    title: state.title,
+    source: state.source,
+    difficulty: state.difficulty,
+    group_id: CUSTOM_GROUP_ID,
+    group_title: CUSTOM_GROUP_TITLE,
+  }, 'My Puzzle')
 }
 
 export function puzzleJSONToVisualState(puzzle: PlayablePuzzle): Partial<VisualState> {

@@ -1,4 +1,5 @@
 import type { PuzzleJSON, PuzzleBlock } from './puzzleTypes'
+import { cellKey } from './components/blockGeometry'
 
 /** Remove the specified blocks from the puzzle. */
 export function removeBlocks(puzzle: PuzzleJSON, blockIds: string[]): PuzzleJSON {
@@ -30,7 +31,7 @@ export function shufflePuzzle(puzzle: PuzzleJSON): PuzzleJSON {
 
   const fixedCells = new Set<string>()
   for (const b of nonMovable) {
-    for (const [c, r] of b.cells) fixedCells.add(`${c},${r}`)
+    for (const [c, r] of b.cells) fixedCells.add(cellKey(c, r))
   }
 
   for (let attempt = 0; attempt < 500; attempt++) {
@@ -47,7 +48,7 @@ export function shufflePuzzle(puzzle: PuzzleJSON): PuzzleJSON {
       const anchors: [number, number][] = []
       for (let r = 0; r + maxDR < height; r++) {
         for (let c = 0; c + maxDC < width; c++) {
-          if (shape.every(([dc, dr]) => !occupied.has(`${c + dc},${r + dr}`))) {
+          if (shape.every(([dc, dr]) => !occupied.has(cellKey(c + dc, r + dr)))) {
             anchors.push([c, r])
           }
         }
@@ -57,7 +58,7 @@ export function shufflePuzzle(puzzle: PuzzleJSON): PuzzleJSON {
 
       const [ac, ar] = anchors[Math.floor(Math.random() * anchors.length)]
       const newCells: [number, number][] = shape.map(([dc, dr]) => [ac + dc, ar + dr])
-      newCells.forEach(([c, r]) => occupied.add(`${c},${r}`))
+      newCells.forEach(([c, r]) => occupied.add(cellKey(c, r)))
       newBlocks.push({ ...block, cells: newCells })
     }
 

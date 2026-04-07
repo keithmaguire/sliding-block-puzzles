@@ -1,4 +1,4 @@
-import { PUZZLE_SESSIONS_KEY as KEY } from './localMemory'
+import { PUZZLE_SESSIONS_KEY as KEY, loadJsonFromStorage, saveJsonToStorage } from './localMemory'
 import type { PlayablePuzzle } from './puzzleTypes'
 import type { WasmBlock, WasmRestoreBlocks } from './wasm'
 
@@ -52,17 +52,8 @@ function hasSetupStateChanges(initialPuzzle: PlayablePuzzle, playPuzzle: Playabl
   return !sameBlocks(initialPuzzle.blocks, playPuzzle.blocks)
 }
 
-function load(): SessionStore {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '{}') as SessionStore
-  } catch {
-    return {}
-  }
-}
-
-function save(store: SessionStore) {
-  localStorage.setItem(KEY, JSON.stringify(store))
-}
+const load = (): SessionStore => loadJsonFromStorage<SessionStore>(KEY, {})
+const save = (store: SessionStore) => saveJsonToStorage(KEY, store)
 
 export function getPuzzleSession(puzzleId: string): SavedPuzzleSession | null {
   const session = load()[puzzleId]

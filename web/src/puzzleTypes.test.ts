@@ -101,6 +101,40 @@ describe('normalizePuzzleJSONInput', () => {
     })).toThrow(/text appearance must use text_color "white" or "black"/)
   })
 
+  it('accepts safe svg appearance fragments', () => {
+    expect(normalizePuzzleJSONInput({
+      ...canonical,
+      blocks: [
+        {
+          id: 'A',
+          movable: true,
+          cells: [[0, 0]],
+          appearance: { type: 'svg', color: '#f00', value: "<path d='M8 48 Q32 8 56 48' stroke='white' stroke-width='5' fill='none'/>" },
+        },
+      ],
+    }).blocks[0].appearance).toEqual({
+      type: 'svg',
+      color: '#f00',
+      value: "<path d='M8 48 Q32 8 56 48' stroke='white' stroke-width='5' fill='none'/>",
+    })
+  })
+
+  it('rejects unsafe svg appearance fragments', () => {
+    for (const value of [
+      '<script>alert(1)</script>',
+      '<path onload="alert(1)" d="M0 0"/>',
+      '<image href="javascript:alert(1)"/>',
+      '<path style="background:url(javascript:alert(1))" d="M0 0"/>',
+    ]) {
+      expect(() => normalizePuzzleJSONInput({
+        ...canonical,
+        blocks: [
+          { id: 'A', movable: true, cells: [[0, 0]], appearance: { type: 'svg', color: '#f00', value } },
+        ],
+      })).toThrow(/safe SVG shape fragment/)
+    }
+  })
+
   it('rejects unknown block fields', () => {
     expect(() => normalizePuzzleJSONInput({
       ...canonical,

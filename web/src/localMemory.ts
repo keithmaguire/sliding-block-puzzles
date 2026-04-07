@@ -5,6 +5,18 @@ export const PUZZLE_SESSIONS_KEY = 'sliding-puzzle-sessions'
 export const DEBUG_ENABLED_KEY = 'sliding-puzzle-debug-enabled'
 export const DEBUG_LOG_KEY = 'sliding-puzzle-debug-log'
 
+export function loadJsonFromStorage<T>(key: string, fallback: T): T {
+  try {
+    return JSON.parse(localStorage.getItem(key) ?? JSON.stringify(fallback)) as T
+  } catch {
+    return fallback
+  }
+}
+
+export function saveJsonToStorage<T>(key: string, value: T): void {
+  localStorage.setItem(key, JSON.stringify(value))
+}
+
 export function clearLocalMemory(): void {
   localStorage.removeItem(CUSTOM_PUZZLES_KEY)
   localStorage.removeItem(PROGRESS_KEY)

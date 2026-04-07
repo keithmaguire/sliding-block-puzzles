@@ -1,7 +1,6 @@
 import type { PuzzleJSON } from '../puzzleTypes'
 import { getSupportedSetupOptions } from '../puzzleTypes'
-
-const BASE_CELL = 64
+import { CELL_SIZE } from './blockGeometry'
 const MAX_CELL = 128
 const PORTRAIT_SIDE_GUTTER = 24
 const PORTRAIT_FRAME_PADDING = 24
@@ -32,7 +31,7 @@ export function computeBoardDisplayWidth(
   boardCols: number,
   boardRows: number,
 ): number {
-  const naturalWidth = boardCols * BASE_CELL
+  const naturalWidth = boardCols * CELL_SIZE
   if (viewportWidth <= 0 || viewportHeight <= 0 || boardCols <= 0 || boardRows <= 0) {
     return naturalWidth
   }
