@@ -1,0 +1,279 @@
+{
+  "id": "b32-get-my-goat",
+  "min_moves": 28,
+  "board": {
+    "width": 3,
+    "height": 4
+  },
+  "blocks": [
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#f0a500"
+      },
+      "cells": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#22c55e"
+      },
+      "cells": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "D",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#06b6d4"
+      },
+      "cells": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ff0000"
+      },
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "I",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#22c55e"
+      },
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "K",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#06b6d4"
+      },
+      "cells": [
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "A",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ff0000"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "H",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#22c55e"
+      },
+      "cells": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "F",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#f0a500"
+      },
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "G",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#f0a500"
+      },
+      "cells": [
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "J",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#06b6d4"
+      },
+      "cells": [
+        [
+          1,
+          3
+        ]
+      ]
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#ff0000"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#22c55e"
+          }
+        },
+        "col": 2,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#f0a500"
+          }
+        },
+        "col": 0,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#06b6d4"
+          }
+        },
+        "col": 1,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#f0a500"
+          }
+        },
+        "col": 2,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#22c55e"
+          }
+        },
+        "col": 0,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#ff0000"
+          }
+        },
+        "col": 1,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#22c55e"
+          }
+        },
+        "col": 2,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#06b6d4"
+          }
+        },
+        "col": 0,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#f0a500"
+          }
+        },
+        "col": 1,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#06b6d4"
+          }
+        },
+        "col": 2,
+        "row": 3
+      }
+    ]
+  }
+}

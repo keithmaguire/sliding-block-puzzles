@@ -1,0 +1,304 @@
+{
+  "id": "d11",
+  "board": {
+    "width": 6,
+    "height": 5
+  },
+  "blocks": [
+    {
+      "id": "A",
+      "movable": true,
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#e74c3c"
+      }
+    },
+    {
+      "id": "1",
+      "movable": true,
+      "cells": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#3498db"
+      }
+    },
+    {
+      "id": "2a",
+      "movable": true,
+      "cells": [
+        [
+          5,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#9b59b6"
+      }
+    },
+    {
+      "id": "3",
+      "movable": true,
+      "cells": [
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#2ecc71"
+      }
+    },
+    {
+      "id": "4",
+      "movable": true,
+      "cells": [
+        [
+          5,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#f39c12"
+      }
+    },
+    {
+      "id": "5",
+      "movable": true,
+      "cells": [
+        [
+          0,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#1abc9c"
+      }
+    },
+    {
+      "id": "6",
+      "movable": true,
+      "cells": [
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#e67e22"
+      }
+    },
+    {
+      "id": "7",
+      "movable": true,
+      "cells": [
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#2980b9"
+      }
+    },
+    {
+      "id": "8",
+      "movable": true,
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#78909c"
+      }
+    },
+    {
+      "id": "9",
+      "movable": true,
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#78909c"
+      }
+    },
+    {
+      "id": "10",
+      "movable": true,
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#78909c"
+      }
+    },
+    {
+      "id": "11",
+      "movable": true,
+      "cells": [
+        [
+          2,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#78909c"
+      }
+    },
+    {
+      "id": "12",
+      "movable": true,
+      "cells": [
+        [
+          1,
+          3
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#546e7a"
+      }
+    },
+    {
+      "id": "13",
+      "movable": true,
+      "cells": [
+        [
+          1,
+          4
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#546e7a"
+      }
+    },
+    {
+      "id": "2b",
+      "movable": true,
+      "cells": [
+        [
+          0,
+          4
+        ]
+      ],
+      "appearance": {
+        "type": "plain",
+        "color": "#9b59b6"
+      }
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#e74c3c"
+          },
+          "shape": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "col": 4,
+        "row": 3
+      }
+    ]
+  }
+}

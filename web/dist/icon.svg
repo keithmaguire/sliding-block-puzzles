@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#1a1a2e"/>
+  <!-- 3x3 sliding puzzle grid with one missing piece (bottom-right) -->
+  <rect x="60"  y="60"  width="120" height="120" rx="12" fill="#f0a500"/>
+  <rect x="196" y="60"  width="120" height="120" rx="12" fill="#e74c3c"/>
+  <rect x="332" y="60"  width="120" height="120" rx="12" fill="#3498db"/>
+  <rect x="60"  y="196" width="120" height="120" rx="12" fill="#2ecc71"/>
+  <rect x="196" y="196" width="120" height="120" rx="12" fill="#9b59b6"/>
+  <rect x="332" y="196" width="120" height="120" rx="12" fill="#e67e22"/>
+  <rect x="60"  y="332" width="120" height="120" rx="12" fill="#1abc9c"/>
+  <rect x="196" y="332" width="120" height="120" rx="12" fill="#e74c3c"/>
+  <!-- bottom-right empty (missing piece) -->
+</svg>

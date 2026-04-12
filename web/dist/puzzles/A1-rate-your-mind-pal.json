@@ -1,0 +1,431 @@
+{
+  "blocks": [
+    {
+      "id": "A",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "R",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "A",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "T",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "D",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "E",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "Y",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "F",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "O",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "G",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "U",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "H",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#f0a500",
+        "value": "R",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          3,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "I",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "M"
+      },
+      "cells": [
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "J",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "I"
+      },
+      "cells": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "K",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "N"
+      },
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "L",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "D"
+      },
+      "cells": [
+        [
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "M",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "P"
+      },
+      "cells": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "N",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "A"
+      },
+      "cells": [
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "O",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#8b5cf6",
+        "value": "L"
+      },
+      "cells": [
+        [
+          2,
+          3
+        ]
+      ]
+    }
+  ],
+  "board": {
+    "width": 4,
+    "height": 4
+  },
+  "id": "a1-rate-your-mind-pal",
+  "min_moves": 0,
+  "setup_options": {
+    "allow_shuffle": true
+  },
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "R",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "A",
+            "text_color": "black"
+          }
+        },
+        "col": 1,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "T",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "E",
+            "text_color": "black"
+          }
+        },
+        "col": 3,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "Y",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "O",
+            "text_color": "black"
+          }
+        },
+        "col": 1,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "U",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#f0a500",
+            "value": "R",
+            "text_color": "black"
+          }
+        },
+        "col": 3,
+        "row": 1
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "M",
+            "text_color": "white"
+          }
+        },
+        "col": 0,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "I",
+            "text_color": "white"
+          }
+        },
+        "col": 1,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "N",
+            "text_color": "white"
+          }
+        },
+        "col": 2,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "D",
+            "text_color": "white"
+          }
+        },
+        "col": 3,
+        "row": 2
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "P",
+            "text_color": "white"
+          }
+        },
+        "col": 0,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "A",
+            "text_color": "white"
+          }
+        },
+        "col": 1,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#8b5cf6",
+            "value": "L",
+            "text_color": "white"
+          }
+        },
+        "col": 2,
+        "row": 3
+      }
+    ]
+  }
+}

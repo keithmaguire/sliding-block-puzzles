@@ -1,0 +1,276 @@
+{
+  "id": "d12-traffic-jam-a",
+  "board": {
+    "width": 6,
+    "height": 5
+  },
+  "blocks": [
+    {
+      "id": "A",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#e11d48"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#8b5cf6"
+      },
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ec4899"
+      },
+      "cells": [
+        [
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "D",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#06b6d4"
+      },
+      "cells": [
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#14b8a6"
+      },
+      "cells": [
+        [
+          3,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "F",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#78909c"
+      },
+      "cells": [
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "G",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#06b6d4"
+      },
+      "cells": [
+        [
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "H",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#008000"
+      },
+      "cells": [
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "I",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#0000ff"
+      },
+      "cells": [
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "J",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ffffff"
+      },
+      "cells": [
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "K",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#f0a500"
+      },
+      "cells": [
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "L",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ff0000"
+      },
+      "cells": [
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "M",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#22c55e"
+      },
+      "cells": [
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "N",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#ec4899"
+      },
+      "cells": [
+        [
+          5,
+          3
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ]
+      ]
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "plain",
+            "color": "#e11d48"
+          }
+        },
+        "col": 4,
+        "row": 3
+      }
+    ]
+  }
+}

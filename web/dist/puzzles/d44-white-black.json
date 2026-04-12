@@ -1,0 +1,361 @@
+{
+  "id": "d44-white-black",
+  "board": {
+    "width": 5,
+    "height": 4
+  },
+  "blocks": [
+    {
+      "id": "W",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#eceff1",
+        "value": "W",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "H",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#eceff1",
+        "value": "H",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "I",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#eceff1",
+        "value": "I",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "T",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#eceff1",
+        "value": "T",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "E",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#eceff1",
+        "value": "E",
+        "text_color": "black"
+      },
+      "cells": [
+        [
+          4,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "X",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#e67e22"
+      },
+      "cells": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "FX1",
+      "movable": false,
+      "appearance": {
+        "type": "plain",
+        "color": "#546e7a"
+      },
+      "cells": [
+        [
+          3,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "Y",
+      "movable": true,
+      "appearance": {
+        "type": "plain",
+        "color": "#1abc9c"
+      },
+      "cells": [
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "FX2",
+      "movable": false,
+      "appearance": {
+        "type": "plain",
+        "color": "#546e7a"
+      },
+      "cells": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "B",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#263238",
+        "value": "B"
+      },
+      "cells": [
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "L",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#263238",
+        "value": "L"
+      },
+      "cells": [
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "A",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#263238",
+        "value": "A"
+      },
+      "cells": [
+        [
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "C",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#263238",
+        "value": "C"
+      },
+      "cells": [
+        [
+          3,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "K",
+      "movable": true,
+      "appearance": {
+        "type": "text",
+        "color": "#263238",
+        "value": "K"
+      },
+      "cells": [
+        [
+          4,
+          3
+        ]
+      ]
+    }
+  ],
+  "win_condition": {
+    "type": "position",
+    "positions": [
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#263238",
+            "value": "B",
+            "text_color": "white"
+          }
+        },
+        "col": 0,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#263238",
+            "value": "L",
+            "text_color": "white"
+          }
+        },
+        "col": 1,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#263238",
+            "value": "A",
+            "text_color": "white"
+          }
+        },
+        "col": 2,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#263238",
+            "value": "C",
+            "text_color": "white"
+          }
+        },
+        "col": 3,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#263238",
+            "value": "K",
+            "text_color": "white"
+          }
+        },
+        "col": 4,
+        "row": 0
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#eceff1",
+            "value": "W",
+            "text_color": "black"
+          }
+        },
+        "col": 0,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#eceff1",
+            "value": "H",
+            "text_color": "black"
+          }
+        },
+        "col": 1,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#eceff1",
+            "value": "I",
+            "text_color": "black"
+          }
+        },
+        "col": 2,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#eceff1",
+            "value": "T",
+            "text_color": "black"
+          }
+        },
+        "col": 3,
+        "row": 3
+      },
+      {
+        "match": {
+          "appearance": {
+            "type": "text",
+            "color": "#eceff1",
+            "value": "E",
+            "text_color": "black"
+          }
+        },
+        "col": 4,
+        "row": 3
+      }
+    ]
+  }
+}
