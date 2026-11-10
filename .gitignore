@@ -18,6 +18,7 @@ web/public/wasm_exec.js
 
 # Beads local machine state
 .beads/.beads-credential-key
+.beads.gate.lock*
 .beads-migration/
 
 # OS
